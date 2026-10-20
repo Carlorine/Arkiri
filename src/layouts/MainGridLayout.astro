@@ -18,6 +18,8 @@ interface Props {
 	headings?: MarkdownHeading[];
 	/** the profile card belongs on the front pages, not on an article */
 	showProfile?: boolean;
+	/** article pages keep only the contents: no category or tag panels */
+	showWidgets?: boolean;
 }
 
 const {
@@ -28,6 +30,7 @@ const {
 	setOGTypeArticle,
 	headings = [],
 	showProfile = true,
+	showWidgets = true,
 } = Astro.props;
 
 // Reading pages put the table of contents in the page margin; other pages use
@@ -60,13 +63,13 @@ const hasMargin = headings.length > 0;
             </div>
         </main>
 
-        <aside class="shell-margin">
+        <aside class:list={["shell-margin", { "is-article-margin": !showWidgets }]}>
             <div id="toc" class="margin-toc" aria-label="Contents">
                 <div id="toc-inner-wrapper" class="margin-inner">
                     {hasMargin && <TOC headings={headings}></TOC>}
                 </div>
             </div>
-            <SideBar class="margin-widgets" headings={headings} showProfile={showProfile}></SideBar>
+            <SideBar class="margin-widgets" headings={headings} showProfile={showProfile} showWidgets={showWidgets}></SideBar>
         </aside>
 
         <div class="shell-footer"><Footer></Footer></div>
@@ -167,6 +170,21 @@ const hasMargin = headings.length > 0;
         .shell-margin {
             padding: 2rem 0 3rem;
             border-top: 0;
+        }
+        /* Article pages: the margin holds only the contents, and it follows
+           the reader. The grid row is as tall as the article, so the aside has
+           real travel here; the inner sticky is switched off to avoid two
+           sticky layers. top:0 lets the 2rem padding decide the resting
+           position (panel at 40px), which is where it already started. */
+        .shell-margin.is-article-margin {
+            position: sticky;
+            top: 0;
+            align-self: start;
+        }
+        .shell-margin.is-article-margin .margin-inner {
+            position: static;
+            max-height: none;
+            overflow: visible;
         }
     }
 

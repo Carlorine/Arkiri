@@ -3,6 +3,8 @@ import { i18n } from "../i18n/translation";
 import I18nKey from "../i18n/i18nKey";
 import { efDate } from "../utils/post-index";
 import { getCategoryUrl, getTagUrl } from "../utils/url-utils";
+import UiText from "./common/UiText.astro";
+import { uiPair } from "../utils/ui-i18n";
 
 interface Props {
 	class: string;
@@ -29,7 +31,7 @@ const hasUpdate =
     <li><time datetime={published.toISOString()}>{efDate(published)}</time></li>
     {hasUpdate && <li><time datetime={(updated as Date).toISOString()}>{efDate(updated as Date)}</time></li>}
     <li>
-        <a href={getCategoryUrl(category)}>{category || i18n(I18nKey.uncategorized)}</a>
+        <a href={getCategoryUrl(category)}>{category ? category : <UiText k={I18nKey.uncategorized} />}</a>
     </li>
     {tags && tags.length > 0 && (
         <li class:list={[{ "tags-on-mobile": !hideTagsForMobile }]}>

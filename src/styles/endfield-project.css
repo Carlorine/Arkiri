@@ -9,12 +9,11 @@
 
 /* ---------- fonts ---------- */
 /* Latin/figures: the self-hosted Saira (src/styles/fonts.css).
-   Chinese: the system heiti — no webfont, and never font-stretch'd. */
-:root {
+   Chinese: the system heiti — no webfont, and never font-stretch'd. */:root {
   --ef-font-ui: 'Saira', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
     'Noto Sans SC', 'Source Han Sans SC', sans-serif;
-  --ef-font-text: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
-    'Noto Sans SC', 'Source Han Sans SC', sans-serif;
+  --ef-font-text: 'HarmonyOS Sans SC', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Noto Sans SC', 'Source Han Sans SC', sans-serif;
 }
 
 /* A zero-height marker at the top of the document; the back-to-top button
@@ -112,4 +111,15 @@
    rule in endfield.css stays untouched. */
 .post-sheet {
   border-right: 0;
+}
+
+/* ---------- UI language ---------- */
+/* Both translations live in the DOM, next to each other. This decides which
+   one is painted: en is the default, zh is opted into on <html>. The visible
+   span keeps its own display, so nothing about the layouts changes. */
+:root:not([data-ui-lang="zh"]) [data-l="zh"] {
+  display: none;
+}
+:root[data-ui-lang="zh"] [data-l="en"] {
+  display: none;
 }

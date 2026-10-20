@@ -9,9 +9,11 @@ interface Props {
 	headings?: MarkdownHeading[];
 	/** front pages show the profile card; an article does not */
 	showProfile?: boolean;
+	/** article pages keep only the contents: no category or tag panels */
+	showWidgets?: boolean;
 }
 
-const { showProfile = true } = Astro.props;
+const { showProfile = true, showWidgets = true } = Astro.props;
 const className = Astro.props.class;
 ---
 <div id="sidebar" class:list={[className, "w-full"]}>
@@ -20,8 +22,10 @@ const className = Astro.props.class;
             <Profile></Profile>
         </div>
     )}
-    <div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-[1.6rem] top-4 sticky top-4">
-        <Categories class="onload-animation" style="animation-delay: 150ms"></Categories>
-        <Tag class="onload-animation" style="animation-delay: 200ms"></Tag>
-    </div>
+    {showWidgets && (
+        <div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-[1.6rem] top-4 sticky top-4">
+            <Categories class="onload-animation" style="animation-delay: 150ms"></Categories>
+            <Tag class="onload-animation" style="animation-delay: 200ms"></Tag>
+        </div>
+    )}
 </div>

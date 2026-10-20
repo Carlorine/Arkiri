@@ -6,6 +6,7 @@ import { siteConfig } from "../config";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
+import UiText from "../components/common/UiText.astro";
 
 const aboutPost = await getEntry("spec", "about");
 
@@ -18,7 +19,7 @@ const { Content } = await render(aboutPost);
 <MainGridLayout title={i18n(I18nKey.about)} description={i18n(I18nKey.about)}>
     <article class="about">
         <header class="ef-sheet-head">
-            <h1 class="ef-read">{i18n(I18nKey.about)}</h1>
+            <h1 class="ef-read"><UiText k={I18nKey.about} /></h1>
             <p class="ef-field">// {siteConfig.title}</p>
         </header>
         <div class="about-body">

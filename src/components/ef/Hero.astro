@@ -3,6 +3,8 @@ import I18nKey from "../../i18n/i18nKey";
 import { i18n } from "../../i18n/translation";
 import { profileConfig, siteConfig } from "../../config";
 import { url } from "../../utils/url-utils";
+import { uiAttrs, uiPair } from "../../utils/ui-i18n";
+import UiText from "../common/UiText.astro";
 
 interface Recent {
 	no: string;
@@ -24,17 +26,20 @@ const no3 = latest.no.replace("No.", "");
 
 // plural forms: the number is real, so the unit has to agree with it
 const word = (n: number) => i18n(n === 1 ? I18nKey.wordCount : I18nKey.wordsCount);
+const wordPair = (n: number) => uiPair(n === 1 ? I18nKey.wordCount : I18nKey.wordsCount);
 const minute = (n: number) => i18n(n === 1 ? I18nKey.minuteCount : I18nKey.minutesCount);
+const minutePair = (n: number) => uiPair(n === 1 ? I18nKey.minuteCount : I18nKey.minutesCount);
 const post = (n: number) => i18n(n === 1 ? I18nKey.postCount : I18nKey.postsCount);
+const postPair = (n: number) => uiPair(n === 1 ? I18nKey.postCount : I18nKey.postsCount);
 ---
 
 <section class="hero">
     <div class="hero-copy">
         <p class="ef-eyebrow slash">{siteConfig.title}</p>
         <ul class="ef-facts ef-field hero-facts">
-            <li>{total} {post(total)}</li>
-            <li>{totalWords.toLocaleString("en-US")} {word(totalWords)}</li>
-            <li>{i18n(I18nKey.latestPost)} {latest.date}</li>
+            <li>{total} <UiText en={postPair(total).en} zh={postPair(total).zh} /></li>
+            <li>{totalWords.toLocaleString("en-US")} <UiText en={wordPair(totalWords).en} zh={wordPair(totalWords).zh} /></li>
+            <li><UiText k={I18nKey.latestPost} /> {latest.date}</li>
         </ul>
 
         <h1 class="ef-wordmark">
@@ -52,23 +57,23 @@ const post = (n: number) => i18n(n === 1 ? I18nKey.postCount : I18nKey.postsCoun
 
         <p class="ef-actions hero-actions">
             <a class="ef-btn go" href={latest.url}>
-                {i18n(I18nKey.latestPost)} <span class="sub">{latest.no}</span>
+                <UiText k={I18nKey.latestPost} /> <span class="sub">{latest.no}</span>
             </a>
-            <a class="ef-btn" href={url("/archive/")}>{i18n(I18nKey.archive)}</a>
-            <a class="ef-btn" href={url("/about/")}>{i18n(I18nKey.about)}</a>
+            <a class="ef-btn" href={url("/archive/")}><UiText k={I18nKey.archive} /></a>
+            <a class="ef-btn" href={url("/about/")}><UiText k={I18nKey.about} /></a>
         </p>
     </div>
 
     <a class="latest" href={latest.url} aria-label={latest.title}>
         <span class="ef-hollow-no" aria-hidden="true">{no3}</span>
         <span class="latest-body">
-            <span class="ef-field">{latest.date} / {latest.words} {word(latest.words)} / {latest.minutes} {minute(latest.minutes)}</span>
+            <span class="ef-field">{latest.date} / {latest.words} <UiText en={wordPair(latest.words).en} zh={wordPair(latest.words).zh} /> / {latest.minutes} <UiText en={minutePair(latest.minutes).en} zh={minutePair(latest.minutes).zh} /></span>
             <span class="latest-title ef-read">{latest.title}</span>
         </span>
     </a>
 
     {tickerItems.length > 0 && (
-        <div class="ef-ticker" aria-label={i18n(I18nKey.recentPosts)}>
+        <div class="ef-ticker" aria-label={i18n(I18nKey.recentPosts)} {...uiAttrs(I18nKey.recentPosts, "aria-label")}>
             <div class="track">
                 <ul>
                     {tickerItems.map((item) => (

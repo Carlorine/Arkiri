@@ -1,7 +1,7 @@
 <script lang="ts">
 import { DARK_MODE, LIGHT_MODE } from "@constants/constants.ts";
 import I18nKey from "@i18n/i18nKey";
-import { i18n } from "@i18n/translation";
+import { getTranslation, i18n } from "@i18n/translation";
 import Icon from "@iconify/svelte";
 import {
 	applyThemeToDocument,
@@ -9,6 +9,7 @@ import {
 	setTheme,
 } from "@utils/setting-utils.ts";
 import { onMount } from "svelte";
+import { currentUiLang, onUiLangChange } from "../utils/ui-lang-client";
 import type { LIGHT_DARK_MODE } from "@/types/config.ts";
 
 /*
@@ -29,9 +30,18 @@ interface Props {
 let { class: className = "" }: Props = $props();
 
 let mode: LIGHT_DARK_MODE = $state(LIGHT_MODE);
+let uiLang = $state(currentUiLang());
+const zhDict = getTranslation("zh_CN");
+const label = $derived(
+	uiLang === "zh"
+		? zhDict[mode === DARK_MODE ? I18nKey.switchToLight : I18nKey.switchToDark]
+		: i18n(mode === DARK_MODE ? I18nKey.switchToLight : I18nKey.switchToDark),
+);
 
 onMount(() => {
 	mode = getStoredTheme();
+	const off = onUiLangChange((lang) => { uiLang = lang; });
+	return off;
 });
 
 function toggle() {
@@ -47,8 +57,8 @@ function toggle() {
     class="theme-toggle {className}"
     onclick={toggle}
     aria-pressed={mode === DARK_MODE}
-    aria-label={i18n(mode === DARK_MODE ? I18nKey.switchToLight : I18nKey.switchToDark)}
-    title={i18n(mode === DARK_MODE ? I18nKey.switchToLight : I18nKey.switchToDark)}
+    aria-label={label}
+    title={label}
 >
     <Icon
         icon={mode === DARK_MODE

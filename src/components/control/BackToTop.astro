@@ -1,14 +1,13 @@
 ---
 import { Icon } from "astro-icon/components";
-import I18nKey from "../../i18n/i18nKey";
-import { i18n } from "../../i18n/translation";
+import { uiAttrsRaw } from "../../utils/ui-i18n";
 ---
 
 <!-- Fixed to the bottom-right gutter: it never sits over the footer text. -->
 <div id="back-to-top-btn" class="back-to-top hide">
     <button
         type="button"
-        aria-label={i18n(I18nKey.home)}
+        aria-label="Back to top" {...uiAttrsRaw("aria-label", "Back to top", "返回顶部")}
         class="back-to-top-button"
         onclick="backToTop()"
     >

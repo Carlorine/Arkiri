@@ -1,7 +1,10 @@
 ---
 import { Icon } from "astro-icon/components";
+import I18nKey from "@i18n/i18nKey";
+import { getTranslation } from "@i18n/translation";
 import { type NavBarLink } from "../../types/config";
 import { url } from "../../utils/url-utils";
+import LangSwitch from "../common/LangSwitch.astro";
 
 interface Props {
 	links: NavBarLink[];
@@ -17,6 +20,14 @@ const enLabel = (link: NavBarLink) => {
 	};
 	return map[link.url] ?? "";
 };
+// The big word follows the reader's language; the // eyebrow stays Latin.
+const zhDict = getTranslation("zh_CN");
+const zhMap: Record<string, string> = {
+	"/": zhDict[I18nKey.home],
+	"/archive/": zhDict[I18nKey.archive],
+	"/about/": zhDict[I18nKey.about],
+};
+const zhLabel = (link: NavBarLink) => zhMap[link.url] ?? link.name;
 ---
 <div id="nav-menu-panel" class:list={["float-panel float-panel-closed nav-drawer"]}>
     <p class="ef-eyebrow slash drawer-head">Menu</p>
@@ -28,10 +39,13 @@ const enLabel = (link: NavBarLink) => {
                target={link.external ? "_blank" : null}
             >
                 <span class="ef-eyebrow">{enLabel(link)}</span>
-                <span class="zh">{link.name}</span>
+                <span class="zh" data-l="en">{link.name}</span><span class="zh" data-l="zh">{zhLabel(link)}</span>
                 {link.external && <Icon name="fa6-solid:arrow-up-right-from-square" class="ext" />}
             </a>
         ))}
+    </div>
+    <div class="drawer-lang">
+        <LangSwitch></LangSwitch>
     </div>
 </div>
 
@@ -95,5 +109,17 @@ const enLabel = (link: NavBarLink) => {
     }
     .drawer-item {
         position: relative;
+    }
+    /* the language key sits at the bottom of the drawer on a phone */
+    .drawer-lang {
+        display: flex;
+        justify-content: flex-end;
+        margin-top: 0.75rem;
+        padding-top: 0.75rem;
+        border-top: 1px solid var(--ef-rule);
+    }
+    .drawer-lang :global(.lang-toggle) {
+        flex: 0 0 44px;
+        width: 44px;
     }
 </style>

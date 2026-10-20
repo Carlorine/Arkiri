@@ -1,29 +1,30 @@
 ---
 import { Icon } from "astro-icon/components";
 import I18nKey from "../../i18n/i18nKey";
-import { i18n } from "../../i18n/translation";
+import UiText from "../common/UiText.astro";
 
 interface Props {
 	id: string;
 	name?: string;
+	nameZh?: string;
 	isCollapsed?: boolean;
 	collapsedHeight?: string;
 	class?: string;
 	style?: string;
 }
-const { id, name, isCollapsed, collapsedHeight, style } = Astro.props;
+const { id, name, nameZh, isCollapsed, collapsedHeight, style } = Astro.props;
 const className = Astro.props.class;
 ---
 <widget-layout data-id={id} data-is-collapsed={String(isCollapsed)} class:list={[className]} style={style}>
     <div class="widget ef-panel tab-right">
-        <h2 class="widget-head"><span class="ef-eyebrow slash">{name}</span></h2>
+        <h2 class="widget-head"><span class="ef-eyebrow slash"><span data-l="en">{name}</span><span data-l="zh">{nameZh ?? name}</span></span></h2>
         <div id={id} class:list={["collapse-wrapper", { collapsed: isCollapsed }]}>
             <slot></slot>
         </div>
         {isCollapsed && <div class="expand-btn">
             <button class="ef-btn small expand" type="button">
                 <Icon name="material-symbols:more-horiz" class="expand-icon"></Icon>
-                {i18n(I18nKey.more)}
+                <UiText k={I18nKey.more} />
             </button>
         </div>}
     </div>

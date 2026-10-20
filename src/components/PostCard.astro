@@ -3,6 +3,8 @@ import type { CollectionEntry } from "astro:content";
 import { i18n } from "../i18n/translation";
 import I18nKey from "../i18n/i18nKey";
 import { efDate } from "../utils/post-index";
+import UiText from "./common/UiText.astro";
+import { uiPair } from "../utils/ui-i18n";
 
 interface Props {
 	class?: string;
@@ -31,6 +33,6 @@ const words = remarkPluginFrontmatter.words;
         <span class="ef-tag">{number}</span>
         <time class="ef-field" datetime={published.toISOString()}>{efDate(published)}</time>
         <span class="name ef-read">{title}</span>
-        <span class="ef-field count">{words} {i18n(words === 1 ? I18nKey.wordCount : I18nKey.wordsCount)}</span>
+        <span class="ef-field count">{words} <UiText en={uiPair(words === 1 ? I18nKey.wordCount : I18nKey.wordsCount).en} zh={uiPair(words === 1 ? I18nKey.wordCount : I18nKey.wordsCount).zh} /></span>
     </a>
 </li>

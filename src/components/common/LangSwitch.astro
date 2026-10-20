@@ -1,0 +1,90 @@
+---
+interface Props {
+	class?: string;
+}
+const { class: className } = Astro.props;
+---
+<button type="button" class:list={["icon-btn", "lang-toggle", className]} aria-pressed="false" aria-label="Switch to Chinese">
+    <span data-l="en" class="lang-mark">EN</span><span data-l="zh" class="lang-mark">中</span>
+</button>
+
+<script>
+type UiLang = "en" | "zh";
+
+function currentUiLang(): UiLang {
+    return document.documentElement.dataset.uiLang === "zh" ? "zh" : "en";
+}
+
+/** Apply the language to the document and to everything that lives in attributes. */
+export function applyUiLang(lang: UiLang) {
+    const root = document.documentElement;
+    root.dataset.uiLang = lang;
+    root.lang = lang === "zh" ? "zh-CN" : "en";
+    try {
+        localStorage.setItem("uiLang", lang);
+    } catch {
+        // private mode: keep the switch working for this page
+    }
+
+    document.querySelectorAll<HTMLElement>(".lang-toggle").forEach((btn) => {
+        btn.setAttribute("aria-pressed", String(lang === "zh"));
+        btn.setAttribute("aria-label", lang === "zh" ? "切换到英文" : "Switch to Chinese");
+    });
+
+    document.querySelectorAll<HTMLElement>("[data-i18n-attr]").forEach((el) => {
+        const attr = el.getAttribute("data-i18n-attr");
+        const value = el.getAttribute(`data-i18n-${lang}`);
+        if (attr && value !== null) el.setAttribute(attr, value);
+    });
+
+    // Svelte islands render after this script runs; they read the attribute on
+    // mount and then listen for this event.
+    window.dispatchEvent(new CustomEvent("ui-lang-change", { detail: { lang } }));
+}
+
+function bindLangToggle() {
+    if (document.documentElement.dataset.langToggleBound === "1") return;
+    document.documentElement.dataset.langToggleBound = "1";
+    document.addEventListener("click", (event) => {
+        const target = event.target as Element | null;
+        if (!target || !target.closest(".lang-toggle")) return;
+        applyUiLang(currentUiLang() === "zh" ? "en" : "zh");
+    });
+}
+
+applyUiLang(currentUiLang());
+bindLangToggle();
+</script>
+
+<style>
+    /* Same key as the theme control, but scoped here: the button is rendered by
+       this component, so the navbar's scoped .icon-btn rules do not reach it. */
+    .lang-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 44px;
+        width: 44px;
+        min-height: 44px;
+        padding: 0;
+        border: 0;
+        border-radius: 0;
+        background: var(--ef-chip);
+        color: var(--ef-ink);
+        cursor: pointer;
+        transition: background-color 120ms var(--ef-ease);
+    }
+    .lang-toggle:hover {
+        background: var(--ef-rule);
+    }
+    .lang-toggle:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+    .lang-mark {
+        font-family: var(--ef-font-ui);
+        font-size: 0.8125rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+</style>

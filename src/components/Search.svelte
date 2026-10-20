@@ -1,10 +1,14 @@
 <script lang="ts">
 import I18nKey from "@i18n/i18nKey";
-import { i18n } from "@i18n/translation";
+import { getTranslation, i18n } from "@i18n/translation";
 import Icon from "@iconify/svelte";
 import { url } from "@utils/url-utils.ts";
 import { onMount } from "svelte";
 import type { SearchResult } from "@/global";
+import { currentUiLang, onUiLangChange } from "../utils/ui-lang-client";
+
+const zhDict = getTranslation("zh_CN");
+let uiLang = currentUiLang();
 
 let keywordDesktop = "";
 let keywordMobile = "";
@@ -87,6 +91,7 @@ const search = async (keyword: string, isDesktop: boolean): Promise<void> => {
 };
 
 onMount(() => {
+	const offLang = onUiLangChange((lang) => { uiLang = lang; });
 	const initializeSearch = () => {
 		initialized = true;
 		pagefindLoaded =
@@ -123,6 +128,8 @@ onMount(() => {
 			}
 		}, 2000); // Adjust timeout as needed
 	}
+
+	return () => offLang();
 });
 
 $: if (initialized && keywordDesktop) {
@@ -143,8 +150,11 @@ $: if (initialized && keywordMobile) {
     <label class="ef-search">
         <input
             type="search"
-            placeholder={i18n(I18nKey.search)}
-            aria-label={i18n(I18nKey.search)}
+            placeholder={uiLang === "zh" ? zhDict[I18nKey.search] : i18n(I18nKey.search)}
+            data-i18n-attr="placeholder"
+            data-i18n-en={i18n(I18nKey.search)}
+            data-i18n-zh={zhDict[I18nKey.search]}
+            aria-label={uiLang === "zh" ? zhDict[I18nKey.search] : i18n(I18nKey.search)}
             bind:value={keywordDesktop}
             on:focus={() => search(keywordDesktop, true)}
         />
@@ -152,23 +162,26 @@ $: if (initialized && keywordMobile) {
 </div>
 
 <!-- phone / tablet: a 46px square button that opens the same panel -->
-<button on:click={togglePanel} aria-label={i18n(I18nKey.search)} id="search-switch" class="icon-btn search-toggle">
+<button on:click={togglePanel} aria-label={uiLang === "zh" ? zhDict[I18nKey.search] : i18n(I18nKey.search)} id="search-switch" class="icon-btn search-toggle">
     <Icon icon="material-symbols:search" class="text-[1.25rem]"></Icon>
 </button>
 
 <!-- results: a paper panel with a hairline frame, one row per post -->
-<div id="search-panel" class="float-panel float-panel-closed search-panel" role="region" aria-label={i18n(I18nKey.search)}>
+<div id="search-panel" class="float-panel float-panel-closed search-panel" role="region" aria-label={uiLang === "zh" ? zhDict[I18nKey.search] : i18n(I18nKey.search)}>
     <label class="ef-search search-in-panel">
         <input
             type="search"
-            placeholder={i18n(I18nKey.search)}
-            aria-label={i18n(I18nKey.search)}
+            placeholder={uiLang === "zh" ? zhDict[I18nKey.search] : i18n(I18nKey.search)}
+            data-i18n-attr="placeholder"
+            data-i18n-en={i18n(I18nKey.search)}
+            data-i18n-zh={zhDict[I18nKey.search]}
+            aria-label={uiLang === "zh" ? zhDict[I18nKey.search] : i18n(I18nKey.search)}
             bind:value={keywordMobile}
         />
     </label>
 
     {#if result.length > 0}
-        <p class="ef-eyebrow slash results-head">{i18n(I18nKey.search)} · {result.length}</p>
+        <p class="ef-eyebrow slash results-head"><span data-l="en">{i18n(I18nKey.search)}</span><span data-l="zh">{zhDict[I18nKey.search]}</span> · {result.length}</p>
         <div class="hits">
             {#each result as item}
                 <a class="hit" href={item.url}>
@@ -178,7 +191,7 @@ $: if (initialized && keywordMobile) {
             {/each}
         </div>
     {:else if initialized && (keywordDesktop || keywordMobile)}
-        <p class="ef-empty">{i18n(I18nKey.noResults)}</p>
+        <p class="ef-empty"><span data-l="en">{i18n(I18nKey.noResults)}</span><span data-l="zh">{zhDict[I18nKey.noResults]}</span></p>
     {/if}
 </div>
 

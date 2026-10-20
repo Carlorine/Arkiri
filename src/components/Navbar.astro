@@ -1,9 +1,13 @@
 ---
 import { Icon } from "astro-icon/components";
+import I18nKey from "@i18n/i18nKey";
+import { getTranslation } from "@i18n/translation";
 import { navBarConfig, siteConfig } from "../config";
 import { LinkPresets } from "../constants/link-presets";
 import { LinkPreset, type NavBarLink } from "../types/config";
 import { pathsEqual, url } from "../utils/url-utils";
+import { uiAttrs } from "../utils/ui-i18n";
+import LangSwitch from "./common/LangSwitch.astro";
 import LightDarkSwitch from "./LightDarkSwitch.svelte";
 import Search from "./Search.svelte";
 import DisplaySettings from "./widget/DisplaySettings.svelte";
@@ -31,6 +35,14 @@ const enLabel = (link: NavBarLink): string => {
 	if (link.external) return link.name;
 	return enLabels[link.url] ?? "";
 };
+// The big word is the reader's language; the small eyebrow stays Latin.
+const zhDict = getTranslation("zh_CN");
+const zhLabels: Record<string, string> = {
+	"/": zhDict[I18nKey.home],
+	"/archive/": zhDict[I18nKey.archive],
+	"/about/": zhDict[I18nKey.about],
+};
+const zhLabel = (link: NavBarLink): string => zhLabels[link.url] ?? link.name;
 const isCurrent = (link: NavBarLink): boolean =>
 	!link.external && pathsEqual(Astro.url.pathname, url(link.url));
 ---
@@ -49,7 +61,7 @@ const isCurrent = (link: NavBarLink): boolean =>
                    rel={link.external ? "noopener" : null}
                 >
                     <small class="ef-eyebrow">{enLabel(link)}</small>
-                    <span class="zh">{link.name}</span>
+                    <span class="zh" data-l="en">{link.name}</span><span class="zh" data-l="zh">{zhLabel(link)}</span>
                 </a>
             ))}
         </div>
@@ -58,10 +70,11 @@ const isCurrent = (link: NavBarLink): boolean =>
     <div class="nav-tools">
         <Search client:only="svelte"></Search>
         <div class="tool-row">
-            <button aria-label="Motion" class="icon-btn" id="display-settings-switch">
+            <button aria-label="Motion" class="icon-btn" id="display-settings-switch" {...uiAttrs(I18nKey.motion, "aria-label")}>
                 <Icon name="material-symbols:tune-rounded" class="text-[1.25rem]"></Icon>
             </button>
             <LightDarkSwitch client:only="svelte"></LightDarkSwitch>
+            <LangSwitch></LangSwitch>
         </div>
         <button aria-label="Menu" name="Nav Menu" class="icon-btn menu-btn" id="nav-menu-switch">
             <Icon name="material-symbols:menu-rounded" class="text-[1.25rem]"></Icon>
@@ -139,9 +152,9 @@ const isCurrent = (link: NavBarLink): boolean =>
     }
     .tool-row {
         display: flex;
-        gap: 0.5rem;
-        /* two fixed 44px controls: in the 168px rail an even split would make
-           them 64px each and leave the row crowded against the edge */
+        gap: 0;
+        /* three fixed 44px keys across the 137px rail content: 132 fits, and
+           space-between spreads them to the edges */
         justify-content: space-between;
     }
     .tool-row .icon-btn {
@@ -261,6 +274,10 @@ const isCurrent = (link: NavBarLink): boolean =>
             flex: 1 1 0;
             min-width: 0;
         }
+        /* the language key lives at the bottom of the drawer on a phone */
+        .tool-row :global(.lang-toggle) {
+            display: none;
+        }
         .nav-shell .links {
             display: none;
         }
@@ -300,6 +317,35 @@ const isCurrent = (link: NavBarLink): boolean =>
 </style>
 
 <script>
+import { pathsEqual } from "../utils/url-utils";
+
+/**
+ * The rail and the drawer sit outside the swup container, so their
+ * aria-current is never repainted by a page swap. Recompute it from the URL on
+ * first load and after every visit: exactly one item (or none, on a post) is
+ * marked, with the same trailing-slash rules the server render uses.
+ */
+function syncCurrent() {
+    const here = location.pathname;
+    const items = document.querySelectorAll(
+        ".nav-shell .links a[href], #nav-menu-panel .drawer-item[href]",
+    );
+    items.forEach((item) => {
+        const href = item.getAttribute("href") || "";
+        let target = href;
+        try {
+            target = new URL(href, location.origin).pathname;
+        } catch {
+            target = href;
+        }
+        if (pathsEqual(here, target)) item.setAttribute("aria-current", "page");
+        else item.removeAttribute("aria-current");
+    });
+}
+syncCurrent();
+document.addEventListener("swup:page:view", syncCurrent);
+document.addEventListener("swup:visit:end", syncCurrent);
+
 let escBound = false;
 
 function bindEscapeClose() {

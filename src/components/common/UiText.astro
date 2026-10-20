@@ -1,0 +1,19 @@
+---
+import type I18nKey from "@i18n/i18nKey";
+import { uiPair } from "@/utils/ui-i18n";
+
+interface Props {
+	/** Use a dictionary key… */
+	k?: I18nKey;
+	/** …or two literals for text that has no key yet. */
+	en?: string;
+	zh?: string;
+	class?: string;
+}
+
+const { k, class: className } = Astro.props;
+const pairs = k ? uiPair(k) : undefined;
+const en = pairs ? pairs.en : Astro.props.en;
+const zh = pairs ? pairs.zh : Astro.props.zh;
+---
+<span data-l="en" class={className}>{en}</span><span data-l="zh" class={className}>{zh}</span>

@@ -1,8 +1,4 @@
 ---
-import "@fontsource/roboto/400.css";
-import "@fontsource/roboto/500.css";
-import "@fontsource/roboto/700.css";
-
 import { profileConfig, siteConfig } from "@/config";
 import {
 	BANNER_HEIGHT,
@@ -18,6 +14,7 @@ import "katex/dist/katex.css";
 // Do not rely on src/styles/* being picked up by a glob anywhere.
 // Order matters: fonts -> kit -> project overrides.
 import "../styles/fonts.css";
+import "../styles/fonts-harmonyos.css";
 import "../styles/endfield.css";
 import "../styles/endfield-project.css";
 
@@ -75,6 +72,7 @@ const bannerOffset =
 
 <!DOCTYPE html>
 <html lang={siteLang}
+	  style="font-size: 20px"
 	  data-ef-accent="yellow"
 	  data-ef-paper="neutral"
 	  data-ef-cut="standard"
@@ -133,6 +131,14 @@ const bannerOffset =
 			if (themeMeta) {
 				themeMeta.setAttribute('content', isDark ? '#191919' : '#f4f4f2');
 			}
+
+			// UI language: en by default, zh only when the visitor picked it.
+			// Both translations are already in the markup; the attribute decides
+			// which one CSS paints, so this must land before first paint.
+			const storedUiLang = localStorage.getItem('uiLang');
+			const uiLang = storedUiLang === 'zh' ? 'zh' : 'en';
+			document.documentElement.dataset.uiLang = uiLang;
+			document.documentElement.lang = uiLang === 'zh' ? 'zh-CN' : 'en';
 
 			// Restore the motion variant before first paint (endfield.css reads
 			// data-ef-motion). Density is fixed to "standard" and no longer a

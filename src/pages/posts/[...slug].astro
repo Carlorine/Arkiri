@@ -51,7 +51,7 @@ const prevNumber = entry.data.prevSlug ? numbers.get(entry.data.prevSlug) ?? "" 
 const nextNumber = entry.data.nextSlug ? numbers.get(entry.data.nextSlug) ?? "" : "";
 ---
 
-<MainGridLayout banner={entry.data.image} title={entry.data.title} description={entry.data.description} lang={entry.data.lang} setOGTypeArticle={true} headings={headings} showProfile={false}>
+<MainGridLayout banner={entry.data.image} title={entry.data.title} description={entry.data.description} lang={entry.data.lang} setOGTypeArticle={true} headings={headings} showProfile={false} showWidgets={false}>
     <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
 
     <article class="ef-sheet post-sheet" data-pagefind-body data-pagefind-weight="10" data-pagefind-meta="title">

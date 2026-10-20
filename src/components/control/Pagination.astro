@@ -2,6 +2,7 @@
 import type { Page } from "astro";
 import { Icon } from "astro-icon/components";
 import { url } from "../../utils/url-utils";
+import { uiAttrsRaw } from "../../utils/ui-i18n";
 
 interface Props {
 	page: Page;
@@ -51,9 +52,9 @@ const getPageUrl = (p: number) => {
 };
 ---
 
-<nav class:list={[className, "pagination"]} style={style} aria-label="Pagination">
+<nav class:list={[className, "pagination"]} style={style} aria-label="Pagination" {...uiAttrsRaw("aria-label", "Pagination", "分页")}>
     {page.url.prev ? (
-        <a href={page.url.prev} aria-label="Previous Page" class="ef-btn small page step">
+        <a href={page.url.prev} aria-label="Previous Page" {...uiAttrsRaw("aria-label", "Previous Page", "上一页")} class="ef-btn small page step">
             <Icon name="material-symbols:chevron-left-rounded"></Icon>
         </a>
     ) : (
@@ -68,12 +69,12 @@ const getPageUrl = (p: number) => {
         if (p === page.currentPage)
             return <span class="ef-btn small page current" aria-current="page">{p}</span>;
         return (
-            <a href={url(getPageUrl(p))} aria-label={`Page ${p}`} class="ef-btn small page">{p}</a>
+            <a href={url(getPageUrl(p))} aria-label={`Page ${p}`} {...uiAttrsRaw("aria-label", `Page ${p}`, `第 ${p} 页`)} class="ef-btn small page">{p}</a>
         );
     })}
 
     {page.url.next ? (
-        <a href={page.url.next} aria-label="Next Page" class="ef-btn small page step">
+        <a href={page.url.next} aria-label="Next Page" {...uiAttrsRaw("aria-label", "Next Page", "下一页")} class="ef-btn small page step">
             <Icon name="material-symbols:chevron-right-rounded"></Icon>
         </a>
     ) : (

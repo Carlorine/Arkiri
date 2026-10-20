@@ -1,7 +1,8 @@
 <script lang="ts">
 import I18nKey from "@i18n/i18nKey";
-import { i18n } from "@i18n/translation";
+import { getTranslation, i18n } from "@i18n/translation";
 import { onMount } from "svelte";
+import { currentUiLang, onUiLangChange } from "../../utils/ui-lang-client";
 
 /*
  * Display settings.
@@ -15,6 +16,9 @@ import { onMount } from "svelte";
  */
 
 type Motion = "full" | "calm";
+
+const zhDict = getTranslation("zh_CN");
+let uiLang = currentUiLang();
 
 const MOTIONS: Motion[] = ["full", "calm"];
 
@@ -38,12 +42,14 @@ function setMotion(next: Motion) {
 onMount(() => {
 	const storedMotion = localStorage.getItem("motion");
 	if (isMotion(storedMotion)) motion = storedMotion;
+	const off = onUiLangChange((lang) => { uiLang = lang; });
+	return off;
 });
 </script>
 
 <div id="display-setting" class="float-panel float-panel-closed absolute w-80 right-4 px-4 py-4">
-    <p class="ef-field m-0 mb-2">{i18n(I18nKey.motion)}</p>
-    <div class="ef-seg" role="radiogroup" aria-label={i18n(I18nKey.motion)}>
+    <p class="ef-field m-0 mb-2"><span data-l="en">{i18n(I18nKey.motion)}</span><span data-l="zh">{zhDict[I18nKey.motion]}</span></p>
+    <div class="ef-seg" role="radiogroup" data-i18n-attr="aria-label" data-i18n-en={i18n(I18nKey.motion)} data-i18n-zh={zhDict[I18nKey.motion]} aria-label={uiLang === "zh" ? zhDict[I18nKey.motion] : i18n(I18nKey.motion)}>
         {#each MOTIONS as value}
             <label>
                 <input
@@ -53,7 +59,7 @@ onMount(() => {
                     checked={motion === value}
                     onchange={() => setMotion(value)}
                 />
-                <span>{i18n(motionLabel[value])}</span>
+                <span><span data-l="en">{i18n(motionLabel[value])}</span><span data-l="zh">{zhDict[motionLabel[value]]}</span></span>
             </label>
         {/each}
     </div>

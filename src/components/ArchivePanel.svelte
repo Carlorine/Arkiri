@@ -2,7 +2,7 @@
 import { onMount } from "svelte";
 
 import I18nKey from "../i18n/i18nKey";
-import { i18n } from "../i18n/translation";
+import { getTranslation, i18n } from "../i18n/translation";
 import { getPostUrlBySlug } from "../utils/url-utils";
 
 type ArchivePostData = {
@@ -30,8 +30,11 @@ export let numbers: Record<string, string> = {};
 let groups: Group[] = [];
 let total = 0;
 
+const zhDict = getTranslation("zh_CN");
 const postWord = (n: number) =>
 	i18n(n === 1 ? I18nKey.postCount : I18nKey.postsCount);
+const postWordZh = (n: number) =>
+	zhDict[n === 1 ? I18nKey.postCount : I18nKey.postsCount];
 
 const published = (post: ArchivePost) => new Date(post.data.published);
 
@@ -95,17 +98,17 @@ onMount(() => {
 
 <section class="archive">
     <header class="ef-sheet-head">
-        <h1 class="ef-read">{i18n(I18nKey.archive)}</h1>
-        <p class="ef-field">{total} {postWord(total)}</p>
+        <h1 class="ef-read"><span data-l="en">{i18n(I18nKey.archive)}</span><span data-l="zh">{zhDict[I18nKey.archive]}</span></h1>
+        <p class="ef-field">{total} <span data-l="en">{postWord(total)}</span><span data-l="zh">{postWordZh(total)}</span></p>
     </header>
 
     {#if groups.length === 0}
-        <p class="ef-empty">{i18n(I18nKey.noResults)}</p>
+        <p class="ef-empty"><span data-l="en">{i18n(I18nKey.noResults)}</span><span data-l="zh">{zhDict[I18nKey.noResults]}</span></p>
     {:else}
         {#each groups as group}
             <h2 class="ef-group-head">
                 <span>{group.year}</span>
-                <span class="ef-field">{group.posts.length} {postWord(group.posts.length)}</span>
+                <span class="ef-field">{group.posts.length} <span data-l="en">{postWord(group.posts.length)}</span><span data-l="zh">{postWordZh(group.posts.length)}</span></span>
             </h2>
             <ul class="ef-records">
                 {#each group.posts as post}

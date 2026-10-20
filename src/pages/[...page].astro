@@ -2,6 +2,7 @@
 import type { GetStaticPaths } from "astro";
 import Pagination from "../components/control/Pagination.astro";
 import Hero from "../components/ef/Hero.astro";
+import UiText from "../components/common/UiText.astro";
 import PostPage from "../components/PostPage.astro";
 import { PAGE_SIZE } from "../constants/constants";
 import I18nKey from "../i18n/i18nKey";
@@ -10,6 +11,7 @@ import MainGridLayout from "../layouts/MainGridLayout.astro";
 import { getSortedPosts } from "../utils/content-utils";
 import { efDate, makePostNumbers } from "../utils/post-index";
 import { getPostUrlBySlug } from "../utils/url-utils";
+import { uiPair } from "../utils/ui-i18n";
 
 export const getStaticPaths = (async ({ paginate }) => {
 	const allBlogPosts = await getSortedPosts();
@@ -52,14 +54,14 @@ const latest = recent[0];
 
     {!isFirstPage && (
         <header class="ef-sheet-head list-head">
-            <h1 class="ef-read">{i18n(I18nKey.recentPosts)}</h1>
+            <h1 class="ef-read"><UiText k={I18nKey.recentPosts} /></h1>
             <p class="ef-field">
-                {page.currentPage} / {page.lastPage} &nbsp; {allPosts.length} {i18n(allPosts.length === 1 ? I18nKey.postCount : I18nKey.postsCount)}
+                {page.currentPage} / {page.lastPage} &nbsp; {allPosts.length} <UiText en={uiPair(allPosts.length === 1 ? I18nKey.postCount : I18nKey.postsCount).en} zh={uiPair(allPosts.length === 1 ? I18nKey.postCount : I18nKey.postsCount).zh} />
             </p>
         </header>
     )}
 
-    <h2 class="ef-bar-title list-title">{i18n(I18nKey.recentPosts)}</h2>
+    <h2 class="ef-bar-title list-title"><UiText k={I18nKey.recentPosts} /></h2>
 
     <PostPage page={page} numbers={numbers}></PostPage>
 

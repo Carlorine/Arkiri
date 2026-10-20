@@ -1,5 +1,6 @@
 ---
 import type { MarkdownHeading } from "astro";
+import UiText from "../common/UiText.astro";
 import { siteConfig } from "../../config";
 
 interface Props {
@@ -36,7 +37,7 @@ for (const heading of items) {
 ---
 {isPostsRoute && items.length > 0 && (
     <table-of-contents class:list={[className, "ef-panel", "tab-right"]}>
-        <p class="ef-eyebrow slash toc-head">On this page</p>
+        <p class="ef-eyebrow slash toc-head"><UiText en="On this page" zh="本页目录" /></p>
         <ol class="toc-list">
             {items.map((heading) => (
                 <li class:list={{ sub: heading.depth > minDepth }}>
