@@ -248,6 +248,13 @@
     opacity: 1;
 }
 
+/* touch screens never hover, so the button must be permanently visible there */
+@media (hover: none) {
+    .custom-md .copy-btn {
+        opacity: 1;
+    }
+}
+
 .custom-md .copy-btn:active {
     background: #3a3a3a;
 }
@@ -332,19 +339,44 @@
     border-top: 1px solid var(--ef-rule);
 }
 
+/* A formula can be wider than the measure: the container is the only scroll
+   layer (focusable, so it can be scrolled by keyboard), and the formula must
+   never widen the page. */
 .custom-md .katex-display-container {
     max-width: 100%;
     overflow-x: auto;
+    overflow-y: hidden;
     margin-block: 1em;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ef-rule) transparent;
 }
 
-/* A formula can be wider than the measure: it scrolls inside the column,
-   it must never widen the page. */
+/* A formula can be wider than the measure. Before the runtime wrapper exists
+   the formula itself must stay inside the column, so it is clipped here. */
 .custom-md .katex-display {
     max-width: 100%;
     overflow-x: auto;
     overflow-y: hidden;
     padding-bottom: 0.25rem;
+}
+
+/* Inside the wrapper the container is the only scroll layer: the formula
+   widens to its own content so the container, not the formula, scrolls it. */
+.custom-md .katex-display-container > .katex-display {
+    max-width: none;
+    overflow: visible;
+}
+
+/* min-width keeps formulas that fit inside the measure centered. */
+.custom-md .katex-display > .katex {
+    width: max-content;
+    min-width: 100%;
+}
+
+/* KaTeX positions the hidden MathML fallback against the initial containing
+   block, so its static position would widen the page; anchor it to the formula. */
+.custom-md .katex-display .katex {
+    position: relative;
 }
 
 .custom-md strong {

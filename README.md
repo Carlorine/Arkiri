@@ -1,99 +1,58 @@
-# 🍥Fuwari  
-![Node.js >= 20](https://img.shields.io/badge/node.js-%3E%3D20-brightgreen) 
-![pnpm >= 9](https://img.shields.io/badge/pnpm-%3E%3D9-blue) 
-[![DeepWiki](https://img.shields.io/badge/DeepWiki-saicaca%2Ffuwari-blue.svg?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAyCAYAAAAnWDnqAAAAAXNSR0IArs4c6QAAA05JREFUaEPtmUtyEzEQhtWTQyQLHNak2AB7ZnyXZMEjXMGeK/AIi+QuHrMnbChYY7MIh8g01fJoopFb0uhhEqqcbWTp06/uv1saEDv4O3n3dV60RfP947Mm9/SQc0ICFQgzfc4CYZoTPAswgSJCCUJUnAAoRHOAUOcATwbmVLWdGoH//PB8mnKqScAhsD0kYP3j/Yt5LPQe2KvcXmGvRHcDnpxfL2zOYJ1mFwrryWTz0advv1Ut4CJgf5uhDuDj5eUcAUoahrdY/56ebRWeraTjMt/00Sh3UDtjgHtQNHwcRGOC98BJEAEymycmYcWwOprTgcB6VZ5JK5TAJ+fXGLBm3FDAmn6oPPjR4rKCAoJCal2eAiQp2x0vxTPB3ALO2CRkwmDy5WohzBDwSEFKRwPbknEggCPB/imwrycgxX2NzoMCHhPkDwqYMr9tRcP5qNrMZHkVnOjRMWwLCcr8ohBVb1OMjxLwGCvjTikrsBOiA6fNyCrm8V1rP93iVPpwaE+gO0SsWmPiXB+jikdf6SizrT5qKasx5j8ABbHpFTx+vFXp9EnYQmLx02h1QTTrl6eDqxLnGjporxl3NL3agEvXdT0WmEost648sQOYAeJS9Q7bfUVoMGnjo4AZdUMQku50McDcMWcBPvr0SzbTAFDfvJqwLzgxwATnCgnp4wDl6Aa+Ax283gghmj+vj7feE2KBBRMW3FzOpLOADl0Isb5587h/U4gGvkt5v60Z1VLG8BhYjbzRwyQZemwAd6cCR5/XFWLYZRIMpX39AR0tjaGGiGzLVyhse5C9RKC6ai42ppWPKiBagOvaYk8lO7DajerabOZP46Lby5wKjw1HCRx7p9sVMOWGzb/vA1hwiWc6jm3MvQDTogQkiqIhJV0nBQBTU+3okKCFDy9WwferkHjtxib7t3xIUQtHxnIwtx4mpg26/HfwVNVDb4oI9RHmx5WGelRVlrtiw43zboCLaxv46AZeB3IlTkwouebTr1y2NjSpHz68WNFjHvupy3q8TFn3Hos2IAk4Ju5dCo8B3wP7VPr/FGaKiG+T+v+TQqIrOqMTL1VdWV1DdmcbO8KXBz6esmYWYKPwDL5b5FA1a0hwapHiom0r/cKaoqr+27/XcrS5UwSMbQAAAABJRU5ErkJggg==)](https://deepwiki.com/saicaca/fuwari)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsaicaca%2Ffuwari.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsaicaca%2Ffuwari?ref=badge_shield&issueType=license)
+# Arkiri
 
-A static blog template built with [Astro](https://astro.build).
+一个用 Astro 构建的个人博客：三栏贴边留白的阅读版式、纸墨与单一强调色的工业界面、中英双语可切换。
 
-[**🖥️ Live Demo (Vercel)**](https://fuwari.vercel.app)
+## 技术栈
 
-![Preview Image](https://raw.githubusercontent.com/saicaca/resource/main/fuwari/home.png)
+- **Astro**：静态站点生成，内容集合、RSS、sitemap、Pagefind 搜索。
+- **[fuwari](https://github.com/saicaca/fuwari)**：上游博客模板（MIT）。内容结构、i18n、搜索、RSS 等基础能力来自它。
+- **[endfield-ui skill](https://github.com/hhikr/endfield-ui-skill)**：界面的视觉与交互规范。本站的纸面、墨色、单一酸黄强调色、切角、编号记录行、短促机械动效，都是照这个 skill 重做的；样式以 `src/styles/endfield.css`（套件）＋ `src/styles/endfield-project.css`（项目覆盖层）组织。
 
-🌏 README in
-[**中文**](https://github.com/saicaca/fuwari/blob/main/docs/README.zh-CN.md) /
-[**日本語**](https://github.com/saicaca/fuwari/blob/main/docs/README.ja.md) /
-[**한국어**](https://github.com/saicaca/fuwari/blob/main/docs/README.ko.md) /
-[**Español**](https://github.com/saicaca/fuwari/blob/main/docs/README.es.md) /
-[**ไทย**](https://github.com/saicaca/fuwari/blob/main/docs/README.th.md) /
-[**Tiếng Việt**](https://github.com/saicaca/fuwari/blob/main/docs/README.vi.md) /
-[**Bahasa Indonesia**](https://github.com/saicaca/fuwari/blob/main/docs/README.id.md) (Provided by the community and may not always be up-to-date)
+## 字体
 
-## ✨ Features
+- **界面西文**：自托管的 [Saira](https://fonts.google.com/specimen/Saira) 可变字体（`public/fonts/saira/`，OFL），按 `unicode-range` 分片，只在需要时下载。
+- **正文（中英文）**：HarmonyOS Sans SC Regular + Bold，来自 Huawei Device Co., Ltd.，按 `unicode-range` 切成 woff2 分片放在 `public/fonts/harmonyos-sc/`。授权文件见同目录 `LICENSE.txt`；页脚注明 `Typeface: HarmonyOS Sans (Huawei)`。字体本身未做字形修改，只做了网页分发所需的分片与格式转换。
+- 中文界面小标与标题按设计回落到系统黑体（PingFang SC 等），不额外下载中文字体。
 
-- [x] Built with [Astro](https://astro.build) and [Tailwind CSS](https://tailwindcss.com)
-- [x] Smooth animations and page transitions
-- [x] Light / dark mode
-- [x] Customizable theme colors & banner
-- [x] Responsive design
-- [x] Search functionality with [Pagefind](https://pagefind.app/)
-- [x] [Markdown extended features](https://github.com/saicaca/fuwari?tab=readme-ov-file#-markdown-extended-syntax)
-- [x] Table of contents
-- [x] RSS feed
+## 功能
 
-## 🚀 Getting Started
+- 三栏布局：左栏贴视口边缘，正文列固定 712px 居中，右侧页边放目录与小组件；≥1200 时启用，以下退回顶栏 + 单栏。
+- 主题两态：默认浅色，单按钮切换，无「跟随系统」，刷新保持。
+- 中英切换：界面文案在构建时双语渲染，切换只改 `<html data-ui-lang>`，不重新加载、不复制路由；文章正文不翻译。
+- 目录吸顶：文章页右栏只保留目录，随滚动停留；首页/归档/关于仍是三块面板。
+- 换页动效：单页跳转只播一次快门动画（出站阶段无动画）。
+- 搜索：Pagefind 全文检索；RSS 与 sitemap 由 Astro 生成。
+- 根字号固定 20px，版式不随浏览器默认字号漂移（浏览器缩放仍有效）。
 
-1. Create your blog repository:
-    - [Generate a new repository](https://github.com/saicaca/fuwari/generate) from this template or fork this repository.
-    - Or run one of the following commands:
-       ```sh
-       npm create fuwari@latest
-       yarn create fuwari
-       pnpm create fuwari@latest
-       bun create fuwari@latest
-       deno run -A npm:create-fuwari@latest
-       ```
-2. To edit your blog locally, clone your repository, run `pnpm install` to install dependencies.
-    - Install [pnpm](https://pnpm.io) `npm install -g pnpm` if you haven't.
-3. Edit the config file `src/config.ts` to customize your blog.
-4. Run `pnpm new-post <filename>` to create a new post and edit it in `src/content/posts/`.
-5. Deploy your blog to Vercel, Netlify, GitHub Pages, etc. following [the guides](https://docs.astro.build/en/guides/deploy/). You need to edit the site configuration in `astro.config.mjs` before deployment.
+## 开发
 
-## 📝 Frontmatter of Posts
-
-```yaml
----
-title: My First Blog Post
-published: 2023-09-09
-description: This is the first post of my new Astro blog.
-image: ./cover.jpg
-tags: [Foo, Bar]
-category: Front-end
-draft: false
-lang: jp      # Set only if the post's language differs from the site's language in `config.ts`
----
+```bash
+pnpm install
+pnpm dev       # 本地开发
+pnpm build     # 构建到 dist/（含 Pagefind 索引）
+pnpm preview   # 预览构建产物
 ```
 
-## 🧩 Markdown Extended Syntax
+部署域名在 `astro.config.mjs` 的 `site` 里改。
 
-In addition to Astro's default support for [GitHub Flavored Markdown](https://github.github.com/gfm/), several extra Markdown features are included:
+## 项目结构
 
-- Admonitions ([Preview and Usage](https://fuwari.vercel.app/posts/markdown-extended/#admonitions))
-- GitHub repository cards ([Preview and Usage](https://fuwari.vercel.app/posts/markdown-extended/#github-repository-cards))
-- Enhanced code blocks with Expressive Code ([Preview](https://fuwari.vercel.app/posts/expressive-code/) / [Docs](https://expressive-code.com/))
+```
+src/
+  components/        界面组件（ef/ 为套件风格组件，widget/ 为侧栏组件）
+  content/           文章、关于页等 Markdown 内容
+  layouts/           Layout.astro（全局外壳）与 MainGridLayout.astro（三栏栅格）
+  pages/             路由：首页分页、文章、归档、关于、RSS、sitemap
+  styles/            endfield.css（套件）、endfield-project.css（项目覆盖）、
+                     fonts.css / fonts-harmonyos.css、markdown 与过渡样式
+public/
+  fonts/             Saira 与 HarmonyOS Sans 的分片字体
+  contours/          背景等高线 SVG
+```
 
-## ⚡ Commands
+## 致谢与许可
 
-All commands are run from the root of the project, from a terminal:
-
-| Command                    | Action                                              |
-|:---------------------------|:----------------------------------------------------|
-| `pnpm install`             | Installs dependencies                               |
-| `pnpm dev`                 | Starts local dev server at `localhost:4321`         |
-| `pnpm build`               | Build your production site to `./dist/`             |
-| `pnpm preview`             | Preview your build locally, before deploying        |
-| `pnpm check`               | Run checks for errors in your code                  |
-| `pnpm format`              | Format your code using Biome                        |
-| `pnpm new-post <filename>` | Create a new post                                   |
-| `pnpm astro ...`           | Run CLI commands like `astro add`, `astro check`    |
-| `pnpm astro --help`        | Get help using the Astro CLI                        |
-
-## ✏️ Contributing
-
-Check out the [Contributing Guide](https://github.com/saicaca/fuwari/blob/main/CONTRIBUTING.md) for details on how to contribute to this project.
-
-## 📄 License
-
-This project is licensed under the MIT License.
-
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsaicaca%2Ffuwari.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsaicaca%2Ffuwari?ref=badge_large&issueType=license)
+- 模板：[fuwari](https://github.com/saicaca/fuwari)（MIT），其版权与许可声明保留在仓库的 `LICENSE` 中。
+- 界面规范：[endfield-ui skill](https://github.com/hhikr/endfield-ui-skill)。
+- 字体：Saira（OFL）、HarmonyOS Sans（Huawei Device Co., Ltd.，见 `public/fonts/harmonyos-sc/LICENSE.txt`）。
+- 本站内容与代码：见仓库 `LICENSE`。

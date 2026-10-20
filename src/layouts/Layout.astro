@@ -339,19 +339,12 @@ function initCustomScrollbar() {
 
 		const container = document.createElement('div');
 		container.className = 'katex-display-container';
+		container.setAttribute('role', 'region');
+		container.setAttribute('tabindex', '0');
 		container.setAttribute('aria-label', 'scrollable container for formulas');
 
 		element.parentNode.insertBefore(container, element);
 		container.appendChild(element);
-
-		OverlayScrollbars(container, {
-			scrollbars: {
-				theme: 'scrollbar-base scrollbar-auto',
-				autoHide: 'leave',
-				autoHideDelay: 500,
-				autoHideSuspend: false
-			}
-		});
 
 		element.setAttribute('data-scrollbar-initialized', 'true');
 	};

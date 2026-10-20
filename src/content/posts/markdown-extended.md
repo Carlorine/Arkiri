@@ -2,9 +2,9 @@
 title: Markdown Extended Features
 published: 2024-05-01
 updated: 2024-11-29
-description: 'Read more about Markdown features in Fuwari'
+description: 'Read more about Markdown features in Arkiri'
 image: ''
-tags: [Demo, Example, Markdown, Fuwari]
+tags: [Demo, Example, Markdown, Arkiri]
 category: 'Examples'
 draft: false 
 ---
@@ -17,7 +17,7 @@ You can add dynamic cards that link to GitHub repositories, on page load, the re
 Create a GitHub repository card with the code `::github{repo="<owner>/<repo>"}`.
 
 ```markdown
-::github{repo="saicaca/fuwari"}
+::github{repo="withastro/astro"}
 ```
 
 ## Admonitions
