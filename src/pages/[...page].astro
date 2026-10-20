@@ -1,23 +1,81 @@
 ---
 import type { GetStaticPaths } from "astro";
 import Pagination from "../components/control/Pagination.astro";
+import Hero from "../components/ef/Hero.astro";
 import PostPage from "../components/PostPage.astro";
 import { PAGE_SIZE } from "../constants/constants";
+import I18nKey from "../i18n/i18nKey";
+import { i18n } from "../i18n/translation";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
 import { getSortedPosts } from "../utils/content-utils";
+import { efDate, makePostNumbers } from "../utils/post-index";
+import { getPostUrlBySlug } from "../utils/url-utils";
 
 export const getStaticPaths = (async ({ paginate }) => {
 	const allBlogPosts = await getSortedPosts();
 	return paginate(allBlogPosts, { pageSize: PAGE_SIZE });
 }) satisfies GetStaticPaths;
-// https://github.com/withastro/astro/issues/6507#issuecomment-1489916992
 
+const allPosts = await getSortedPosts();
+const numbers = makePostNumbers(allPosts);
 const { page } = Astro.props;
+const isFirstPage = page.currentPage === 1;
 
-const len = page.data.length;
+// Real figures for the showcase header: every word count comes from the
+// rendered post itself.
+let totalWords = 0;
+const recent = [];
+for (const post of allPosts) {
+	const { remarkPluginFrontmatter } = await post.render();
+	totalWords += remarkPluginFrontmatter.words ?? 0;
+	recent.push({
+		no: numbers.get(post.slug) ?? "",
+		url: getPostUrlBySlug(post.slug),
+		title: post.data.title,
+		date: efDate(post.data.published),
+		words: remarkPluginFrontmatter.words ?? 0,
+		minutes: remarkPluginFrontmatter.minutes ?? 0,
+	});
+}
+const latest = recent[0];
 ---
 
 <MainGridLayout>
-    <PostPage page={page}></PostPage>
-    <Pagination class="mx-auto onload-animation" page={page} style={`animation-delay: calc(var(--content-delay) + ${(len)*50}ms)`}></Pagination>
+    {isFirstPage && latest && (
+        <Hero
+            total={allPosts.length}
+            totalWords={totalWords}
+            latest={latest}
+            recent={recent}
+        />
+    )}
+
+    {!isFirstPage && (
+        <header class="ef-sheet-head list-head">
+            <h1 class="ef-read">{i18n(I18nKey.recentPosts)}</h1>
+            <p class="ef-field">
+                {page.currentPage} / {page.lastPage} &nbsp; {allPosts.length} {i18n(allPosts.length === 1 ? I18nKey.postCount : I18nKey.postsCount)}
+            </p>
+        </header>
+    )}
+
+    <h2 class="ef-bar-title list-title">{i18n(I18nKey.recentPosts)}</h2>
+
+    <PostPage page={page} numbers={numbers}></PostPage>
+
+    {page.lastPage > 1 && (
+        <Pagination class="ef-pagination" page={page}></Pagination>
+    )}
 </MainGridLayout>
+
+<style>
+    .list-head {
+        margin-bottom: 1.5rem;
+    }
+    .list-title {
+        margin-top: 1.5rem;
+    }
+    .ef-pagination {
+        margin-top: 2rem;
+    }
+</style>

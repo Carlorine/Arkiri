@@ -1,8 +1,7 @@
 ---
-import { Icon } from "astro-icon/components";
-import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
-import { formatDateToYYYYMMDD } from "../utils/date-utils";
+import I18nKey from "../i18n/i18nKey";
+import { efDate } from "../utils/post-index";
 import { getCategoryUrl, getTagUrl } from "../utils/url-utils";
 
 interface Props {
@@ -23,60 +22,50 @@ const {
 	hideUpdateDate = false,
 } = Astro.props;
 const className = Astro.props.class;
+const hasUpdate =
+	!hideUpdateDate && updated && updated.getTime() !== published.getTime();
 ---
-
-<div class:list={["flex flex-wrap text-neutral-500 dark:text-neutral-400 items-center gap-4 gap-x-4 gap-y-2", className]}>
-    <!-- publish date -->
-    <div class="flex items-center">
-        <div class="meta-icon"
-        >
-            <Icon name="material-symbols:calendar-today-outline-rounded" class="text-xl"></Icon>
-        </div>
-        <span class="text-50 text-sm font-medium">{formatDateToYYYYMMDD(published)}</span>
-    </div>
-
-    <!-- update date -->
-    {!hideUpdateDate && updated && updated.getTime() !== published.getTime() && (
-        <div class="flex items-center">
-            <div class="meta-icon"
-            >
-                <Icon name="material-symbols:edit-calendar-outline-rounded" class="text-xl"></Icon>
-            </div>
-            <span class="text-50 text-sm font-medium">{formatDateToYYYYMMDD(updated)}</span>
-        </div>
-    )}
-
-    <!-- categories -->
-    <div class="flex items-center">
-        <div class="meta-icon"
-        >
-            <Icon name="material-symbols:book-2-outline-rounded" class="text-xl"></Icon>
-        </div>
-        <div class="flex flex-row flex-nowrap items-center">
-            <a href={getCategoryUrl(category)} aria-label={`View all posts in the ${category} category`}
-               class="link-lg transition text-50 text-sm font-medium
-                            hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap">
-                {category || i18n(I18nKey.uncategorized)}
-            </a>
-        </div>
-    </div>
-
-    <!-- tags -->
-    <div class:list={["items-center", {"flex": !hideTagsForMobile, "hidden md:flex": hideTagsForMobile}]}>
-        <div class="meta-icon"
-        >
-            <Icon name="material-symbols:tag-rounded" class="text-xl"></Icon>
-        </div>
-        <div class="flex flex-row flex-nowrap items-center">
-            {(tags && tags.length > 0) && tags.map((tag, i) => (
-                <div class:list={[{"hidden": i == 0}, "mx-1.5 text-[var(--meta-divider)] text-sm"]}>/</div>
-                <a href={getTagUrl(tag)} aria-label={`View all posts with the ${tag.trim()} tag`}
-                   class="link-lg transition text-50 text-sm font-medium
-                                hover:text-[var(--primary)] dark:hover:text-[var(--primary)] whitespace-nowrap">
-                    {tag.trim()}
-                </a>
+<ul class:list={["ef-facts ef-field meta-facts", className]}>
+    <li><time datetime={published.toISOString()}>{efDate(published)}</time></li>
+    {hasUpdate && <li><time datetime={(updated as Date).toISOString()}>{efDate(updated as Date)}</time></li>}
+    <li>
+        <a href={getCategoryUrl(category)}>{category || i18n(I18nKey.uncategorized)}</a>
+    </li>
+    {tags && tags.length > 0 && (
+        <li class:list={[{ "tags-on-mobile": !hideTagsForMobile }]}>
+            {tags.map((tag, index) => (
+                <span class="tag">
+                    {index > 0 && <span class="sep" aria-hidden="true">/</span>}
+                    <a href={getTagUrl(tag)}>{tag.trim()}</a>
+                </span>
             ))}
-            {!(tags && tags.length > 0) && <div class="transition text-50 text-sm font-medium">{i18n(I18nKey.noTags)}</div>}
-        </div>
-    </div>
-</div>
+        </li>
+    )}
+</ul>
+
+<style>
+    .meta-facts a {
+        color: inherit;
+    }
+    .meta-facts a:hover {
+        color: var(--ef-ink);
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.2em;
+    }
+    .meta-facts .sep {
+        margin: 0 0.35rem;
+        color: var(--ef-rule);
+    }
+    @media (max-width: 719px) {
+        .meta-facts li:not(.tags-on-mobile) {
+            font-size: 0.75rem;
+        }
+        .meta-facts li:has(.tag) {
+            display: none;
+        }
+        .meta-facts li.tags-on-mobile {
+            display: block;
+        }
+    }
+</style>

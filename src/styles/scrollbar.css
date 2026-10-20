@@ -1,24 +1,27 @@
+/* OverlayScrollbars, restyled to the kit: a thin rectangular handle, no radius. */
 .scrollbar-base.os-scrollbar {
-    @apply transition-all;
     pointer-events: unset;
+    transition: opacity 120ms var(--ef-ease);
 
     &.os-scrollbar-horizontal {
         @apply py-1 px-2 h-4;
         .os-scrollbar-track .os-scrollbar-handle {
-            @apply rounded-full h-1;
+            @apply h-1;
+            border-radius: 0;
         }
         &:hover .os-scrollbar-track .os-scrollbar-handle {
-            @apply h-2;
+            @apply h-1;
         }
     }
 
     &.os-scrollbar-vertical {
         @apply px-1 py-1 w-4;
         .os-scrollbar-track .os-scrollbar-handle {
-            @apply rounded-full w-1;
+            @apply w-1;
+            border-radius: 0;
         }
         &:hover .os-scrollbar-track .os-scrollbar-handle {
-            @apply w-2;
+            @apply w-1;
         }
     }
 }

@@ -1,121 +1,352 @@
+/*
+ * The reading column.
+ *
+ * One measure (~38 Chinese characters), plain sans at regular weight, wide
+ * leading. Yellow appears only as the highlighter under a link; in dark theme
+ * it becomes a thin yellow line, because a yellow block would swallow the
+ * light text. Headings are the interface face, 700. Everything else is
+ * hairline-ruled, square-cornered, and carries no shadow.
+ */
 .custom-md {
-    h1 {
-        @apply text-3xl;
-    }
+    /* one reading measure; the sheet around it may be wider */
+    max-width: var(--ef-measure);
+    font-family: var(--ef-font-text);
+    font-size: var(--ef-t-body);
+    line-height: 1.85;
+    color: var(--ef-ink);
 
-    h1, h2, h3, h4, h5, h6 {
-        .anchor {
-            @apply transition -m-0.5 ml-[0.2ch] p-0.5 select-none opacity-0 no-underline !important;
+    /* kept for the GitHub card and admonitions, which read these */
+    --tw-prose-body: var(--ef-ink);
+    --tw-prose-headings: var(--ef-ink);
+    --tw-prose-lead: var(--ef-ink-2);
+    --tw-prose-links: var(--ef-ink);
+    --tw-prose-bold: var(--ef-ink);
+    --tw-prose-counters: var(--ef-ink-2);
+    --tw-prose-bullets: var(--ef-ink-2);
+    --tw-prose-hr: var(--ef-rule);
+    --tw-prose-quotes: var(--ef-ink-2);
+    --tw-prose-quote-borders: var(--ef-ink);
+    --tw-prose-captions: var(--ef-ink-2);
+    --tw-prose-kbd: var(--ef-ink);
+    --tw-prose-code: var(--ef-ink);
+    --tw-prose-pre-code: #ededed;
+    --tw-prose-pre-bg: #161616;
+    --tw-prose-th-borders: var(--ef-rule);
+    --tw-prose-td-borders: var(--ef-rule);
+}
 
-            .anchor-icon {
-                @apply mx-[0.45ch] !important;
-            }
-        }
+.custom-md > :first-child {
+    margin-top: 0;
+}
+.custom-md p,
+.custom-md ul,
+.custom-md ol,
+.custom-md figure,
+.custom-md .expressive-code {
+    margin-block: 1.1em;
+}
 
-        &:hover {
-            .anchor {
-                @apply opacity-100 !important;
-            }
-        }
-    }
+/* ---------- headings ---------- */
+.custom-md h1,
+.custom-md h2,
+.custom-md h3,
+.custom-md h4,
+.custom-md h5,
+.custom-md h6 {
+    position: relative;
+    font-family: var(--ef-font-ui);
+    color: var(--ef-ink);
+    text-wrap: balance;
+}
 
-    a:not(.no-styling) {
-        @apply relative bg-none link font-medium text-[var(--primary)]
-        underline decoration-[var(--link-underline)] decoration-1 decoration-dashed underline-offset-4;
-        box-decoration-break: clone;
-        -webkit-box-decoration-break: clone;
-        display: inline-block;
-    
-        &:hover, &:active {
-            @apply decoration-transparent;
-            background: var(--btn-plain-bg-hover);
-            border-bottom: 1px dashed var(--link-hover);
-            text-decoration: none;
-        }
-    }
+.custom-md h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-block: 2em 0.75em;
+}
 
-    code {
-        @apply bg-[var(--inline-code-bg)] text-[var(--inline-code-color)] px-1 py-0.5 rounded-md overflow-hidden;
+.custom-md h2 {
+    margin-block: 2.4em 0.9em;
+    padding-top: 0.9em;
+    border-top: 1px solid var(--ef-rule);
+    font-size: var(--ef-t-h2);
+    font-weight: 700;
+    line-height: 1.45;
+}
 
-        font-family: 'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
-        &:before {
-            content:none;
-        }
-        &:after {
-            content:none;
-        }
+.custom-md h3 {
+    margin-block: 1.9em 0.7em;
+    padding-left: 0.75rem;
+    border-left: 4px solid var(--ef-trace);
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.5;
+}
 
-        counter-reset: line;
-        span.line {
-            &:before {
-                @apply text-white/25 mr-4 w-4 inline-block;
-                content: counter(line);
-                counter-increment: line;
-                direction: rtl;
-            }
-            &:last-child:empty, &:last-child:has(> span:empty:only-child) {
-                display: none;
-            }
-        }
-    }
+.custom-md h4,
+.custom-md h5,
+.custom-md h6 {
+    margin-block: 1.6em 0.6em;
+    font-size: 1rem;
+    font-weight: 700;
+}
 
-    .copy-btn {
-        all: initial;
-        @apply btn-regular-dark opacity-0 shadow-lg shadow-black/50 absolute active:scale-90 h-8 w-8 top-3 right-3 text-sm rounded-lg transition-all ease-in-out z-20 cursor-pointer;
-    }
-    .frame:hover .copy-btn {
-        opacity: 1;
-    }
+/* the "#" that appears on hover, for linking to a section */
+.custom-md h1 .anchor,
+.custom-md h2 .anchor,
+.custom-md h3 .anchor,
+.custom-md h4 .anchor,
+.custom-md h5 .anchor,
+.custom-md h6 .anchor {
+    margin-left: 0.2ch;
+    padding: 0.1rem 0.25rem;
+    text-decoration: none;
+    opacity: 0;
+    transition: opacity 120ms var(--ef-ease);
+    color: var(--ef-ink-2) !important;
+}
 
-    .copy-btn-icon {
-        @apply absolute top-1/2 left-1/2 transition -translate-x-1/2 -translate-y-1/2 w-4 h-4 fill-white pointer-events-none;
-    }
-    .copy-btn .copy-icon {
-        @apply opacity-100 fill-white dark:fill-white/75;
-    }
-    .copy-btn.success .copy-icon {
-        @apply opacity-0 fill-[var(--deep-text)]
-    }
-    .copy-btn .success-icon {
-        @apply opacity-0 fill-white;
-    }
-    .copy-btn.success .success-icon {
-        @apply opacity-100
-    }
+.custom-md h1:hover .anchor,
+.custom-md h2:hover .anchor,
+.custom-md h3:hover .anchor,
+.custom-md h4:hover .anchor,
+.custom-md h5:hover .anchor,
+.custom-md h6:hover .anchor,
+.custom-md .anchor:focus-visible {
+    opacity: 1;
+}
 
-    .expressive-code {
-        @apply my-4;
-        ::selection {
-            @apply bg-[var(--codeblock-selection)];
-        }
-    }
+/* ---------- links: ink on a yellow highlighter stroke ---------- */
+.custom-md a:not(.no-styling, .anchor) {
+    color: var(--ef-ink);
+    text-decoration: none;
+    background-image: linear-gradient(var(--ef-mark), var(--ef-mark));
+    background-repeat: no-repeat;
+    background-position: 0 88%;
+    background-size: 100% 0.4em;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+    transition: background-size 200ms var(--ef-mech);
+}
 
+.custom-md a:not(.no-styling, .anchor):hover,
+.custom-md a:not(.no-styling, .anchor):focus-visible {
+    background-size: 100% 100%;
+}
 
-    ul, ol {
-        li::marker {
-            @apply text-[var(--primary)];
-        }
-    }
+:root.dark .custom-md a:not(.no-styling, .anchor) {
+    background-image: none;
+    border-bottom: 1.5px solid var(--ef-signal);
+    padding-bottom: 0.05em;
+}
 
-    blockquote {
-        @apply not-italic border-transparent relative;
-        font-weight: inherit;
+/* ---------- lists ---------- */
+.custom-md ul,
+.custom-md ol {
+    padding-left: 1.4em;
+}
 
-        &:before {
-            @apply content-[''] absolute -left-1 block transition bg-[var(--btn-regular-bg)] h-full w-1 rounded-full;
-        }
+.custom-md li {
+    margin-block: 0.35em;
+}
 
-        /* Remove the double quotes from default styles */
-        p:before, p:after {
-            @apply content-none;
-        }
+.custom-md ul li::marker {
+    color: var(--ef-ink-2);
+    content: "— ";
+    font-family: var(--ef-font-ui);
+}
 
-    }
+.custom-md ol li::marker {
+    color: var(--ef-ink-2);
+    font-family: var(--ef-font-ui);
+    font-variant-numeric: tabular-nums;
+}
 
-    .katex-display-container {
-        max-width: 100%;
-        overflow-x: auto;
-        margin: 1em 0;
-    }
-    
+.custom-md li > ul,
+.custom-md li > ol {
+    margin-block: 0.25em;
+}
+
+/* ---------- quotes ---------- */
+.custom-md blockquote {
+    margin: 1.6em 0;
+    padding: 0.1rem 0 0.1rem 1rem;
+    border-left: 3px solid var(--ef-ink);
+    color: var(--ef-ink-2);
+    font-style: normal;
+}
+
+.custom-md blockquote p {
+    margin-block: 0.5em;
+}
+
+/* ---------- code ---------- */
+.custom-md code {
+    font-family: var(--ef-font-mono);
+    font-size: 0.84em;
+    padding: 0.1em 0.35em;
+    border: 1px solid var(--ef-rule);
+    background: var(--ef-paper);
+    color: var(--ef-ink);
+}
+
+.custom-md code::before,
+.custom-md code::after {
+    content: none;
+}
+
+.custom-md pre {
+    overflow-x: auto;
+    border-radius: 0;
+}
+
+.custom-md pre code {
+    padding: 0;
+    border: 0;
+    background: none;
+}
+
+/* Expressive Code: square frames, dark block in both themes, chip buttons */
+.custom-md .expressive-code {
+    margin-block: 1.25rem;
+}
+
+.custom-md .expressive-code .frame {
+    border-radius: 0;
+}
+
+.custom-md .expressive-code .frame pre,
+.custom-md .expressive-code pre {
+    border-radius: 0;
+}
+
+.custom-md .expressive-code ::selection {
+    background: var(--ef-mark);
+    color: var(--ef-ink);
+}
+
+.custom-md .copy-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border: 1px solid #3a3a3a;
+    background: #222222;
+    color: #ededed;
+    opacity: 0;
+    transition: opacity 120ms var(--ef-ease);
+}
+
+.custom-md .frame:hover .copy-btn,
+.custom-md .copy-btn:focus-visible {
+    opacity: 1;
+}
+
+.custom-md .copy-btn:active {
+    background: #3a3a3a;
+}
+
+.custom-md .copy-btn.success {
+    background: var(--ef-signal);
+    color: var(--ef-on-signal);
+    border-color: var(--ef-signal);
+}
+
+.custom-md .copy-btn-icon {
+    width: 1rem;
+    height: 1rem;
+}
+
+.custom-md .copy-btn .copy-icon {
+    fill: currentColor;
+    opacity: 1;
+}
+
+.custom-md .copy-btn .success-icon {
+    fill: currentColor;
+    opacity: 0;
+}
+
+.custom-md .copy-btn.success .copy-icon {
+    opacity: 0;
+}
+
+.custom-md .copy-btn.success .success-icon {
+    opacity: 1;
+}
+
+/* ---------- tables ---------- */
+.custom-md table {
+    width: 100%;
+    margin-block: 1.6em;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+}
+
+.custom-md thead th {
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid var(--ef-ink);
+    color: var(--ef-ink-2);
+    font-family: var(--ef-font-ui);
+    font-size: 0.8125rem;
+    font-stretch: var(--ef-wide);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-align: left;
+}
+
+.custom-md tbody td {
+    padding: 0.5rem 0.6rem;
+    border-bottom: 1px solid var(--ef-rule);
+    vertical-align: top;
+}
+
+.custom-md tbody td:has(> :is(code, .ef-field)),
+.custom-md tbody td.num {
+    font-variant-numeric: tabular-nums;
+}
+
+/* ---------- figures, rules, formulas ---------- */
+.custom-md img {
+    border-radius: 0;
+    border: 1px solid var(--ef-rule);
+}
+
+.custom-md figure figcaption {
+    margin-top: 0.5rem;
+    color: var(--ef-ink-2);
+    font-size: 0.8125rem;
+    font-family: var(--ef-font-ui);
+    font-stretch: var(--ef-wide);
+}
+
+.custom-md hr {
+    margin-block: 2.4em;
+    border: 0;
+    border-top: 1px solid var(--ef-rule);
+}
+
+.custom-md .katex-display-container {
+    max-width: 100%;
+    overflow-x: auto;
+    margin-block: 1em;
+}
+
+/* A formula can be wider than the measure: it scrolls inside the column,
+   it must never widen the page. */
+.custom-md .katex-display {
+    max-width: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 0.25rem;
+}
+
+.custom-md strong {
+    font-weight: 700;
 }

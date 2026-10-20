@@ -8,25 +8,92 @@ interface Props {
 }
 
 const links = Astro.props.links;
+const enLabel = (link: NavBarLink) => {
+	if (link.external) return link.name.toUpperCase();
+	const map: Record<string, string> = {
+		"/": "HOME",
+		"/archive/": "ARCHIVE",
+		"/about/": "ABOUT",
+	};
+	return map[link.url] ?? "";
+};
 ---
-<div id="nav-menu-panel" class:list={["float-panel float-panel-closed absolute transition-all fixed right-4 px-2 py-2"]}>
-    {links.map((link) => (
-        <a href={link.external ? link.url : url(link.url)} class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
-            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
-        "
-           target={link.external ? "_blank" : null}
-        >
-            <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]">
-                {link.name}
-            </div>
-            {!link.external && <Icon name="material-symbols:chevron-right-rounded"
-                  class="transition text-[1.25rem] text-[var(--primary)]"
+<div id="nav-menu-panel" class:list={["float-panel float-panel-closed nav-drawer"]}>
+    <p class="ef-eyebrow slash drawer-head">Menu</p>
+    <div class="drawer-grid">
+        {links.map((link) => (
+            <a href={link.external ? link.url : url(link.url)}
+               class="drawer-item"
+               aria-current={!link.external && Astro.url.pathname === url(link.url) ? "page" : undefined}
+               target={link.external ? "_blank" : null}
             >
-            </Icon>}
-            {link.external && <Icon name="fa6-solid:arrow-up-right-from-square"
-                  class="transition text-[0.75rem] text-black/25 dark:text-white/25 -translate-x-1"
-            >
-            </Icon>}
-        </a>
-    ))}
+                <span class="ef-eyebrow">{enLabel(link)}</span>
+                <span class="zh">{link.name}</span>
+                {link.external && <Icon name="fa6-solid:arrow-up-right-from-square" class="ext" />}
+            </a>
+        ))}
+    </div>
 </div>
+
+<style>
+    /* Phone navigation: a paper panel, a hairline frame, a 2-column grid of
+       // EN over Chinese. Anchored under the top bar. */
+    /* Sized by width, not by left+right: a fixed element must never be able to
+       widen the page on a narrow screen. Closed = out of layout entirely. */
+    .nav-drawer {
+        position: fixed;
+        top: calc(4.25rem + env(safe-area-inset-top, 0px));
+        left: 0.75rem;
+        right: auto;
+        width: min(24rem, calc(100vw - 1.5rem));
+        max-width: calc(100vw - 1.5rem);
+        padding: 0.75rem;
+        border: 1px solid var(--ef-ink);
+        background: var(--ef-panel);
+    }
+    .nav-drawer.float-panel-closed {
+        visibility: hidden;
+    }
+    .drawer-head {
+        margin: 0 0 0.6rem;
+    }
+    .drawer-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1px;
+        background: var(--ef-rule);
+        border: 1px solid var(--ef-rule);
+    }
+    .drawer-item {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 0.1rem;
+        min-height: 3rem;
+        padding: 0.5rem 0.75rem;
+        background: var(--ef-panel);
+        color: var(--ef-ink);
+    }
+    .drawer-item:hover {
+        background: var(--ef-chip);
+    }
+    .drawer-item[aria-current="page"] {
+        background: var(--ef-signal);
+        color: var(--ef-on-signal);
+    }
+    .drawer-item .zh {
+        font-weight: 700;
+        font-size: 0.9375rem;
+    }
+    .drawer-item .ext {
+        position: absolute;
+        right: 0.5rem;
+        top: 0.5rem;
+        width: 0.75rem;
+        height: 0.75rem;
+        opacity: 0.6;
+    }
+    .drawer-item {
+        position: relative;
+    }
+</style>

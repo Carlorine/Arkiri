@@ -1,18 +1,12 @@
 ---
 import BackToTop from "@components/control/BackToTop.astro";
 import Footer from "@components/Footer.astro";
+import ImageWrapper from "@components/misc/ImageWrapper.astro";
 import Navbar from "@components/Navbar.astro";
 import SideBar from "@components/widget/SideBar.astro";
+import TOC from "@components/widget/TOC.astro";
 import type { MarkdownHeading } from "astro";
-import { Icon } from "astro-icon/components";
-import ImageWrapper from "../components/misc/ImageWrapper.astro";
-import TOC from "../components/widget/TOC.astro";
 import { siteConfig } from "../config";
-import {
-	BANNER_HEIGHT,
-	BANNER_HEIGHT_EXTEND,
-	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
-} from "../constants/constants";
 import Layout from "./Layout.astro";
 
 interface Props {
@@ -22,6 +16,8 @@ interface Props {
 	lang?: string;
 	setOGTypeArticle?: boolean;
 	headings?: MarkdownHeading[];
+	/** the profile card belongs on the front pages, not on an article */
+	showProfile?: boolean;
 }
 
 const {
@@ -31,95 +27,152 @@ const {
 	lang,
 	setOGTypeArticle,
 	headings = [],
+	showProfile = true,
 } = Astro.props;
-const hasBannerCredit =
-	siteConfig.banner.enable && siteConfig.banner.credit.enable;
-const hasBannerLink = !!siteConfig.banner.credit.url;
 
-const mainPanelTop = siteConfig.banner.enable
-	? `calc(${BANNER_HEIGHT}vh - ${MAIN_PANEL_OVERLAPS_BANNER_HEIGHT}rem)`
-	: "5.5rem";
+// Reading pages put the table of contents in the page margin; other pages use
+// the full width next to the rail.
+const hasMargin = headings.length > 0;
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
+    <slot slot="head" name="head"></slot>
 
-<!-- Navbar -->
-<slot slot="head" name="head"></slot>
-<div id="top-row" class="z-50 pointer-events-none relative transition-all duration-700 max-w-[var(--page-width)] px-0 md:px-4 mx-auto" class:list={[""]}>
-    <div id="navbar-wrapper" class="pointer-events-auto sticky top-0 transition-all">
-        <Navbar></Navbar>
-    </div>
-</div>
-
-<!-- Banner -->
-{siteConfig.banner.enable && <div id="banner-wrapper" class={`absolute z-10 w-full transition duration-700 overflow-hidden`} style={`top: -${BANNER_HEIGHT_EXTEND}vh`}>
-    <ImageWrapper id="banner" alt="Banner image of the blog" class:list={["object-cover h-full transition duration-700 opacity-0 scale-105"]}
-                  src={siteConfig.banner.src} position={siteConfig.banner.position}
-    >
-    </ImageWrapper>
-</div>}
-
-<!-- Main content -->
-<div class="absolute w-full z-30 pointer-events-none" style={`top: ${mainPanelTop}`}>
-    <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
-    <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
-        <div id="main-grid" class="transition duration-700 w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
-    mx-auto gap-4 px-0 md:px-4"
-        >
-            <!-- Banner image credit -->
-            {hasBannerCredit && <a href={siteConfig.banner.credit.url} id="banner-credit" target="_blank" rel="noopener" aria-label="Visit image source"
-                                   class:list={["group onload-animation transition-all absolute flex justify-center items-center rounded-full " +
-                                   "px-3 right-4 -top-[3.25rem] bg-black/60 hover:bg-black/70 h-9", {"hover:pr-9 active:bg-black/80": hasBannerLink}]}
-            >
-                <Icon class="text-white/75 text-[1.25rem] mr-1" name="material-symbols:copyright-outline-rounded" ></Icon>
-                <div class="text-white/75 text-xs">{siteConfig.banner.credit.text}</div>
-                <Icon class:list={["transition absolute text-[oklch(0.75_0.14_var(--hue))] right-4 text-[0.75rem] opacity-0",
-                    {"group-hover:opacity-100": hasBannerLink}]}
-                      name="fa6-solid:arrow-up-right-from-square">
-                </Icon>
-            </a>}
-
-
-            <SideBar class="mb-4 row-start-2 row-end-3 col-span-2 lg:row-start-1 lg:row-end-2 lg:col-span-1 lg:max-w-[17.5rem] onload-animation" headings={headings}></SideBar>
-
-            <main id="swup-container" class="transition-swup-fade col-span-2 lg:col-span-1 overflow-hidden">
-                <div id="content-wrapper" class="onload-animation">
-                    <!-- the overflow-hidden here prevent long text break the layout-->
-                    <!-- make id different from windows.swup global property -->
-                    <slot></slot>
-                    <div class="footer col-span-2 onload-animation hidden lg:block">
-                        <Footer></Footer>
-                    </div>
-                </div>
-            </main>
-
-            <div class="footer col-span-2 onload-animation block lg:hidden">
-                <Footer></Footer>
-            </div>
+    {siteConfig.banner.enable && (
+        <div class="banner" aria-hidden="true">
+            <ImageWrapper
+                id="banner"
+                alt=""
+                class="banner-image"
+                src={siteConfig.banner.src}
+                position={siteConfig.banner.position}
+            />
         </div>
+    )}
 
-        <BackToTop></BackToTop>
-    </div>
-</div>
+    <div class:list={["shell", { "has-margin": hasMargin }]}>
+        <Navbar class="shell-nav"></Navbar>
 
-<!-- The things that should be under the banner, only the TOC for now -->
-<div class="absolute w-full z-0 hidden 2xl:block">
-    <div class="relative max-w-[var(--page-width)] mx-auto">
-        <!-- TOC component -->
-        {siteConfig.toc.enable && <div id="toc-wrapper" class:list={["hidden lg:block transition absolute top-0 -right-[var(--toc-width)] w-[var(--toc-width)] items-center",
-            {"toc-hide": siteConfig.banner.enable}]}
-        >
-            <div id="toc-inner-wrapper" class="fixed top-14 w-[var(--toc-width)] h-[calc(100vh_-_20rem)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
-                <div id="toc" class="w-full h-full transition-swup-fade ">
-                    <div class="h-8 w-full"></div>
-                    <TOC headings={headings}></TOC>
-                    <div class="h-8 w-full"></div>
+        <main id="swup-container" class="transition-swup-fade shell-main">
+            <div id="content-wrapper">
+                <!-- the overflow guard used to live here; components keep it -->
+                <slot></slot>
+            </div>
+        </main>
+
+        <aside class="shell-margin">
+            <div id="toc" class="margin-toc" aria-label="Contents">
+                <div id="toc-inner-wrapper" class="margin-inner">
+                    {hasMargin && <TOC headings={headings}></TOC>}
                 </div>
             </div>
-        </div>}
+            <SideBar class="margin-widgets" headings={headings} showProfile={showProfile}></SideBar>
+        </aside>
 
-        <!-- #toc needs to exist for Swup to work normally -->
-        {!siteConfig.toc.enable && <div id="toc"></div>}
+        <div class="shell-footer"><Footer></Footer></div>
     </div>
-</div>
+
+    <BackToTop></BackToTop>
 </Layout>
+
+<style>
+    /* One flow: rail, sheet, margin. No absolute positioning, no banner
+       overlap math — the reading column simply sits beside the rail, left
+       aligned, and the margin holds the contents. */
+    /* One column of text, centred in the page: 75rem max, 1rem side padding,
+       so 1440 gives 120px of air on each side. The rail and the margin sit
+       inside that same container. */
+    .shell {
+        /* 1200px = 75rem at a 16px root; written in px so a browser with a
+           larger default font size cannot eat the side gutters. */
+        max-width: 1200px;
+        margin-inline: auto;
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        align-items: start;
+    }
+    .shell-main {
+        min-width: 0;
+        padding: 1.5rem 1rem 3rem;
+    }
+    .shell-footer {
+        grid-column: 1 / -1;
+        padding: 0 1rem 3rem;
+    }
+    /* the rail is sticky and a viewport tall: the footer must start after its
+       column, otherwise the rail covers the copyright line */
+    @media (min-width: 1200px) {
+        .shell-footer {
+            grid-column: 2 / -1;
+            padding: 0 0 4rem;
+        }
+    }
+    .shell-margin {
+        display: block;
+        padding: 1.5rem 1rem 3rem;
+        border-top: 1px solid var(--ef-rule);
+    }
+    .margin-toc:empty,
+    .margin-toc:not(:has(a)) {
+        display: none;
+    }
+    /* the contents block sits right above the widget panels on a reading
+       page; give it air so the two do not weld together. When there is no
+       contents (front pages) the widgets start at the aside's own padding. */
+    .margin-toc:has(a) + :global(.margin-widgets) {
+        margin-top: 1.6rem;
+    }
+    .margin-inner {
+        position: sticky;
+        top: 2rem;
+        max-height: calc(100dvh - 4rem);
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+    }
+    .margin-inner::-webkit-scrollbar {
+        display: none;
+    }
+
+    .banner {
+        border-bottom: 1px solid var(--ef-rule);
+    }
+    .banner-image {
+        display: block;
+        width: 100%;
+        height: 26vh;
+        min-height: 10rem;
+    }
+
+    /* Three columns start at 1200 — the width of the shell itself. Below it the
+       shell is one column, so 1100–1199 gets the top bar and a 660px measure
+       instead of a reading column squeezed to 545px. */
+    @media (min-width: 1200px) {
+        .shell {
+            /* The rail hugs the left edge of the viewport; the reading column
+               keeps its 712px and is centred in whatever is left between the
+               rail and the margin. rail 168 / 24 gap / middle 1fr / 24 gap /
+               margin 240 / 16 right padding. */
+            max-width: none;
+            margin-inline: 0;
+            grid-template-columns: 168px minmax(0, 1fr) 240px;
+            column-gap: 24px;
+            padding-inline: 0 16px;
+        }
+        .shell-main {
+            max-width: 712px;
+            margin-inline: auto;
+            padding: 1.5rem 0 4rem;
+        }
+        .shell-margin {
+            padding: 2rem 0 3rem;
+            border-top: 0;
+        }
+    }
+
+    @media (max-width: 1199px) {
+        .shell-main {
+            padding: 1rem var(--ef-pad) 3rem;
+        }
+    }
+</style>

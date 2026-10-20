@@ -24,15 +24,28 @@ export const zh_CN: Translation = {
 	[Key.postCount]: "篇文章",
 	[Key.postsCount]: "篇文章",
 
-	[Key.themeColor]: "主题色",
-
 	[Key.lightMode]: "亮色",
 	[Key.darkMode]: "暗色",
-	[Key.systemMode]: "跟随系统",
 
 	[Key.more]: "更多",
 
 	[Key.author]: "作者",
 	[Key.publishedAt]: "发布于",
 	[Key.license]: "许可协议",
+
+	[Key.motion]: "动效",
+	[Key.motionFull]: "完整",
+	[Key.motionCalm]: "平静",
+
+	[Key.latestPost]: "最新一篇",
+	[Key.previousPost]: "上一篇",
+	[Key.nextPost]: "下一篇",
+
+	[Key.theme]: "主题",
+	[Key.switchTheme]: "切换主题",
+
+	[Key.noResults]: "没有匹配的文章。",
+
+	[Key.switchToDark]: "切换到深色",
+	[Key.switchToLight]: "切换到浅色",
 };

@@ -1,49 +1,71 @@
 ---
 import { Icon } from "astro-icon/components";
+import I18nKey from "../../i18n/i18nKey";
+import { i18n } from "../../i18n/translation";
 ---
 
-<!-- There can't be a filter on parent element, or it will break `fixed` -->
-<div class="back-to-top-wrapper hidden lg:block">
-    <div id="back-to-top-btn" class="back-to-top-btn hide flex items-center rounded-2xl overflow-hidden transition" onclick="backToTop()">
-        <button aria-label="Back to Top" class="btn-card h-[3.75rem] w-[3.75rem]">
-            <Icon name="material-symbols:keyboard-arrow-up-rounded" class="mx-auto"></Icon>
-        </button>
-    </div>
+<!-- Fixed to the bottom-right gutter: it never sits over the footer text. -->
+<div id="back-to-top-btn" class="back-to-top hide">
+    <button
+        type="button"
+        aria-label={i18n(I18nKey.home)}
+        class="back-to-top-button"
+        onclick="backToTop()"
+    >
+        <Icon name="material-symbols:keyboard-arrow-up-rounded" class="text-[1.5rem]"></Icon>
+    </button>
 </div>
 
-<style lang="stylus">
-.back-to-top-wrapper
-    width: 3.75rem
-    height: 3.75rem
-    position: absolute
-    right: 0
-    top: 0
-    pointer-events: none
-
-.back-to-top-btn
-    color: var(--primary)
-    font-size: 2.25rem
-    font-weight: bold
-    border: none
-    position: fixed
-    bottom: 10rem
-    opacity: 1
-    cursor: pointer
-    transform: translateX(5rem)
-    pointer-events: auto
-    i
-        font-size: 1.75rem
-    &.hide
-        transform: translateX(5rem) scale(0.9)
-        opacity: 0
-        pointer-events: none
-    &:active
-      transform: translateX(5rem) scale(0.9)
-
+<style>
+    .back-to-top {
+        position: fixed;
+        right: 1.25rem;
+        bottom: 1.25rem;
+        z-index: 40;
+        transition: opacity 160ms var(--ef-mech), transform 160ms var(--ef-mech);
+    }
+    .back-to-top.hide {
+        opacity: 0;
+        transform: translateY(8px);
+        visibility: hidden;
+        pointer-events: none;
+    }
+    .back-to-top-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        background: var(--ef-ink);
+        color: var(--ef-panel);
+        border-radius: 0;
+        transition: background-color 120ms var(--ef-ease);
+    }
+    .back-to-top-button:hover {
+        background: var(--ef-ink-2);
+    }
+    .back-to-top-button:focus-visible {
+        outline: 2px solid var(--ef-ink);
+        outline-offset: 2px;
+    }
 </style>
 
 <script is:raw is:inline>
 function backToTop() {
-    window.scroll({ top: 0, behavior: 'smooth' });
+    window.scroll({ top: 0, behavior: "smooth" });
 }
+
+// Show the button once the top of the page is 80% of a viewport away. A
+// sentinel is used instead of scroll events: OverlayScrollbars owns scrolling
+// here, so window.onscroll cannot be trusted.
+(function () {
+    var btn = document.getElementById("back-to-top-btn");
+    var sentinel = document.getElementById("page-top-sentinel");
+    if (!btn || !sentinel || !("IntersectionObserver" in window)) return;
+    var io = new IntersectionObserver(function (entries) {
+        var atTop = entries[0].isIntersecting;
+        btn.classList.toggle("hide", atTop);
+    }, { rootMargin: "0px 0px -80% 0px", threshold: 0 });
+    io.observe(sentinel);
+})();
 </script>

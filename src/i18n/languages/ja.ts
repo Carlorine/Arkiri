@@ -24,15 +24,28 @@ export const ja: Translation = {
 	[Key.postCount]: "件の投稿",
 	[Key.postsCount]: "件の投稿",
 
-	[Key.themeColor]: "テーマカラー",
-
 	[Key.lightMode]: "ライト",
 	[Key.darkMode]: "ダーク",
-	[Key.systemMode]: "システム",
 
 	[Key.more]: "もっと",
 
 	[Key.author]: "作者",
 	[Key.publishedAt]: "公開日",
 	[Key.license]: "ライセンス",
+
+	[Key.motion]: "動き",
+	[Key.motionFull]: "標準",
+	[Key.motionCalm]: "控えめ",
+
+	[Key.latestPost]: "最新の記事",
+	[Key.previousPost]: "前の記事",
+	[Key.nextPost]: "次の記事",
+
+	[Key.theme]: "テーマ",
+	[Key.switchTheme]: "テーマを切り替え",
+
+	[Key.noResults]: "一致する記事はありません。",
+
+	[Key.switchToDark]: "ダークに切り替え",
+	[Key.switchToLight]: "ライトに切り替え",
 };

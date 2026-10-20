@@ -7,15 +7,20 @@ import Tag from "./Tags.astro";
 interface Props {
 	class?: string;
 	headings?: MarkdownHeading[];
+	/** front pages show the profile card; an article does not */
+	showProfile?: boolean;
 }
 
+const { showProfile = true } = Astro.props;
 const className = Astro.props.class;
 ---
 <div id="sidebar" class:list={[className, "w-full"]}>
-    <div class="flex flex-col w-full gap-4 mb-4">
-        <Profile></Profile>
-    </div>
-    <div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-4 top-4 sticky top-4">
+    {showProfile && (
+        <div class="flex flex-col w-full gap-[1.6rem] mb-[1.6rem]">
+            <Profile></Profile>
+        </div>
+    )}
+    <div id="sidebar-sticky" class="transition-all duration-700 flex flex-col w-full gap-[1.6rem] top-4 sticky top-4">
         <Categories class="onload-animation" style="animation-delay: 150ms"></Categories>
         <Tag class="onload-animation" style="animation-delay: 200ms"></Tag>
     </div>

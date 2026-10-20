@@ -1,21 +1,37 @@
 ---
-
 import { profileConfig } from "../config";
 import { url } from "../utils/url-utils";
 
 const currentYear = new Date().getFullYear();
 ---
+<footer class="site-footer">
+    <ul class="ef-facts ef-field">
+        <li>&copy; <span id="copyright-year">{currentYear}</span> {profileConfig.name}</li>
+        <li><a href={url("rss.xml")} target="_blank" rel="noopener">RSS</a></li>
+        <li><a href={url("sitemap-index.xml")} target="_blank" rel="noopener">Sitemap</a></li>
+        <li><a href="https://astro.build" target="_blank" rel="noopener">Astro</a></li>
+        <li><a href="https://github.com/saicaca/fuwari" target="_blank" rel="noopener">Fuwari</a></li>
+    </ul>
+</footer>
 
-<!--<div class="border-t border-[var(&#45;&#45;primary)] mx-16 border-dashed py-8 max-w-[var(&#45;&#45;page-width)] flex flex-col items-center justify-center px-6">-->
-<div class="transition border-t border-black/10 dark:border-white/15 my-10 border-dashed mx-32"></div>
-<!--<div class="transition bg-[oklch(92%_0.01_var(&#45;&#45;hue))] dark:bg-black rounded-2xl py-8 mt-4 mb-8 flex flex-col items-center justify-center px-6">-->
-<div class="transition border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/15 rounded-2xl mb-12 flex flex-col items-center justify-center px-6">
-    <div class="transition text-50 text-sm text-center">
-        &copy; <span id="copyright-year">{currentYear}</span> {profileConfig.name}. All Rights Reserved. /
-        <a class="transition link text-[var(--primary)] font-medium" target="_blank" href={url('rss.xml')}>RSS</a> /
-        <a class="transition link text-[var(--primary)] font-medium" target="_blank" href={url('sitemap-index.xml')}>Sitemap</a><br>
-        Powered by
-        <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://astro.build">Astro</a> &
-        <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://github.com/saicaca/fuwari">Fuwari</a>
-    </div>
-</div>
+<style>
+    /* One hairline, one row of real fields. No dashed lines, no box. */
+    .site-footer {
+        margin-top: 3.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--ef-rule);
+    }
+    .site-footer .ef-facts {
+        margin: 0;
+        padding: 0;
+    }
+    .site-footer a {
+        color: var(--ef-ink-2);
+    }
+    .site-footer a:hover {
+        color: var(--ef-ink);
+        text-decoration: underline;
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.2em;
+    }
+</style>

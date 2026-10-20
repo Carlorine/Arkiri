@@ -24,15 +24,28 @@ export const en: Translation = {
 	[Key.postCount]: "post",
 	[Key.postsCount]: "posts",
 
-	[Key.themeColor]: "Theme Color",
-
 	[Key.lightMode]: "Light",
 	[Key.darkMode]: "Dark",
-	[Key.systemMode]: "System",
 
 	[Key.more]: "More",
 
 	[Key.author]: "Author",
 	[Key.publishedAt]: "Published at",
 	[Key.license]: "License",
+
+	[Key.motion]: "Motion",
+	[Key.motionFull]: "Full",
+	[Key.motionCalm]: "Calm",
+
+	[Key.latestPost]: "Latest post",
+	[Key.previousPost]: "Previous post",
+	[Key.nextPost]: "Next post",
+
+	[Key.theme]: "Theme",
+	[Key.switchTheme]: "Switch theme",
+
+	[Key.noResults]: "No posts match that search.",
+
+	[Key.switchToDark]: "Switch to dark",
+	[Key.switchToLight]: "Switch to light",
 };

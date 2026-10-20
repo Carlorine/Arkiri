@@ -24,15 +24,28 @@ export const vi: Translation = {
 	[Key.postCount]: "bài viết",
 	[Key.postsCount]: "bài viết",
 
-	[Key.themeColor]: "Màu giao diện",
-
 	[Key.lightMode]: "Sáng",
 	[Key.darkMode]: "Tối",
-	[Key.systemMode]: "Hệ thống",
 
 	[Key.more]: "Thêm",
 
 	[Key.author]: "Tác giả",
 	[Key.publishedAt]: "Đăng vào lúc",
 	[Key.license]: "Giấy phép bản quyền",
+
+	[Key.motion]: "Chuyển động",
+	[Key.motionFull]: "Đầy đủ",
+	[Key.motionCalm]: "Nhẹ nhàng",
+
+	[Key.latestPost]: "Bài mới nhất",
+	[Key.previousPost]: "Bài trước",
+	[Key.nextPost]: "Bài sau",
+
+	[Key.theme]: "Giao diện",
+	[Key.switchTheme]: "Đổi giao diện",
+
+	[Key.noResults]: "Không có bài viết phù hợp.",
+
+	[Key.switchToDark]: "Chuyển sang tối",
+	[Key.switchToLight]: "Chuyển sang sáng",
 };

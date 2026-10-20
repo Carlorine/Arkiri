@@ -6,34 +6,155 @@ import ImageWrapper from "../misc/ImageWrapper.astro";
 
 const config = profileConfig;
 ---
-<div class="card-base p-3">
-    <a aria-label="Go to About Page" href={url('/about/')}
-       class="group block relative mx-auto mt-1 lg:mx-0 lg:mt-0 mb-3
-       max-w-[12rem] lg:max-w-none overflow-hidden rounded-xl active:scale-95">
-        <div class="absolute transition pointer-events-none group-hover:bg-black/30 group-active:bg-black/50
-        w-full h-full z-50 flex items-center justify-center">
-            <Icon name="fa6-regular:address-card"
-                  class="transition opacity-0 scale-90 group-hover:scale-100 group-hover:opacity-100 text-white text-5xl">
-            </Icon>
-        </div>
-        <ImageWrapper src={config.avatar || ""} alt="Profile Image of the Author" class="mx-auto lg:w-full h-full lg:mt-0 "></ImageWrapper>
+<div class="profile ef-panel tab-right">
+    <a href={url('/about/')} aria-label="Go to About Page" class="avatar-link">
+        <ImageWrapper
+            src={config.avatar || ""}
+            alt="Profile Image of the Author"
+            class="avatar-img"
+        ></ImageWrapper>
+        <span class="avatar-mask" aria-hidden="true">
+            <Icon name="fa6-regular:address-card" class="avatar-icon"></Icon>
+        </span>
     </a>
-    <div class="px-2">
-        <div class="font-bold text-xl text-center mb-1 dark:text-neutral-50 transition">{config.name}</div>
-        <div class="h-1 w-5 bg-[var(--primary)] mx-auto rounded-full mb-2 transition"></div>
-        <div class="text-center text-neutral-400 mb-2.5 transition">{config.bio}</div>
-        <div class="flex flex-wrap gap-2 justify-center mb-1">
-            {config.links.length > 1 && config.links.map(item =>
-                    <a rel="me" aria-label={item.name} href={item.url} target="_blank" class="btn-regular rounded-lg h-10 w-10 active:scale-90">
-                        <Icon name={item.icon} class="text-[1.5rem]"></Icon>
+
+    <p class="profile-name">{config.name}</p>
+    <span class="profile-mark" aria-hidden="true"></span>
+    <p class="profile-bio">{config.bio}</p>
+
+    {config.links.length > 0 && (
+        <ul class="profile-links">
+            {config.links.map((item) =>
+                <li>
+                    <a rel="me" aria-label={item.name} title={item.name} href={item.url} target="_blank"
+                       class="ef-chip profile-link">
+                        <Icon name={item.icon} class="profile-link-icon"></Icon>
                     </a>
+                </li>
             )}
-            {config.links.length == 1 && <a rel="me" aria-label={config.links[0].name} href={config.links[0].url} target="_blank"
-                                            class="btn-regular rounded-lg h-10 gap-2 px-3 font-bold active:scale-95">
-                <Icon name={config.links[0].icon} class="text-[1.5rem]"></Icon>
-                {config.links[0].name}
-            </a>}
-        </div>
-    </div>
+        </ul>
+    )}
 </div>
 
+<style>
+    /* The avatar is the one circle on the site; everything else stays
+       rectangular. The circle is also the clip for the hover mask, so the
+       mask and its icon never leak past the image corners. */
+    .profile {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.6rem;
+        text-align: center;
+    }
+
+    .avatar-link {
+        position: relative;
+        display: block;
+        box-sizing: border-box;
+        width: 96px;
+        height: 96px;
+        overflow: hidden;
+        border: 1px solid var(--ef-rule);
+        /* the single exception to "radius is always 0" */
+        border-radius: 50%;
+        transition: border-color 120ms var(--ef-ease);
+    }
+    .avatar-link:is(:hover, :focus-visible) {
+        border-color: var(--ef-ink);
+    }
+    .avatar-link:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+
+    /* the wrapper fills the circle; ImageWrapper sets object-fit: cover, so a
+       non-square avatar is cropped at the centre, never stretched */
+    .avatar-link :global(.avatar-img) {
+        width: 100%;
+        height: 100%;
+    }
+    .avatar-link :global(.avatar-img img) {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .avatar-mask {
+        position: absolute;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: transparent;
+        transition: background-color 150ms var(--ef-ease);
+    }
+    .avatar-link :global(.avatar-icon) {
+        position: relative;
+        z-index: 1;
+        font-size: 2rem;
+        color: #fff;
+        opacity: 0;
+        transition: opacity 150ms var(--ef-ease);
+    }
+    .avatar-link:is(:hover, :focus-visible) .avatar-mask {
+        background: rgb(0 0 0 / 0.35);
+    }
+    .avatar-link:is(:hover, :focus-visible) :global(.avatar-icon) {
+        opacity: 1;
+    }
+    /* press: the mask deepens. No scale — ef never scales on press. */
+    .avatar-link:active .avatar-mask {
+        background: rgb(0 0 0 / 0.55);
+    }
+
+    .profile-name {
+        margin: 0.15rem 0 0;
+        font-size: 1.05rem;
+        font-weight: 800;
+        line-height: 1.35;
+        color: var(--ef-ink);
+    }
+    /* the "here" mark, as a fill, not a rounded pill */
+    .profile-mark {
+        display: block;
+        width: 24px;
+        height: 3px;
+        background: var(--ef-signal);
+    }
+    .profile-bio {
+        margin: 0;
+        font-size: 0.8125rem;
+        line-height: 1.65;
+        color: var(--ef-ink-2);
+    }
+
+    .profile-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.4rem;
+        margin: 0.25rem 0 0;
+        padding: 0;
+        list-style: none;
+    }
+    .profile-link {
+        box-sizing: border-box;
+        justify-content: center;
+        min-width: 2.5rem;
+        min-height: 2.5rem;
+        padding: 0.3rem 0.45rem;
+    }
+    .profile-link :global(.profile-link-icon) {
+        font-size: 1.125rem;
+    }
+
+    @media (max-width: 719px) {
+        .avatar-link {
+            width: 80px;
+            height: 80px;
+        }
+        .avatar-link :global(.avatar-icon) {
+            font-size: 1.5rem;
+        }
+    }
+</style>

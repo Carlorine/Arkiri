@@ -24,15 +24,28 @@ export const tr: Translation = {
 	[Key.postCount]: "gönderi",
 	[Key.postsCount]: "gönderiler",
 
-	[Key.themeColor]: "Tema Rengi",
-
 	[Key.lightMode]: "Aydınlık",
 	[Key.darkMode]: "Koyu",
-	[Key.systemMode]: "Sistem",
 
 	[Key.more]: "Daha Fazla",
 
 	[Key.author]: "Yazar",
 	[Key.publishedAt]: "Yayınlanma:",
 	[Key.license]: "Lisans",
+
+	[Key.motion]: "Hareket",
+	[Key.motionFull]: "Tam",
+	[Key.motionCalm]: "Sakin",
+
+	[Key.latestPost]: "Son yazı",
+	[Key.previousPost]: "Önceki yazı",
+	[Key.nextPost]: "Sonraki yazı",
+
+	[Key.theme]: "Tema",
+	[Key.switchTheme]: "Temayı değiştir",
+
+	[Key.noResults]: "Eşleşen yazı yok.",
+
+	[Key.switchToDark]: "Koyuya geç",
+	[Key.switchToLight]: "Açığa geç",
 };

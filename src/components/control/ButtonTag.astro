@@ -7,7 +7,20 @@ interface Props {
 }
 const { dot, href, label }: Props = Astro.props;
 ---
-<a href={href} aria-label={label} class="btn-regular h-8 text-sm px-3 rounded-lg">
-    {dot && <div class="h-1 w-1 bg-[var(--btn-content)] dark:bg-[var(--card-bg)] transition rounded-md mr-2"></div>}
+<a href={href} aria-label={label} class="ef-chip tag-chip">
+    {dot && <span class="dot" aria-hidden="true"></span>}
     <slot></slot>
 </a>
+
+<style>
+    .tag-chip {
+        min-height: 2rem;
+        font-size: 0.875rem;
+    }
+    .tag-chip .dot {
+        width: 0.375rem;
+        height: 0.375rem;
+        margin-right: 0.4rem;
+        background: var(--ef-ink-2);
+    }
+</style>

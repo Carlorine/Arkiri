@@ -1,4 +1,4 @@
-import type { AUTO_MODE, DARK_MODE, LIGHT_MODE } from "@constants/constants";
+import type { DARK_MODE, LIGHT_MODE } from "@constants/constants";
 
 export type SiteConfig = {
 	title: string;
@@ -16,10 +16,6 @@ export type SiteConfig = {
 		| "tr"
 		| "id";
 
-	themeColor: {
-		hue: number;
-		fixed: boolean;
-	};
 	banner: {
 		enable: boolean;
 		src: string;
@@ -80,7 +76,7 @@ export type LicenseConfig = {
 export type LIGHT_DARK_MODE =
 	| typeof LIGHT_MODE
 	| typeof DARK_MODE
-	| typeof AUTO_MODE;
+	;
 
 export type BlogPostData = {
 	body: string;

@@ -24,15 +24,28 @@ export const th: Translation = {
 	[Key.postCount]: "โพสต์",
 	[Key.postsCount]: "โพสต์",
 
-	[Key.themeColor]: "สีของธีม",
-
 	[Key.lightMode]: "สว่าง",
 	[Key.darkMode]: "มืด",
-	[Key.systemMode]: "ตามระบบ",
 
 	[Key.more]: "ดูเพิ่ม",
 
 	[Key.author]: "ผู้เขียน",
 	[Key.publishedAt]: "เผยแพร่เมื่อ",
 	[Key.license]: "สัญญาอนุญาต",
+
+	[Key.motion]: "การเคลื่อนไหว",
+	[Key.motionFull]: "เต็ม",
+	[Key.motionCalm]: "สงบ",
+
+	[Key.latestPost]: "บทความล่าสุด",
+	[Key.previousPost]: "บทความก่อนหน้า",
+	[Key.nextPost]: "บทความถัดไป",
+
+	[Key.theme]: "ธีม",
+	[Key.switchTheme]: "สลับธีม",
+
+	[Key.noResults]: "ไม่พบบทความที่ตรงกัน",
+
+	[Key.switchToDark]: "สลับเป็นโหมดมืด",
+	[Key.switchToLight]: "สลับเป็นโหมดสว่าง",
 };

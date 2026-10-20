@@ -1,0 +1,115 @@
+/* ==========================================================================
+   Project layer on top of endfield.css
+   --------------------------------------------------------------------------
+   Only two kinds of rules belong here:
+     1. token overrides (which font, which alias) — never new colours
+     2. layout (grid, measure, sticky) — never new component looks
+   Components come from src/styles/endfield.css (ef- classes).
+   ========================================================================== */
+
+/* ---------- fonts ---------- */
+/* Latin/figures: the self-hosted Saira (src/styles/fonts.css).
+   Chinese: the system heiti — no webfont, and never font-stretch'd. */
+:root {
+  --ef-font-ui: 'Saira', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    'Noto Sans SC', 'Source Han Sans SC', sans-serif;
+  --ef-font-text: 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    'Noto Sans SC', 'Source Han Sans SC', sans-serif;
+}
+
+/* A zero-height marker at the top of the document; the back-to-top button
+   watches it instead of scroll events. */
+#page-top-sentinel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+
+/* Search focus: a 2px line in the colour of "here" along the bottom edge
+   (ink on paper, yellow on the dark theme). The kit only thickened it by 1px,
+   which was not visible enough on a hairline field. */
+.ef-search:focus-within {
+  border-bottom-color: var(--ef-trace);
+  box-shadow: inset 0 -2px 0 var(--ef-trace);
+}
+
+/* Card links: the kit underlines every prose link (a yellow block on light,
+   a yellow line on dark). A card is a whole block of text, so every line
+   inside it inherited that underline. The markdown layer already skips
+   .no-styling; the kit layer did not. Exclude those links here, for both
+   themes, instead of touching endfield.css.
+   The last selector is 0,3,1 so it also outweighs the dark rule
+   `:root.dark .ef-prose a` (0,2,1), whatever the stylesheet order. */
+.ef-prose a.no-styling,
+.ef-prose a.card-github,
+.ef-prose a.card-github.no-styling {
+  text-decoration: none;
+}
+
+/* --------------------------------------------------------------------------
+   Fewer frames.
+   A frame belongs to things that are separate and clickable; a thing that is
+   nested, or merely selected, is marked by the weight of its fill instead.
+   These overrides sit here so endfield.css stays a vendored copy.
+   -------------------------------------------------------------------------- */
+
+/* Margin panels: no frame. The 5px ink tab and the white sheet carry them.
+   The contents panel (#toc) is one of them, so it takes the same padding. */
+#sidebar .ef-panel,
+.margin-toc .ef-panel,
+.margin-toc.ef-panel {
+  border: 0;
+  padding: 1.25rem 1.4rem;
+}
+/* The tab used to hang 1px outside to sit on the border. With the border gone
+   that 1px is a visible overhang, so it now ends exactly on the sheet. */
+#sidebar .ef-panel::before,
+.margin-toc .ef-panel::before,
+.margin-toc.ef-panel::before {
+  top: 0;
+  left: 0;
+  right: 0;
+}
+
+/* "You are here" is one state and gets one look: the same solid signal block
+   as the pager's current page. The cut corner means "pressable", so a current
+   item must not carry it — otherwise every current rail link reads as a button
+   that happens to be selected. */
+.ef-rail a[aria-current] {
+  background: var(--ef-signal);
+}
+/* The mobile drawer is a different component, so the kit's scoped rule does not
+   reach its label: on the yellow block both the Latin eyebrow and the Chinese
+   word go to the ink used on signal. */
+.ef-rail a[aria-current] :is(.zh, .ef-eyebrow),
+.drawer-item[aria-current="page"] :is(.zh, .ef-eyebrow) {
+  color: var(--ef-on-signal);
+}
+
+/* Segmented control: no frame. The chosen segment is the solid ink block;
+   the idle ones are held apart by 4px of paper. */.ef-seg {
+  border: 0;
+  column-gap: 4px;
+}
+.ef-seg label:not(:has(:checked)):hover {
+  background: color-mix(in srgb, var(--ef-ink) 4%, transparent);
+}
+
+/* Inline code: a tinted chip, not a one-line box. The reset for code inside a
+   block (.custom-md pre code) is more specific and still wins. */
+.ef-prose code {
+  padding: 0.12em 0.4em;
+  border: 0;
+  background: color-mix(in srgb, var(--ef-ink) 6%, var(--ef-paper));
+}
+
+/* The reading sheet's right hairline: dropped. Not to land on a round measure
+   (the line happens to cost 1px), but because the sheet already reads as a
+   white block against the paper and a frame is not what separates it. The kit
+   rule in endfield.css stays untouched. */
+.post-sheet {
+  border-right: 0;
+}

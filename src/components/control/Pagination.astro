@@ -51,34 +51,73 @@ const getPageUrl = (p: number) => {
 };
 ---
 
-<div class:list={[className, "flex flex-row gap-3 justify-center"]} style={style}>
-    <a href={page.url.prev || ""} aria-label={page.url.prev ? "Previous Page" : null}
-       class:list={["btn-card overflow-hidden rounded-lg text-[var(--primary)] w-11 h-11",
-           {"disabled": page.url.prev == undefined}
-       ]}
-    >
-        <Icon name="material-symbols:chevron-left-rounded" class="text-[1.75rem]"></Icon>
-    </a>
-    <div class="bg-[var(--card-bg)] flex flex-row rounded-lg items-center text-neutral-700 dark:text-neutral-300 font-bold">
-        {pages.map((p) => {
-            if (p == HIDDEN)
-                return <Icon name="material-symbols:more-horiz" class="mx-1"/>;
-            if (p == page.currentPage)
-                return <div class="h-11 w-11 rounded-lg bg-[var(--primary)] flex items-center justify-center
-                    font-bold text-white dark:text-black/70"
-                >
-                    {p}
-                </div>
-            return <a href={url(getPageUrl(p))} aria-label={`Page ${p}`}
-                class="btn-card w-11 h-11 rounded-lg overflow-hidden active:scale-[0.85]"
-            >{p}</a>
-        })}
-    </div>
-    <a href={page.url.next || ""} aria-label={page.url.next ? "Next Page" : null}
-       class:list={["btn-card overflow-hidden rounded-lg text-[var(--primary)] w-11 h-11",
-           {"disabled": page.url.next == undefined}
-       ]}
-    >
-        <Icon name="material-symbols:chevron-right-rounded" class="text-[1.75rem]"></Icon>
-    </a>
-</div>
+<nav class:list={[className, "pagination"]} style={style} aria-label="Pagination">
+    {page.url.prev ? (
+        <a href={page.url.prev} aria-label="Previous Page" class="ef-btn small page step">
+            <Icon name="material-symbols:chevron-left-rounded"></Icon>
+        </a>
+    ) : (
+        <span class="ef-btn small page step is-off" aria-hidden="true">
+            <Icon name="material-symbols:chevron-left-rounded"></Icon>
+        </span>
+    )}
+
+    {pages.map((p) => {
+        if (p === HIDDEN)
+            return <span class="gap" aria-hidden="true">…</span>;
+        if (p === page.currentPage)
+            return <span class="ef-btn small page current" aria-current="page">{p}</span>;
+        return (
+            <a href={url(getPageUrl(p))} aria-label={`Page ${p}`} class="ef-btn small page">{p}</a>
+        );
+    })}
+
+    {page.url.next ? (
+        <a href={page.url.next} aria-label="Next Page" class="ef-btn small page step">
+            <Icon name="material-symbols:chevron-right-rounded"></Icon>
+        </a>
+    ) : (
+        <span class="ef-btn small page step is-off" aria-hidden="true">
+            <Icon name="material-symbols:chevron-right-rounded"></Icon>
+        </span>
+    )}
+</nav>
+
+<style>
+    .pagination {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+    }
+    /* 44px square targets with the kit's cut corner, so the pager is usable
+       by touch as well as by mouse */
+    .page {
+        min-width: 2.75rem;
+        min-height: 2.75rem;
+        justify-content: center;
+        padding: 0.5rem 0.95rem 0.5rem 0.7rem;
+        font-variant-numeric: tabular-nums;
+    }
+    .step {
+        padding-inline: 0.6rem;
+    }
+    .step :global(svg) {
+        font-size: 1.35rem;
+    }
+    .current {
+        --fill: var(--ef-signal);
+        color: var(--ef-on-signal);
+        font-weight: 800;
+    }
+    .is-off {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+    .gap {
+        padding: 0 0.15rem;
+        color: var(--ef-ink-2);
+        font-family: var(--ef-font-ui);
+    }
+</style>

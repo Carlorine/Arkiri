@@ -3,22 +3,23 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 
-import ConfigCarrier from "@components/ConfigCarrier.astro";
 import { profileConfig, siteConfig } from "@/config";
 import {
-	AUTO_MODE,
 	BANNER_HEIGHT,
 	BANNER_HEIGHT_EXTEND,
 	BANNER_HEIGHT_HOME,
-	DARK_MODE,
-	DEFAULT_THEME,
-	LIGHT_MODE,
 	PAGE_WIDTH,
 } from "../constants/constants";
 import { defaultFavicons } from "../constants/icon";
 import type { Favicon } from "../types/config";
 import { pathsEqual, url } from "../utils/url-utils";
 import "katex/dist/katex.css";
+// UI kit: the vendored endfield-ui stylesheet (explicit entry, see docs/plan).
+// Do not rely on src/styles/* being picked up by a glob anywhere.
+// Order matters: fonts -> kit -> project overrides.
+import "../styles/fonts.css";
+import "../styles/endfield.css";
+import "../styles/endfield-project.css";
 
 interface Props {
 	title?: string;
@@ -37,7 +38,7 @@ const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
 
 // defines global css variables
 // why doing this in Layout instead of GlobalStyles: https://github.com/withastro/astro/issues/6728#issuecomment-1502203757
-const configHue = siteConfig.themeColor.hue;
+// (there is no theme hue any more: the kit has exactly one accent colour)
 if (!banner || typeof banner !== "string" || banner.trim() === "") {
 	banner = siteConfig.banner.src;
 }
@@ -73,7 +74,14 @@ const bannerOffset =
 ---
 
 <!DOCTYPE html>
-<html lang={siteLang} class="bg-[var(--page-bg)] transition text-[14px] md:text-[16px]"
+<html lang={siteLang}
+	  data-ef-accent="yellow"
+	  data-ef-paper="neutral"
+	  data-ef-cut="standard"
+	  data-ef-ground="contours"
+	  data-ef-density="standard"
+	  data-ef-motion="full"
+	  class="transition"
 	  data-overlayscrollbars-initialize
 >
 	<head>
@@ -99,6 +107,7 @@ const bannerOffset =
 		<meta name="twitter:title" content={pageTitle}>
 		<meta name="twitter:description" content={description || pageTitle}>
 
+		<meta id="theme-color-meta" name="theme-color" content="#f4f4f2" />
 		<meta name="viewport" content="width=device-width" />
 		<meta name="generator" content={Astro.generator} />
 		{favicons.map(favicon => (
@@ -110,27 +119,35 @@ const bannerOffset =
 		))}
 
 		<!-- Set the theme before the page is rendered to avoid a flash -->
-		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue}}>
-			// Load the theme from local storage
-			const theme = localStorage.getItem('theme') || DEFAULT_THEME;
-			switch (theme) {
-				case LIGHT_MODE:
-					document.documentElement.classList.remove('dark');
-					break
-				case DARK_MODE:
-					document.documentElement.classList.add('dark');
-					break
-				case AUTO_MODE:
-					if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
-						document.documentElement.classList.add('dark');
-					} else {
-						document.documentElement.classList.remove('dark');
-					}
+		<script is:inline define:vars={{BANNER_HEIGHT_EXTEND, PAGE_WIDTH}}>
+			// Theme: exactly two states. Only an explicit stored "dark" is dark;
+			// the first visit is light even when the system prefers dark, and old
+			// values ("system", "auto") are normalised to light.
+			const storedTheme = localStorage.getItem('theme');
+			const isDark = storedTheme === 'dark';
+			document.documentElement.classList.toggle('dark', isDark);
+			if (storedTheme !== 'dark' && storedTheme !== 'light') {
+				localStorage.setItem('theme', isDark ? 'dark' : 'light');
+			}
+			const themeMeta = document.getElementById('theme-color-meta');
+			if (themeMeta) {
+				themeMeta.setAttribute('content', isDark ? '#191919' : '#f4f4f2');
 			}
 
-			// Load the hue from local storage
-			const hue = localStorage.getItem('hue') || configHue;
-			document.documentElement.style.setProperty('--hue', hue);
+			// Restore the motion variant before first paint (endfield.css reads
+			// data-ef-motion). Density is fixed to "standard" and no longer a
+			// setting, so the attribute stays as written in the markup.
+			const motion = localStorage.getItem('motion');
+			if (motion === 'full' || motion === 'calm') {
+				document.documentElement.dataset.efMotion = motion;
+			}
+
+			// Drop settings that no longer exist, if a returning visitor still
+			// has them stored (hue from the old picker, density from the old
+			// three-step scale).
+			localStorage.removeItem('hue');
+			localStorage.removeItem('density');
+			document.documentElement.style.removeProperty('--hue');
 
 			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
 			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
@@ -138,7 +155,6 @@ const bannerOffset =
 			document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
 		</script>
 		<style define:vars={{
-			configHue,
 			'page-width': `${PAGE_WIDTH}rem`,
 		}}></style>  <!-- defines global css variables. This will be applied to <html> <body> and some other elements idk why -->
 
@@ -148,10 +164,11 @@ const bannerOffset =
 		<link rel="alternate" type="application/rss+xml" title={profileConfig.name} href={`${Astro.site}rss.xml`}/>
 
 	</head>
-	<body class=" min-h-screen transition " class:list={[{"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
+	<body class="min-h-screen transition" class:list={["ef", "ef-contours", {"lg:is-home": isHomePage, "enable-banner": enableBanner}]}
 		  data-overlayscrollbars-initialize
 	>
-		<ConfigCarrier></ConfigCarrier>
+		<div class="ef-tri" aria-hidden="true"><i></i><i></i><i></i></div>
+		<div id="page-top-sentinel" aria-hidden="true"></div>
 		<slot />
 
 		<!-- increase the page height during page transition to prevent the scrolling animation from jumping -->
@@ -202,7 +219,7 @@ import {
 	// SizeObserverPlugin,
 	// ClickScrollPlugin
 } from 'overlayscrollbars';
-import {getHue, getStoredTheme, setHue, setTheme} from "../utils/setting-utils";
+import {getStoredTheme, setTheme} from "../utils/setting-utils";
 import {pathsEqual, url} from "../utils/url-utils";
 import {
 	BANNER_HEIGHT,
@@ -280,10 +297,6 @@ setClickOutsideToClose("search-panel", ["search-panel", "search-bar", "search-sw
 function loadTheme() {
 	const theme = getStoredTheme()
 	setTheme(theme)
-}
-
-function loadHue() {
-	setHue(getHue())
 }
 
 function initCustomScrollbar() {
@@ -366,7 +379,6 @@ function showBanner() {
 function init() {
 	// disableAnimation()()		// TODO
 	loadTheme();
-	loadHue();
 	initCustomScrollbar();
 	showBanner();
 }
@@ -459,14 +471,6 @@ let toc = document.getElementById('toc-wrapper');
 let navbar = document.getElementById('navbar-wrapper')
 function scrollFunction() {
 	let bannerHeight = window.innerHeight * (BANNER_HEIGHT / 100)
-
-	if (backToTopBtn) {
-		if (document.body.scrollTop > bannerHeight || document.documentElement.scrollTop > bannerHeight) {
-			backToTopBtn.classList.remove('hide')
-		} else {
-			backToTopBtn.classList.add('hide')
-		}
-	}
 
 	if (bannerEnabled && toc) {
 		if (document.body.scrollTop > bannerHeight || document.documentElement.scrollTop > bannerHeight) {

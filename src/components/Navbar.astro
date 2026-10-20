@@ -3,7 +3,7 @@ import { Icon } from "astro-icon/components";
 import { navBarConfig, siteConfig } from "../config";
 import { LinkPresets } from "../constants/link-presets";
 import { LinkPreset, type NavBarLink } from "../types/config";
-import { url } from "../utils/url-utils";
+import { pathsEqual, url } from "../utils/url-utils";
 import LightDarkSwitch from "./LightDarkSwitch.svelte";
 import Search from "./Search.svelte";
 import DisplaySettings from "./widget/DisplaySettings.svelte";
@@ -19,67 +19,304 @@ let links: NavBarLink[] = navBarConfig.links.map(
 		return item;
 	},
 );
+
+// The English eyebrow is the literal translation of the Chinese label, not a
+// style word: 首页/HOME, 归档/ARCHIVE, 关于/ABOUT, GitHub/GITHUB.
+const enLabels: Record<string, string> = {
+	"/": "Home",
+	"/archive/": "Archive",
+	"/about/": "About",
+};
+const enLabel = (link: NavBarLink): string => {
+	if (link.external) return link.name;
+	return enLabels[link.url] ?? "";
+};
+const isCurrent = (link: NavBarLink): boolean =>
+	!link.external && pathsEqual(Astro.url.pathname, url(link.url));
 ---
-<div id="navbar" class="z-50 onload-animation">
-    <div class="absolute h-8 left-0 right-0 -top-8 bg-[var(--card-bg)] transition"></div> <!-- used for onload animation -->
-    <div class:list={[
-        className,
-        "card-base !overflow-visible max-w-[var(--page-width)] h-[4.5rem] !rounded-t-none mx-auto flex items-center justify-between px-4"]}>
-        <a href={url('/')} class="btn-plain scale-animation rounded-lg h-[3.25rem] px-5 font-bold active:scale-95">
-            <div class="flex flex-row text-[var(--primary)] items-center text-md">
-                <Icon name="material-symbols:home-outline-rounded" class="text-[1.75rem] mb-1 mr-2" />
-                {siteConfig.title}
-            </div>
+
+<header class:list={["nav-shell", className]}>
+    <nav class="ef-rail" aria-label={siteConfig.title}>
+        <a class="brand" href={url("/")} aria-label={siteConfig.title}>
+            <span class="brand-name">{siteConfig.title}</span>
+            <span class="ef-eyebrow">{siteConfig.subtitle}</span>
         </a>
-        <div class="hidden md:flex">
-            {links.map((l) => {
-                return <a aria-label={l.name} href={l.external ? l.url : url(l.url)} target={l.external ? "_blank" : null}
-                          class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"
+        <div class="links">
+            {links.map((link) => (
+                <a href={link.external ? link.url : url(link.url)}
+                   aria-current={isCurrent(link) ? "page" : undefined}
+                   target={link.external ? "_blank" : null}
+                   rel={link.external ? "noopener" : null}
                 >
-                    <div class="flex items-center">
-                        {l.name}
-                        {l.external && <Icon name="fa6-solid:arrow-up-right-from-square" class="text-[0.875rem] transition -translate-y-[1px] ml-1 text-black/[0.2] dark:text-white/[0.2]"></Icon>}
-                    </div>
-                </a>;
-            })}
+                    <small class="ef-eyebrow">{enLabel(link)}</small>
+                    <span class="zh">{link.name}</span>
+                </a>
+            ))}
         </div>
-        <div class="flex">
-            <!--<SearchPanel client:load>-->
-            <Search client:only="svelte"></Search>
-            {!siteConfig.themeColor.fixed && (
-                    <button aria-label="Display Settings" class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="display-settings-switch">
-                        <Icon name="material-symbols:palette-outline" class="text-[1.25rem]"></Icon>
-                    </button>
-            )}
-            <LightDarkSwitch client:only="svelte"></LightDarkSwitch>
-            <button aria-label="Menu" name="Nav Menu" class="btn-plain scale-animation rounded-lg w-11 h-11 active:scale-90 md:!hidden" id="nav-menu-switch">
-                <Icon name="material-symbols:menu-rounded" class="text-[1.25rem]"></Icon>
+    </nav>
+
+    <div class="nav-tools">
+        <Search client:only="svelte"></Search>
+        <div class="tool-row">
+            <button aria-label="Motion" class="icon-btn" id="display-settings-switch">
+                <Icon name="material-symbols:tune-rounded" class="text-[1.25rem]"></Icon>
             </button>
+            <LightDarkSwitch client:only="svelte"></LightDarkSwitch>
         </div>
-        <NavMenuPanel links={links}></NavMenuPanel>
-        <DisplaySettings client:only="svelte"></DisplaySettings>
+        <button aria-label="Menu" name="Nav Menu" class="icon-btn menu-btn" id="nav-menu-switch">
+            <Icon name="material-symbols:menu-rounded" class="text-[1.25rem]"></Icon>
+        </button>
     </div>
-</div>
+
+    <NavMenuPanel links={links}></NavMenuPanel>
+    <DisplaySettings client:only="svelte"></DisplaySettings>
+</header>
+
+<style>
+    /* The rail is the only navigation: stacked nav, // EN over the Chinese
+       label, the current item a whole yellow block with a cut corner
+       (that comes from .ef-rail itself). Below 1200 it lies down as a top bar. */
+    .nav-shell {
+        position: sticky;
+        top: 0;
+        align-self: start;
+        display: flex;
+        flex-direction: column;
+        height: 100dvh;
+        background: var(--ef-paper);
+        border-right: 1px solid var(--ef-rule);
+    }
+    .nav-shell .ef-rail {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: auto;
+        border-right: 0;
+    }
+    .nav-shell .brand {
+        display: flex;
+        flex-direction: column;
+        gap: 0.15rem;
+        color: var(--ef-ink);
+    }
+    .nav-shell .brand-name {
+        font-family: var(--ef-font-ui);
+        font-weight: 800;
+        font-stretch: var(--ef-wider);
+        font-size: 1.25rem;
+        line-height: 1.1;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+    }
+    .nav-shell .links {
+        display: flex;
+        flex-direction: column;
+    }
+    .nav-shell .links a {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 0.1rem;
+        min-height: 44px;
+        margin-inline: 0.5rem; /* the yellow block keeps 8px off the rail edge */
+        padding-inline: 0.75rem;
+        line-height: 1.15;
+    }
+    .nav-shell .links a .zh {
+        font-weight: 700;
+        font-size: 1rem;
+    }
+    .nav-shell .links a[aria-current="page"] .zh,
+    .nav-shell .links a[aria-current="page"] .ef-eyebrow {
+        color: var(--ef-on-signal);
+    }
+
+    .nav-tools {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 0.75rem;
+        border-top: 1px solid var(--ef-rule);
+    }
+    .tool-row {
+        display: flex;
+        gap: 0.5rem;
+        /* two fixed 44px controls: in the 168px rail an even split would make
+           them 64px each and leave the row crowded against the edge */
+        justify-content: space-between;
+    }
+    .tool-row .icon-btn {
+        flex: 0 0 44px;
+        width: 44px;
+        background: var(--ef-chip);
+    }
+    /* field, density and theme are one row of 44px controls */
+    .nav-tools :global(.ef-search) {
+        height: 44px;
+        padding: 0 0.6rem;
+    }
+    .nav-tools :global(.ef-search input) {
+        min-height: 0;
+        height: 42px;
+    }
+    /* the theme control is its own Svelte button; make it share the row */
+    .tool-row :global(.theme-toggle) {
+        flex: 0 0 44px;
+        width: 44px;
+    }
+    /* At 1200+ the header is the 168px rail, so a panel anchored to its right
+       edge with right:20px starts at a negative x and half of it lands off the
+       screen. Open it to the right of the rail instead; below 1200 the header
+       is the full-width bar and right:20px is already in the viewport. */
+    @media (min-width: 1200px) {
+        /* the sticky header is a stacking context of its own: without a
+           z-index the popover stays under the reading column it now overlaps */
+        .nav-shell {
+            z-index: 60;
+        }
+        .nav-shell :global(#display-setting) {
+            left: calc(100% + 8px);
+            right: auto;
+            z-index: 70;
+        }
+    }
+    /* Below 1200 the header is a full-width bar; the panel used to keep its
+       static position, which put its top above the bar and cut the first row.
+       Drop it just under the bar instead. */
+    @media (max-width: 1199px) {
+        .nav-shell :global(#display-setting) {
+            top: calc(100% + 8px);
+            bottom: auto;
+        }
+    }
+    /* Svelte islands are hydration wrappers, not boxes: their content is the
+       flex item. */
+    .nav-tools :global(astro-island) {
+        display: contents;
+    }
+    .icon-btn {
+        flex: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        min-height: 44px;
+        background: var(--ef-chip);
+        color: var(--ef-ink);
+        border-radius: 0;
+        transition: background-color 120ms var(--ef-ease);
+    }
+    .icon-btn:hover {
+        background: var(--ef-rule);
+    }
+    .icon-btn:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+    .menu-btn {
+        display: none;
+    }
+
+    @media (max-width: 1199px) {
+        .nav-shell {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            height: auto;
+            flex-direction: row;
+            align-items: center;
+            border-right: 0;
+            border-bottom: 1px solid var(--ef-rule);
+        }
+        .nav-shell .ef-rail {
+            flex: 1 1 auto;
+            overflow: visible;
+            border-bottom: 0;
+        }
+        .nav-shell .links {
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+        .nav-shell .links a {
+            min-height: 44px;
+            padding: 0.4rem 0.7rem;
+        }
+        .nav-tools {
+            flex-direction: row;
+            align-items: center;
+            padding: 0 0.75rem;
+            border-top: 0;
+        }
+        .icon-btn {
+            width: auto;
+            min-width: 44px;
+            padding-inline: 0.6rem;
+            background: none;
+        }
+    }
+
+    @media (max-width: 767px) {
+        /* Phone: one row — brand, search, density, theme, menu. Links live in
+           the drawer. The theme control is the single 44px cycle button. */
+        .nav-shell .ef-rail {
+            flex: 1 1 0;
+            min-width: 0;
+        }
+        .nav-shell .links {
+            display: none;
+        }
+        .nav-shell .brand {
+            padding: 0.5rem 0 0.5rem 0.9rem;
+            min-width: 0;
+        }
+        .nav-shell .brand-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .nav-tools {
+            flex-direction: row;
+            align-items: center;
+            flex: none;
+            gap: 0;
+            padding: 0 0.35rem;
+            border-top: 0;
+        }
+        .tool-row {
+            gap: 0;
+        }
+        .tool-row .icon-btn {
+            flex: none;
+            width: 46px;
+            background: none;
+        }
+        .tool-row :global(.theme-toggle) {
+            flex: none;
+            width: 46px;
+        }
+        .menu-btn {
+            display: flex;
+        }
+    }
+</style>
 
 <script>
-function switchTheme() {
-    if (localStorage.theme === 'dark') {
-        document.documentElement.classList.remove('dark');
-        localStorage.theme = 'light';
-    } else {
-        document.documentElement.classList.add('dark');
-        localStorage.theme = 'dark';
-    }
+let escBound = false;
+
+function bindEscapeClose() {
+    if (escBound) return;
+    escBound = true;
+    document.addEventListener("keydown", (event: KeyboardEvent) => {
+        if (event.key !== "Escape") return;
+        const panel = document.getElementById("display-setting");
+        if (!panel || panel.classList.contains("float-panel-closed")) return;
+        panel.classList.add("float-panel-closed");
+        const btn = document.getElementById("display-settings-switch");
+        if (btn) (btn as HTMLElement).focus();
+    });
 }
 
 function loadButtonScript() {
-    let switchBtn = document.getElementById("scheme-switch");
-    if (switchBtn) {
-        switchBtn.onclick = function () {
-            switchTheme()
-        };
-    }
-
+    bindEscapeClose();
     let settingBtn = document.getElementById("display-settings-switch");
     if (settingBtn) {
         settingBtn.onclick = function () {

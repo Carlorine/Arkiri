@@ -1,54 +1,24 @@
-import {
-	AUTO_MODE,
-	DARK_MODE,
-	DEFAULT_THEME,
-	LIGHT_MODE,
-} from "@constants/constants.ts";
+import { DARK_MODE, DEFAULT_THEME, LIGHT_MODE } from "@constants/constants.ts";
 import { expressiveCodeConfig } from "@/config";
 import type { LIGHT_DARK_MODE } from "@/types/config";
 
-export function getDefaultHue(): number {
-	const fallback = "250";
-	const configCarrier = document.getElementById("config-carrier");
-	return Number.parseInt(configCarrier?.dataset.hue || fallback, 10);
-}
-
-export function getHue(): number {
-	const stored = localStorage.getItem("hue");
-	return stored ? Number.parseInt(stored, 10) : getDefaultHue();
-}
-
-export function setHue(hue: number): void {
-	localStorage.setItem("hue", String(hue));
-	const r = document.querySelector(":root") as HTMLElement;
-	if (!r) {
-		return;
-	}
-	r.style.setProperty("--hue", String(hue));
-}
-
+/**
+ * Two states only: light and dark. There is no "follow the system" mode —
+ * the first visit is always light, even on a dark desktop.
+ */
 export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
-	switch (theme) {
-		case LIGHT_MODE:
-			document.documentElement.classList.remove("dark");
-			break;
-		case DARK_MODE:
-			document.documentElement.classList.add("dark");
-			break;
-		case AUTO_MODE:
-			if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-				document.documentElement.classList.add("dark");
-			} else {
-				document.documentElement.classList.remove("dark");
-			}
-			break;
-	}
+	document.documentElement.classList.toggle("dark", theme === DARK_MODE);
 
-	// Set the theme for Expressive Code
+	// Expressive Code reads this attribute, not the class
 	document.documentElement.setAttribute(
 		"data-theme",
 		expressiveCodeConfig.theme,
 	);
+
+	const meta = document.getElementById("theme-color-meta");
+	if (meta) {
+		meta.setAttribute("content", theme === DARK_MODE ? "#191919" : "#f4f4f2");
+	}
 }
 
 export function setTheme(theme: LIGHT_DARK_MODE): void {
@@ -56,6 +26,14 @@ export function setTheme(theme: LIGHT_DARK_MODE): void {
 	applyThemeToDocument(theme);
 }
 
+/**
+ * Only an explicit "dark" is dark. Legacy values ("system", "auto", anything
+ * else) are treated as light and normalised on the next write, so old
+ * local storage can never drag a visitor into dark mode.
+ */
 export function getStoredTheme(): LIGHT_DARK_MODE {
-	return (localStorage.getItem("theme") as LIGHT_DARK_MODE) || DEFAULT_THEME;
+	const stored = localStorage.getItem("theme");
+	const theme = stored === DARK_MODE ? DARK_MODE : DEFAULT_THEME;
+	if (stored !== theme) localStorage.setItem("theme", theme);
+	return theme;
 }

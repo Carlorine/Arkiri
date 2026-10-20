@@ -1,6 +1,9 @@
 # build output
 dist/
 
+# evidence screenshots stay on the machine, not in the repo (~19M)
+docs/screenshots/
+
 # generated types
 .astro/
 

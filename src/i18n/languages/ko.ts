@@ -24,15 +24,28 @@ export const ko: Translation = {
 	[Key.postCount]: "게시물",
 	[Key.postsCount]: "게시물",
 
-	[Key.themeColor]: "테마 색상",
-
 	[Key.lightMode]: "밝은 모드",
 	[Key.darkMode]: "어두운 모드",
-	[Key.systemMode]: "시스템 모드",
 
 	[Key.more]: "더 보기",
 
 	[Key.author]: "저자",
 	[Key.publishedAt]: "게시일",
 	[Key.license]: "라이선스",
+
+	[Key.motion]: "움직임",
+	[Key.motionFull]: "전체",
+	[Key.motionCalm]: "차분하게",
+
+	[Key.latestPost]: "최신 글",
+	[Key.previousPost]: "이전 글",
+	[Key.nextPost]: "다음 글",
+
+	[Key.theme]: "테마",
+	[Key.switchTheme]: "테마 전환",
+
+	[Key.noResults]: "일치하는 글이 없습니다.",
+
+	[Key.switchToDark]: "어둡게 전환",
+	[Key.switchToLight]: "밝게 전환",
 };

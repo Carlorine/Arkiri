@@ -1,9 +1,8 @@
 ---
-import { Icon } from "astro-icon/components";
 import { licenseConfig, profileConfig } from "../../config";
 import I18nKey from "../../i18n/i18nKey";
 import { i18n } from "../../i18n/translation";
-import { formatDateToYYYYMMDD } from "../../utils/date-utils";
+import { efDate } from "../../utils/post-index";
 
 interface Props {
 	title: string;
@@ -14,30 +13,51 @@ interface Props {
 
 const { title, pubDate } = Astro.props;
 const className = Astro.props.class;
-const profileConf = profileConfig;
 const licenseConf = licenseConfig;
 const postUrl = decodeURIComponent(Astro.url.toString());
 ---
-<div class={`relative transition overflow-hidden bg-[var(--license-block-bg)] py-5 px-6 ${className}`}>
-    <div class="transition font-bold text-black/75 dark:text-white/75">
-        {title}
-    </div>
-    <a href={postUrl} class="link text-[var(--primary)]">
-        {postUrl}
-    </a>
-    <div class="flex gap-6 mt-2">
-        <div>
-            <div class="transition text-black/30 dark:text-white/30 text-sm">{i18n(I18nKey.author)}</div>
-            <div class="transition text-black/75 dark:text-white/75 line-clamp-2">{profileConf.name}</div>
-        </div>
-        <div>
-            <div class="transition text-black/30 dark:text-white/30 text-sm">{i18n(I18nKey.publishedAt)}</div>
-            <div class="transition text-black/75 dark:text-white/75 line-clamp-2">{formatDateToYYYYMMDD(pubDate)}</div>
-        </div>
-        <div>
-            <div class="transition text-black/30 dark:text-white/30 text-sm">{i18n(I18nKey.license)}</div>
-            <a href={licenseConf.url} target="_blank" class="link text-[var(--primary)] line-clamp-2">{licenseConf.name}</a>
-        </div>
-    </div>
-    <Icon name="fa6-brands:creative-commons" class="transition text-[15rem] absolute pointer-events-none right-6 top-1/2 -translate-y-1/2 text-black/5 dark:text-white/5"></Icon>
-</div>
+<section class:list={["license", className]} aria-label={i18n(I18nKey.license)}>
+    <p class="ef-eyebrow slash license-head">{i18n(I18nKey.license)}</p>
+    <p class="license-title">{title}</p>
+    <a class="license-url ef-field" href={postUrl}>{postUrl}</a>
+    <ul class="ef-facts ef-field license-facts">
+        <li><span>{i18n(I18nKey.author)}</span> {profileConfig.name}</li>
+        <li><span>{i18n(I18nKey.publishedAt)}</span> <time datetime={pubDate.toISOString()}>{efDate(pubDate)}</time></li>
+        <li><a href={licenseConf.url} target="_blank" rel="noopener">{licenseConf.name}</a></li>
+    </ul>
+</section>
+
+<style>
+    .license {
+        padding: 1rem 0 0;
+        border-top: 1px solid var(--ef-rule);
+    }
+    .license-head {
+        margin: 0 0 0.5rem;
+    }
+    .license-title {
+        margin: 0 0 0.25rem;
+        font-weight: 700;
+    }
+    .license-url {
+        display: block;
+        margin-bottom: 0.6rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .license-url:hover {
+        color: var(--ef-ink);
+        text-decoration: underline;
+    }
+    .license-facts {
+        margin: 0;
+    }
+    .license-facts span {
+        color: var(--ef-ink-2);
+    }
+    .license-facts a:hover {
+        color: var(--ef-ink);
+        text-decoration: underline;
+    }
+</style>

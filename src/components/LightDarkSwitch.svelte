@@ -1,5 +1,5 @@
 <script lang="ts">
-import { AUTO_MODE, DARK_MODE, LIGHT_MODE } from "@constants/constants.ts";
+import { DARK_MODE, LIGHT_MODE } from "@constants/constants.ts";
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import Icon from "@iconify/svelte";
@@ -11,89 +11,76 @@ import {
 import { onMount } from "svelte";
 import type { LIGHT_DARK_MODE } from "@/types/config.ts";
 
-const seq: LIGHT_DARK_MODE[] = [LIGHT_MODE, DARK_MODE, AUTO_MODE];
-let mode: LIGHT_DARK_MODE = $state(AUTO_MODE);
+/*
+ * Theme: one button, two states.
+ *
+ * There is no "follow the system" option: the first visit is always light,
+ * even on a dark desktop, and only an explicit stored "dark" starts dark.
+ * A single 44px button keeps the rail (200px) from being overrun by a
+ * three-column control, and it works the same on the phone bar.
+ *
+ * Label follows the state: "Switch to dark" while light, and the other way
+ * round; aria-pressed carries the state for assistive tech.
+ */
+interface Props {
+	/** extra classes for the button, for layout in the rail / phone bar */
+	class?: string;
+}
+let { class: className = "" }: Props = $props();
+
+let mode: LIGHT_DARK_MODE = $state(LIGHT_MODE);
 
 onMount(() => {
 	mode = getStoredTheme();
-	const darkModePreference = window.matchMedia("(prefers-color-scheme: dark)");
-	const changeThemeWhenSchemeChanged: Parameters<
-		typeof darkModePreference.addEventListener<"change">
-	>[1] = (_e) => {
-		applyThemeToDocument(mode);
-	};
-	darkModePreference.addEventListener("change", changeThemeWhenSchemeChanged);
-	return () => {
-		darkModePreference.removeEventListener(
-			"change",
-			changeThemeWhenSchemeChanged,
-		);
-	};
 });
 
-function switchScheme(newMode: LIGHT_DARK_MODE) {
-	mode = newMode;
-	setTheme(newMode);
-}
-
-function toggleScheme() {
-	let i = 0;
-	for (; i < seq.length; i++) {
-		if (seq[i] === mode) {
-			break;
-		}
-	}
-	switchScheme(seq[(i + 1) % seq.length]);
-}
-
-function showPanel() {
-	const panel = document.querySelector("#light-dark-panel");
-	panel.classList.remove("float-panel-closed");
-}
-
-function hidePanel() {
-	const panel = document.querySelector("#light-dark-panel");
-	panel.classList.add("float-panel-closed");
+function toggle() {
+	const next = mode === DARK_MODE ? LIGHT_MODE : DARK_MODE;
+	mode = next;
+	setTheme(next);
+	applyThemeToDocument(next);
 }
 </script>
 
-<!-- z-50 make the panel higher than other float panels -->
-<div class="relative z-50" role="menu" tabindex="-1" onmouseleave={hidePanel}>
-    <button aria-label="Light/Dark Mode" role="menuitem" class="relative btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="scheme-switch" onclick={toggleScheme} onmouseenter={showPanel}>
-        <div class="absolute" class:opacity-0={mode !== LIGHT_MODE}>
-            <Icon icon="material-symbols:wb-sunny-outline-rounded" class="text-[1.25rem]"></Icon>
-        </div>
-        <div class="absolute" class:opacity-0={mode !== DARK_MODE}>
-            <Icon icon="material-symbols:dark-mode-outline-rounded" class="text-[1.25rem]"></Icon>
-        </div>
-        <div class="absolute" class:opacity-0={mode !== AUTO_MODE}>
-            <Icon icon="material-symbols:radio-button-partial-outline" class="text-[1.25rem]"></Icon>
-        </div>
-    </button>
+<button
+    type="button"
+    class="theme-toggle {className}"
+    onclick={toggle}
+    aria-pressed={mode === DARK_MODE}
+    aria-label={i18n(mode === DARK_MODE ? I18nKey.switchToLight : I18nKey.switchToDark)}
+    title={i18n(mode === DARK_MODE ? I18nKey.switchToLight : I18nKey.switchToDark)}
+>
+    <Icon
+        icon={mode === DARK_MODE
+            ? "material-symbols:dark-mode-outline-rounded"
+            : "material-symbols:wb-sunny-outline-rounded"}
+        class="text-[1.25rem]"
+    />
+</button>
 
-    <div id="light-dark-panel" class="hidden lg:block absolute transition float-panel-closed top-11 -right-2 pt-5" >
-        <div class="card-base float-panel p-2">
-            <button class="flex transition whitespace-nowrap items-center !justify-start w-full btn-plain scale-animation rounded-lg h-9 px-3 font-medium active:scale-95 mb-0.5"
-                    class:current-theme-btn={mode === LIGHT_MODE}
-                    onclick={() => switchScheme(LIGHT_MODE)}
-            >
-                <Icon icon="material-symbols:wb-sunny-outline-rounded" class="text-[1.25rem] mr-3"></Icon>
-                {i18n(I18nKey.lightMode)}
-            </button>
-            <button class="flex transition whitespace-nowrap items-center !justify-start w-full btn-plain scale-animation rounded-lg h-9 px-3 font-medium active:scale-95 mb-0.5"
-                    class:current-theme-btn={mode === DARK_MODE}
-                    onclick={() => switchScheme(DARK_MODE)}
-            >
-                <Icon icon="material-symbols:dark-mode-outline-rounded" class="text-[1.25rem] mr-3"></Icon>
-                {i18n(I18nKey.darkMode)}
-            </button>
-            <button class="flex transition whitespace-nowrap items-center !justify-start w-full btn-plain scale-animation rounded-lg h-9 px-3 font-medium active:scale-95"
-                    class:current-theme-btn={mode === AUTO_MODE}
-                    onclick={() => switchScheme(AUTO_MODE)}
-            >
-                <Icon icon="material-symbols:radio-button-partial-outline" class="text-[1.25rem] mr-3"></Icon>
-                {i18n(I18nKey.systemMode)}
-            </button>
-        </div>
-    </div>
-</div>
+<style>
+    .theme-toggle {
+        display: flex;
+        flex: none;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        min-height: 44px;
+        background: var(--ef-chip);
+        color: var(--ef-ink);
+        border-radius: 0;
+        transition: background-color 120ms var(--ef-ease);
+    }
+    .theme-toggle:hover {
+        background: var(--ef-rule);
+    }
+    .theme-toggle:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+    @media (max-width: 767px) {
+        .theme-toggle {
+            background: none;
+        }
+    }
+</style>

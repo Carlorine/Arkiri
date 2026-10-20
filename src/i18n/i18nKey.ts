@@ -21,11 +21,20 @@ enum I18nKey {
 	postCount = "postCount",
 	postsCount = "postsCount",
 
-	themeColor = "themeColor",
+	motion = "motion",
+	motionFull = "motionFull",
+	motionCalm = "motionCalm",
+	latestPost = "latestPost",
+	previousPost = "previousPost",
+	nextPost = "nextPost",
+	theme = "theme",
+	switchTheme = "switchTheme",
+	noResults = "noResults",
+	switchToDark = "switchToDark",
+	switchToLight = "switchToLight",
 
 	lightMode = "lightMode",
 	darkMode = "darkMode",
-	systemMode = "systemMode",
 
 	more = "more",
 

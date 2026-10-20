@@ -1,72 +1,175 @@
 @tailwind components;
 
+/*
+ * Shared component classes from the fuwari theme, re-skinned onto the kit.
+ *
+ * Rules of this file:
+ *   - no rounded corners, no shadows, no gradients, no glow (kit fixed rules)
+ *   - a surface is separated by a 1px hairline, not by a box with a shadow
+ *   - colours come from --ef-* only (see src/styles/endfield.css)
+ *   - "pressable" shapes get their cut corner from the ef- classes; these
+ *     generic helpers stay rectangular so they can sit inside an ef- block
+ */
 @layer components {
     .card-base {
-        @apply rounded-[var(--radius-large)] overflow-hidden bg-[var(--card-bg)] transition;
-    }
-    h1, h2, h3, h4, h5, h6, p, a, span, li, ul, ol, blockquote, code, pre, table, th, td, strong {
-        @apply transition;
+        position: relative;
+        overflow: hidden;
+        background: var(--ef-panel);
+        border-radius: 0;
     }
     .card-shadow {
-        @apply drop-shadow-[0_2px_4px_rgba(0,0,0,0.005)]
+        filter: none;
     }
+
     .expand-animation {
-        @apply relative before:ease-out before:transition active:bg-none hover:before:bg-[var(--btn-plain-bg-hover)] active:before:bg-[var(--btn-plain-bg-active)] z-0
-        before:absolute before:rounded-[inherit] before:inset-0 before:scale-[0.85] hover:before:scale-100 before:-z-10
+        position: relative;
+        z-index: 0;
     }
+    .expand-animation::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: -10;
+        background: transparent;
+        transition: background-color 120ms var(--ef-ease);
+    }
+    .expand-animation:hover::before {
+        background: var(--ef-chip);
+    }
+    .expand-animation:active::before {
+        background: var(--ef-rule);
+    }
+
     .link {
-        @apply transition rounded-md p-1 -m-1 expand-animation;
+        position: relative;
+        padding: 0.125rem 0.25rem;
+        margin: -0.125rem -0.25rem;
+        transition: color 120ms var(--ef-ease);
     }
     .link-lg {
-        @apply transition rounded-md p-1.5 -m-1.5 expand-animation;
+        position: relative;
+        padding: 0.25rem 0.375rem;
+        margin: -0.25rem -0.375rem;
+        transition: color 120ms var(--ef-ease);
     }
+
     .float-panel {
-        @apply top-[5.25rem] rounded-[var(--radius-large)] overflow-hidden bg-[var(--float-panel-bg)] transition shadow-xl dark:shadow-none
+        background: var(--ef-panel);
+        border: 1px solid var(--ef-rule);
+        border-radius: 0;
+        box-shadow: none;
+        visibility: visible;
+        transition:
+            opacity 160ms var(--ef-mech),
+            transform 160ms var(--ef-mech),
+            visibility 0s;
     }
+    /* A closed panel must leave the tab order and the accessibility tree, not
+       just the screen: opacity alone still lets Tab walk into it. */
     .float-panel-closed {
-        @apply -translate-y-1 opacity-0 pointer-events-none
+        opacity: 0;
+        transform: translateY(-4px);
+        pointer-events: none;
+        visibility: hidden;
+        transition:
+            opacity 160ms var(--ef-mech),
+            transform 160ms var(--ef-mech),
+            visibility 0s linear 160ms;
     }
     .search-panel mark {
-        @apply bg-transparent text-[var(--primary)]
+        background: var(--ef-signal);
+        color: var(--ef-on-signal);
     }
 
     .btn-card {
-        @apply transition flex items-center justify-center bg-[var(--card-bg)] hover:bg-[var(--btn-card-bg-hover)]
-        active:bg-[var(--btn-card-bg-active)]
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--ef-chip);
+        color: var(--ef-ink);
+        border-radius: 0;
+        transition: background-color 120ms var(--ef-ease);
+    }
+    .btn-card:hover {
+        background: var(--ef-rule);
+    }
+    .btn-card:active {
+        background: var(--ef-rule);
     }
     .btn-card.disabled {
-        @apply pointer-events-none text-black/10 dark:text-white/10
+        pointer-events: none;
+        opacity: 0.35;
     }
+
     .btn-plain {
-        @apply transition relative flex items-center justify-center bg-none
-        text-black/75 hover:text-[var(--primary)] dark:text-white/75 dark:hover:text-[var(--primary)];
-        &:not(.scale-animation) {
-            @apply hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)]
-        }
-        &.scale-animation {
-            @apply expand-animation;
-            &.current-theme-btn {
-                @apply before:scale-100 before:opacity-100 before:bg-[var(--btn-plain-bg-hover)] text-[var(--primary)]
-            }
-        }
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        color: var(--ef-ink);
+        border-radius: 0;
+        transition:
+            color 120ms var(--ef-ease),
+            background-color 120ms var(--ef-ease);
     }
+    .btn-plain:hover {
+        background: var(--ef-chip);
+    }
+    .btn-plain:active {
+        background: var(--ef-rule);
+    }
+    .btn-plain.scale-animation {
+        position: relative;
+        z-index: 0;
+    }
+    .btn-plain.scale-animation.current-theme-btn {
+        background: var(--ef-chip);
+        font-weight: 700;
+    }
+
     .btn-regular {
-        @apply transition flex items-center justify-center bg-[var(--btn-regular-bg)] hover:bg-[var(--btn-regular-bg-hover)] active:bg-[var(--btn-regular-bg-active)]
-        text-[var(--btn-content)] dark:text-white/75
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--ef-chip);
+        color: var(--ef-ink);
+        border-radius: 0;
+        transition: background-color 120ms var(--ef-ease);
+    }
+    .btn-regular:hover {
+        background: var(--ef-rule);
+    }
+    .btn-regular:active {
+        background: var(--ef-rule);
     }
 
     .link-underline {
-        @apply transition underline decoration-2 decoration-dashed decoration-[var(--link-underline)]
-        hover:decoration-[var(--link-hover)] active:decoration-[var(--link-active)] underline-offset-[0.25rem]
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        text-decoration-style: solid;
+        text-decoration-color: var(--ef-ink-2);
+        text-underline-offset: 0.25rem;
+        transition: text-decoration-color 120ms var(--ef-ease);
+    }
+    .link-underline:hover {
+        text-decoration-color: var(--ef-ink);
     }
 
     .toc-hide,
     .toc-not-ready {
-        @apply opacity-0 pointer-events-none
+        opacity: 0;
+        pointer-events: none;
     }
 
     #toc-inner-wrapper {
-        mask-image: linear-gradient(to bottom, transparent 0%, black 2rem, black calc(100% - 2rem), transparent 100%);
+        mask-image: linear-gradient(
+            to bottom,
+            transparent 0%,
+            black 2rem,
+            black calc(100% - 2rem),
+            transparent 100%
+        );
     }
 
     .hide-scrollbar {
@@ -78,48 +181,79 @@
     }
 
     .text-90 {
-        @apply text-black/90 dark:text-white/90
+        color: var(--ef-ink);
     }
     .text-75 {
-        @apply text-black/75 dark:text-white/75
+        color: var(--ef-ink);
     }
     .text-50 {
-        @apply text-black/50 dark:text-white/50
+        color: var(--ef-ink-2);
     }
     .text-30 {
-        @apply text-black/30 dark:text-white/30
+        color: var(--ef-ink-2);
     }
     .text-25 {
-        @apply text-black/25 dark:text-white/25
+        color: var(--ef-rule);
     }
 
     .meta-icon {
-        @apply w-8 h-8 transition rounded-md flex items-center justify-center bg-[var(--btn-regular-bg)]
-        text-[var(--btn-content)] mr-2
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.5rem;
+        height: 1.5rem;
+        margin-right: 0.5rem;
+        background: none;
+        color: var(--ef-ink-2);
+        border-radius: 0;
     }
-    .with-divider {
-        @apply before:content-['/'] before:ml-1.5 before:mr-1.5 before:text-[var(--meta-divider)] before:text-sm
-        before:font-medium before:first-of-type:hidden before:transition
+
+    .with-divider::before {
+        content: "/";
+        margin-left: 0.375rem;
+        margin-right: 0.375rem;
+        color: var(--ef-ink-2);
+        font-family: var(--ef-font-ui);
+        font-stretch: var(--ef-wide);
+        font-size: 0.8125rem;
+    }
+    .with-divider:first-of-type::before {
+        content: none;
     }
 
     .btn-regular-dark {
-        @apply flex items-center justify-center
-        bg-[oklch(0.45_0.01_var(--hue))] hover:bg-[oklch(0.50_0.01_var(--hue))] active:bg-[oklch(0.55_0.01_var(--hue))]
-        dark:bg-[oklch(0.30_0.02_var(--hue))] dark:hover:bg-[oklch(0.35_0.03_var(--hue))] dark:active:bg-[oklch(0.40_0.03_var(--hue))]
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #2e2e2e;
+        color: #ededed;
+        border-radius: 0;
+        transition: background-color 120ms var(--ef-ease);
+    }
+    .btn-regular-dark:hover {
+        background: #3a3a3a;
+    }
+    .btn-regular-dark:active {
+        background: #4a4a4a;
     }
     .btn-regular-dark.success {
-        @apply bg-[oklch(0.75_0.14_var(--hue))] dark:bg-[oklch(0.75_0.14_var(--hue))]
+        background: var(--ef-signal);
+        color: var(--ef-on-signal);
     }
 }
 
-.custom-md img, #post-cover img {
-    @apply cursor-zoom-in
+/* Reading content: the only place where an image is clickable to zoom. */
+.custom-md img,
+#post-cover img {
+    cursor: zoom-in;
 }
 
 ::selection {
-    background-color: var(--selection-bg)
+    background: var(--ef-signal);
+    color: var(--ef-on-signal);
 }
 
+/* The archive timeline's centre rule: a hairline, not a dashed decoration. */
 .dash-line {
     position: relative;
 }
@@ -129,10 +263,9 @@
     position: absolute;
     width: 10%;
     height: 100%;
-    left: calc(50% - 1px);
-    border-left: 2px dashed var(--line-color);
+    left: calc(50% - 0.5px);
+    border-left: 1px solid var(--ef-rule);
     pointer-events: none;
-    transition: all 0.3s;
     transform: translateY(-50%);
 }
 
@@ -141,12 +274,15 @@
 }
 
 .custom-md spoiler {
-  @apply bg-[var(--codeblock-bg)] hover:bg-transparent px-1 py-0.5 overflow-hidden rounded-md transition-all duration-150;
-
-  &:not(:hover) {
-    color: var(--codeblock-bg);
-    * {
-        color: var(--codeblock-bg);
-    }
-  }
+    background: var(--ef-ink);
+    color: transparent;
+    padding: 0 0.125rem;
+    transition: background-color 150ms var(--ef-ease);
+}
+.custom-md spoiler:hover {
+    background: var(--ef-chip);
+    color: var(--ef-ink);
+}
+.custom-md spoiler * {
+    color: inherit;
 }
