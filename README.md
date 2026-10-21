@@ -10,9 +10,10 @@
 
 ## 字体
 
-- **界面西文**：自托管的 [Saira](https://fonts.google.com/specimen/Saira) 可变字体（`public/fonts/saira/`，OFL），按 `unicode-range` 分片，只在需要时下载。
+- **界面西文**：通过 `@fontsource-variable/outfit` 自托管的 [Outfit](https://fontsource.org/fonts/outfit) 可变字体（OFL），随项目打包，按 `unicode-range` 分片加载。
 - **正文（中英文）**：HarmonyOS Sans SC Regular + Bold，来自 Huawei Device Co., Ltd.，按 `unicode-range` 切成 woff2 分片放在 `public/fonts/harmonyos-sc/`。授权文件见同目录 `LICENSE.txt`；页脚注明 `Typeface: HarmonyOS Sans (Huawei)`。字体本身未做字形修改，只做了网页分发所需的分片与格式转换。
-- 中文界面小标与标题按设计回落到系统黑体（PingFang SC 等），不额外下载中文字体。
+- 中文界面与标题统一使用 HarmonyOS Sans SC；西文站名与标题使用 Outfit，通过字号与字重建立层级。
+- 代码统一使用 JetBrains Mono；中文注释回落到 HarmonyOS Sans SC。
 
 ## 功能
 
@@ -44,9 +45,9 @@ src/
   layouts/           Layout.astro（全局外壳）与 MainGridLayout.astro（三栏栅格）
   pages/             路由：首页分页、文章、归档、关于、RSS、sitemap
   styles/            endfield.css（套件）、endfield-project.css（项目覆盖）、
-                     fonts.css / fonts-harmonyos.css、markdown 与过渡样式
+                     fonts-harmonyos.css、markdown 与过渡样式
 public/
-  fonts/             Saira 与 HarmonyOS Sans 的分片字体
+  fonts/             HarmonyOS Sans 分片字体及历史 Saira 资源（不再加载）
   contours/          背景等高线 SVG
 ```
 
@@ -54,5 +55,5 @@ public/
 
 - 模板：[fuwari](https://github.com/saicaca/fuwari)（MIT），其版权与许可声明保留在仓库的 `LICENSE` 中。
 - 界面规范：[endfield-ui skill](https://github.com/hhikr/endfield-ui-skill)。
-- 字体：Saira（OFL）、HarmonyOS Sans（Huawei Device Co., Ltd.，见 `public/fonts/harmonyos-sc/LICENSE.txt`）。
+- 字体：Outfit（OFL，许可证随 Fontsource 包提供）、HarmonyOS Sans（Huawei Device Co., Ltd.，见 `public/fonts/harmonyos-sc/LICENSE.txt`）。
 - 本站内容与代码：见仓库 `LICENSE`。

@@ -161,10 +161,11 @@ const nextNumber = entry.data.nextSlug ? numbers.get(entry.data.nextSlug) ?? "" 
     .post-title {
         margin: 0 0 0.75rem;
         font-family: var(--ef-font-ui);
-        font-size: clamp(1.9rem, 4vw, var(--ef-t-h1));
+        font-size: var(--ef-t-h1);
         font-weight: 700;
-        line-height: 1.25;
+        line-height: 1.15;
         letter-spacing: -0.01em;
+        overflow-wrap: anywhere;
     }
     .post-lede {
         margin: 1.25rem 0 0;

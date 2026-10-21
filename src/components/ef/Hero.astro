@@ -101,7 +101,8 @@ const postPair = (n: number) => uiPair(n === 1 ? I18nKey.postCount : I18nKey.pos
         margin-bottom: 1.25rem;
     }
     .hero .ef-wordmark {
-        --ef-wordmark: clamp(2.5rem, 5vw, 6rem);
+        --ef-wordmark: clamp(3.2rem, 7vw, 7rem);
+        font-weight: 700;
         margin: 0 0 1.25rem;
     }
     .hero-marker {
@@ -137,9 +138,11 @@ const postPair = (n: number) => uiPair(n === 1 ? I18nKey.postCount : I18nKey.pos
         min-width: 0;
     }
     .latest-title {
-        font-size: 1.1rem;
+        font-family: var(--ef-font-ui);
+        font-size: clamp(1.25rem, 2.5vw, 1.5rem);
         font-weight: 700;
         line-height: 1.4;
+        overflow-wrap: anywhere;
     }
     .latest:hover .latest-title {
         text-decoration: underline;

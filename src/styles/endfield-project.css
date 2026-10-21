@@ -3,17 +3,48 @@
    --------------------------------------------------------------------------
    Only two kinds of rules belong here:
      1. token overrides (which font, which alias) — never new colours
-     2. layout (grid, measure, sticky) — never new component looks
+     2. layout and typography (grid, measure, hierarchy)
    Components come from src/styles/endfield.css (ef- classes).
    ========================================================================== */
 
 /* ---------- fonts ---------- */
-/* Latin/figures: the self-hosted Saira (src/styles/fonts.css).
-   Chinese: the system heiti — no webfont, and never font-stretch'd. */:root {
-  --ef-font-ui: 'Saira', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
-    'Noto Sans SC', 'Source Han Sans SC', sans-serif;
+/* Outfit carries Latin UI and titles; HarmonyOS unifies Chinese throughout.
+   Code uses JetBrains Mono, with HarmonyOS for Chinese comments. */
+:root {
+  --ef-font-ui: 'Outfit Variable', 'HarmonyOS Sans SC', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', 'Noto Sans SC', 'Source Han Sans SC', sans-serif;
   --ef-font-text: 'HarmonyOS Sans SC', 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', 'Noto Sans SC', 'Source Han Sans SC', sans-serif;
+  --ef-font-mono: 'JetBrains Mono Variable', 'HarmonyOS Sans SC',
+    ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  --ef-t-h1: clamp(2.4rem, 5vw, 3.2rem);
+  --ef-t-title: clamp(1.5rem, 3vw, 2rem);
+  --ef-t-h2: 1.6rem;
+  /* Outfit has a weight axis only; keep the kit's width tokens neutral. */
+  --ef-wide: 100%;
+  --ef-wider: 100%;
+}
+
+/* Titles use the display face even when they also carry .ef-read. Keep
+   Chinese at the supplied 700 weight; size and weight provide emphasis. */
+.ef .ef-record .name {
+  font-family: var(--ef-font-ui);
+  font-size: clamp(1.2rem, 2.2vw, 1.4rem);
+  font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.ef .custom-md :is(h1, h2, h3, h4, h5, h6) {
+  overflow-wrap: anywhere;
+}
+
+.ef .custom-md h3 {
+  font-size: 1.3rem;
+}
+
+.ef .custom-md :is(h4, h5, h6) {
+  font-size: 1.125rem;
 }
 
 /* A zero-height marker at the top of the document; the back-to-top button
