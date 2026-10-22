@@ -166,3 +166,13 @@
 @media (max-width: 1099px) {
   :root { --site-header-height: 3.75rem; }
 }
+
+/* Keep interface labels in their authored case; site wordmarks stay uppercase. */
+.ef-eyebrow,
+.ef-cmdbar nav a small,
+.ef-head h1 small,
+.ef-dial .en,
+.ef-tabbar small,
+.ef-table th {
+  text-transform: none;
+}

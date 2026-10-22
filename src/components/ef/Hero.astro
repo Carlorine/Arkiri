@@ -27,7 +27,7 @@ const postPair = (n: number) => uiPair(n === 1 ? I18nKey.postCount : I18nKey.pos
 
 <section class="hero">
     <div class="hero-copy">
-        <p class="ef-eyebrow slash">{siteConfig.title}</p>
+        <p class="ef-eyebrow slash hero-site-name">{siteConfig.title}</p>
         <ul class="ef-facts ef-field hero-facts">
             <li>{total} <UiText en={postPair(total).en} zh={postPair(total).zh} /></li>
             <li>{totalWords.toLocaleString("en-US")} <UiText en={wordPair(totalWords).en} zh={wordPair(totalWords).zh} /></li>
@@ -60,6 +60,9 @@ const postPair = (n: number) => uiPair(n === 1 ? I18nKey.postCount : I18nKey.pos
     .hero {
         display: block;
         margin-bottom: 2rem;
+    }
+    .hero-site-name {
+        text-transform: uppercase;
     }
     .hero-facts {
         margin-bottom: 1.25rem;
