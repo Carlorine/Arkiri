@@ -6,7 +6,7 @@ interface Props {
 const { class: className, englishOnly = false } = Astro.props;
 ---
 <button type="button" class:list={["icon-btn", "lang-toggle", className]} data-english-only={englishOnly || undefined} aria-pressed="false" aria-label="Switch to Chinese">
-    <span data-l="en" class="lang-mark">EN</span><span data-l="zh" class="lang-mark">{englishOnly ? "ZH" : "中"}</span>
+    <span data-l="en" class="lang-mark">{englishOnly ? "En" : "EN"}</span><span data-l="zh" class="lang-mark">{englishOnly ? "Zh" : "中"}</span>
 </button>
 
 <script>
