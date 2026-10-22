@@ -8,6 +8,12 @@
    ========================================================================== */
 
 /* ---------- fonts ---------- */
+
+/* Transparent display lettering keeps its fill effects without an outline. */
+.ef-wordmark .hollow,
+.ef-hollow-no {
+  -webkit-text-stroke: 0;
+}
 /* Outfit carries Latin UI and titles; HarmonyOS unifies Chinese throughout.
    Code uses JetBrains Mono, with HarmonyOS for Chinese comments. */
 :root {

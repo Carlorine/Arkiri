@@ -48,7 +48,6 @@ const latest = recent[0];
             total={allPosts.length}
             totalWords={totalWords}
             latest={latest}
-            recent={recent}
         />
     )}
 
@@ -61,8 +60,6 @@ const latest = recent[0];
         </header>
     )}
 
-    <h2 class="ef-bar-title list-title"><UiText k={I18nKey.recentPosts} /></h2>
-
     <PostPage page={page} numbers={numbers}></PostPage>
 
     {page.lastPage > 1 && (
@@ -73,9 +70,6 @@ const latest = recent[0];
 <style>
     .list-head {
         margin-bottom: 1.5rem;
-    }
-    .list-title {
-        margin-top: 1.5rem;
     }
     .ef-pagination {
         margin-top: 2rem;

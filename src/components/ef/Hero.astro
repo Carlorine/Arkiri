@@ -1,9 +1,8 @@
 ---
 import I18nKey from "../../i18n/i18nKey";
-import { i18n } from "../../i18n/translation";
 import { profileConfig, siteConfig } from "../../config";
 import { url } from "../../utils/url-utils";
-import { uiAttrs, uiPair } from "../../utils/ui-i18n";
+import { uiPair } from "../../utils/ui-i18n";
 import UiText from "../common/UiText.astro";
 
 interface Recent {
@@ -17,19 +16,12 @@ interface Props {
 	total: number;
 	totalWords: number;
 	latest: Recent & { words: number; minutes: number };
-	recent: Recent[];
 }
 
-const { total, totalWords, latest, recent } = Astro.props;
-const tickerItems = recent.slice(0, 6);
-const no3 = latest.no.replace("No.", "");
+const { total, totalWords, latest } = Astro.props;
 
 // plural forms: the number is real, so the unit has to agree with it
-const word = (n: number) => i18n(n === 1 ? I18nKey.wordCount : I18nKey.wordsCount);
 const wordPair = (n: number) => uiPair(n === 1 ? I18nKey.wordCount : I18nKey.wordsCount);
-const minute = (n: number) => i18n(n === 1 ? I18nKey.minuteCount : I18nKey.minutesCount);
-const minutePair = (n: number) => uiPair(n === 1 ? I18nKey.minuteCount : I18nKey.minutesCount);
-const post = (n: number) => i18n(n === 1 ? I18nKey.postCount : I18nKey.postsCount);
 const postPair = (n: number) => uiPair(n === 1 ? I18nKey.postCount : I18nKey.postsCount);
 ---
 
@@ -44,14 +36,11 @@ const postPair = (n: number) => uiPair(n === 1 ? I18nKey.postCount : I18nKey.pos
 
         <h1 class="ef-wordmark">
             <span class="solid ef-in-drive">{siteConfig.title}</span>
-            {siteConfig.subtitle && (
-                <span class="hollow ef-in-drive" aria-hidden="true">{siteConfig.subtitle}</span>
-            )}
         </h1>
 
         {profileConfig.bio && (
             <p class="hero-marker">
-                <span class="ef-marker ef-in-stroke">{profileConfig.bio}</span>
+                <span class="ef-marker">{profileConfig.bio}</span>
             </p>
         )}
 
@@ -64,38 +53,13 @@ const postPair = (n: number) => uiPair(n === 1 ? I18nKey.postCount : I18nKey.pos
         </p>
     </div>
 
-    <a class="latest" href={latest.url} aria-label={latest.title}>
-        <span class="ef-hollow-no" aria-hidden="true">{no3}</span>
-        <span class="latest-body">
-            <span class="ef-field">{latest.date} / {latest.words} <UiText en={wordPair(latest.words).en} zh={wordPair(latest.words).zh} /> / {latest.minutes} <UiText en={minutePair(latest.minutes).en} zh={minutePair(latest.minutes).zh} /></span>
-            <span class="latest-title ef-read">{latest.title}</span>
-        </span>
-    </a>
-
-    {tickerItems.length > 0 && (
-        <div class="ef-ticker" aria-label={i18n(I18nKey.recentPosts)} {...uiAttrs(I18nKey.recentPosts, "aria-label")}>
-            <div class="track">
-                <ul>
-                    {tickerItems.map((item) => (
-                        <li><a href={item.url}><b>{item.no}</b>{item.title}</a></li>
-                    ))}
-                </ul>
-                <ul aria-hidden="true">
-                    {tickerItems.map((item) => (
-                        <li><a href={item.url} tabindex="-1"><b>{item.no}</b>{item.title}</a></li>
-                    ))}
-                </ul>
-            </div>
-        </div>
-    )}
 </section>
 
 <style>
-    /* Showcase: the wordmark is the main visual. The column is one reading
-       measure wide, so the latest-record block sits under the copy as a
-       horizontal strip instead of competing for width. */
+    /* Separate the introduction from the article list. */
     .hero {
         display: block;
+        margin-bottom: 2rem;
     }
     .hero-facts {
         margin-bottom: 1.25rem;
@@ -110,6 +74,10 @@ const postPair = (n: number) => uiPair(n === 1 ? I18nKey.postCount : I18nKey.pos
         margin: 0 0 1rem;
         font-size: clamp(1.05rem, 1.8vw, 1.35rem);
     }
+    .hero-marker .ef-marker {
+        background: none;
+        color: var(--ef-ink);
+    }
     .hero-actions {
         display: flex;
         flex-wrap: wrap;
@@ -117,54 +85,4 @@ const postPair = (n: number) => uiPair(n === 1 ? I18nKey.postCount : I18nKey.pos
         margin-top: 1.25rem;
     }
 
-    .latest {
-        display: flex;
-        align-items: center;
-        gap: 1.25rem;
-        margin-top: 2rem;
-        padding: 0.9rem 0.25rem;
-        border-top: 1px solid var(--ef-rule);
-        border-bottom: 1px solid var(--ef-rule);
-        color: var(--ef-ink);
-    }
-    .latest .ef-hollow-no {
-        flex: none;
-        font-size: clamp(2.25rem, 4.5vw, 3.5rem);
-    }
-    .latest-body {
-        display: flex;
-        flex-direction: column;
-        gap: 0.3rem;
-        min-width: 0;
-    }
-    .latest-title {
-        font-family: var(--ef-font-ui);
-        font-size: clamp(1.25rem, 2.5vw, 1.5rem);
-        font-weight: 700;
-        line-height: 1.4;
-        overflow-wrap: anywhere;
-    }
-    .latest:hover .latest-title {
-        text-decoration: underline;
-        text-decoration-thickness: 2px;
-        text-underline-offset: 0.2em;
-    }
-
-    .hero .ef-ticker {
-        margin: 2.25rem 0 0;
-    }
-    /* hold the strip for 1.5s so the opening frame shows No.006 whole; the
-       marquee itself starts from translateX(0) */
-    .hero .ef-ticker .track {
-        animation-delay: 1.5s;
-    }
-
-    @media (max-width: 719px) {
-        .latest {
-            gap: 0.75rem;
-        }
-        .latest .ef-hollow-no {
-            font-size: 2.25rem;
-        }
-    }
 </style>
