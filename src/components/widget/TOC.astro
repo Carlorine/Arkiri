@@ -119,7 +119,8 @@ class TableOfContents extends HTMLElement {
         // Sections can contain other sections, so their intersection does not
         // identify the heading being read. Track the last heading above the
         // reading line instead; keep the first one selected before the prose.
-        const readingLine = 2 * Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+        const readingLine = (document.querySelector(".nav-shell")?.getBoundingClientRect().bottom ?? 0)
+            + 2 * Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
         let current = this.headings.findIndex((heading) => heading !== null);
         this.headings.forEach((heading, index) => {
             if (heading && heading.getBoundingClientRect().top <= readingLine) current = index;

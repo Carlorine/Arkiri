@@ -54,7 +54,7 @@ const nextNumber = entry.data.nextSlug ? numbers.get(entry.data.nextSlug) ?? "" 
 <MainGridLayout banner={entry.data.image} title={entry.data.title} description={entry.data.description} lang={entry.data.lang} setOGTypeArticle={true} headings={headings} showProfile={false} showWidgets={false}>
     <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
 
-    <article class="ef-sheet post-sheet" data-pagefind-body data-pagefind-weight="10" data-pagefind-meta="title">
+    <article class="ef-sheet post-sheet" data-pagefind-body data-pagefind-weight="10">
         <p class="ef-crumb ef-field">
             <a href={url("/")}>{i18n(I18nKey.home)}</a><span>{entry.data.category || i18n(I18nKey.uncategorized)}</span>
         </p>
@@ -75,7 +75,7 @@ const nextNumber = entry.data.nextSlug ? numbers.get(entry.data.nextSlug) ?? "" 
             category={entry.data.category}
         ></PostMetadata>
 
-        <h1 class="ef-read post-title">{entry.data.title}</h1>
+        <h1 class="ef-read post-title" data-pagefind-meta="title">{entry.data.title}</h1>
         <div class="ef-tri" aria-hidden="true"><i></i><i></i><i></i></div>
 
         {entry.data.description && (

@@ -1,11 +1,12 @@
 ---
 interface Props {
 	class?: string;
+    englishOnly?: boolean;
 }
-const { class: className } = Astro.props;
+const { class: className, englishOnly = false } = Astro.props;
 ---
-<button type="button" class:list={["icon-btn", "lang-toggle", className]} aria-pressed="false" aria-label="Switch to Chinese">
-    <span data-l="en" class="lang-mark">EN</span><span data-l="zh" class="lang-mark">中</span>
+<button type="button" class:list={["icon-btn", "lang-toggle", className]} data-english-only={englishOnly || undefined} aria-pressed="false" aria-label="Switch to Chinese">
+    <span data-l="en" class="lang-mark">EN</span><span data-l="zh" class="lang-mark">{englishOnly ? "ZH" : "中"}</span>
 </button>
 
 <script>
@@ -28,7 +29,7 @@ export function applyUiLang(lang: UiLang) {
 
     document.querySelectorAll<HTMLElement>(".lang-toggle").forEach((btn) => {
         btn.setAttribute("aria-pressed", String(lang === "zh"));
-        btn.setAttribute("aria-label", lang === "zh" ? "切换到英文" : "Switch to Chinese");
+        btn.setAttribute("aria-label", lang === "zh" ? (btn.hasAttribute("data-english-only") ? "Switch to English" : "切换到英文") : "Switch to Chinese");
     });
 
     document.querySelectorAll<HTMLElement>("[data-i18n-attr]").forEach((el) => {

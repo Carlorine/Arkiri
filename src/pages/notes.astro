@@ -1,0 +1,19 @@
+---
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+---
+
+<MainGridLayout title="Notes" showProfile={false} showWidgets={false}>
+    <section aria-labelledby="notes-heading" data-pagefind-ignore>
+        <header class="ef-sheet-head">
+            <h1 id="notes-heading" class="ef-read">Notes</h1>
+        </header>
+        <p class="section-empty">
+            <span data-l="en">Notes will appear here when they are published.</span>
+            <span data-l="zh">发布的笔记会显示在这里。</span>
+        </p>
+    </section>
+</MainGridLayout>
+
+<style>
+    .section-empty { margin-top: 1.5rem; color: var(--ef-ink-2); }
+</style>

@@ -1,9 +1,8 @@
 ---
 import { Icon } from "astro-icon/components";
-import I18nKey from "@i18n/i18nKey";
-import { getTranslation } from "@i18n/translation";
 import { type NavBarLink } from "../../types/config";
 import { url } from "../../utils/url-utils";
+import { isNavPathCurrent } from "../../utils/nav-utils";
 import LangSwitch from "../common/LangSwitch.astro";
 
 interface Props {
@@ -12,51 +11,38 @@ interface Props {
 
 const links = Astro.props.links;
 const enLabel = (link: NavBarLink) => {
-	if (link.external) return link.name.toUpperCase();
+	if (link.external) return link.name;
 	const map: Record<string, string> = {
-		"/": "HOME",
-		"/archive/": "ARCHIVE",
-		"/about/": "ABOUT",
+		"/": "Home",
+		"/archive/": "Archive",
+		"/about/": "About",
 	};
-	return map[link.url] ?? "";
+	return map[link.url] ?? link.name;
 };
-// The big word follows the reader's language; the // eyebrow stays Latin.
-const zhDict = getTranslation("zh_CN");
-const zhMap: Record<string, string> = {
-	"/": zhDict[I18nKey.home],
-	"/archive/": zhDict[I18nKey.archive],
-	"/about/": zhDict[I18nKey.about],
-};
-const zhLabel = (link: NavBarLink) => zhMap[link.url] ?? link.name;
 ---
 <div id="nav-menu-panel" class:list={["float-panel float-panel-closed nav-drawer"]}>
-    <p class="ef-eyebrow slash drawer-head">Menu</p>
     <div class="drawer-grid">
         {links.map((link) => (
             <a href={link.external ? link.url : url(link.url)}
                class="drawer-item"
-               aria-current={!link.external && Astro.url.pathname === url(link.url) ? "page" : undefined}
+               aria-current={!link.external && isNavPathCurrent(Astro.url.pathname, url(link.url)) ? "page" : undefined}
                target={link.external ? "_blank" : null}
             >
-                <span class="ef-eyebrow">{enLabel(link)}</span>
-                <span class="zh" data-l="en">{link.name}</span><span class="zh" data-l="zh">{zhLabel(link)}</span>
+                <span>{enLabel(link)}</span>
                 {link.external && <Icon name="fa6-solid:arrow-up-right-from-square" class="ext" />}
             </a>
         ))}
     </div>
     <div class="drawer-lang">
-        <LangSwitch></LangSwitch>
+        <LangSwitch englishOnly />
     </div>
 </div>
 
 <style>
-    /* Phone navigation: a paper panel, a hairline frame, a 2-column grid of
-       // EN over Chinese. Anchored under the top bar. */
-    /* Sized by width, not by left+right: a fixed element must never be able to
-       widen the page on a narrow screen. Closed = out of layout entirely. */
+    /* A compact English menu anchored below the floating navigation. */
     .nav-drawer {
         position: fixed;
-        top: calc(4.25rem + env(safe-area-inset-top, 0px));
+        top: calc(var(--site-header-height) + 0.5rem);
         left: 0.75rem;
         right: auto;
         width: min(24rem, calc(100vw - 1.5rem));
@@ -68,36 +54,34 @@ const zhLabel = (link: NavBarLink) => zhMap[link.url] ?? link.name;
     .nav-drawer.float-panel-closed {
         visibility: hidden;
     }
-    .drawer-head {
-        margin: 0 0 0.6rem;
-    }
     .drawer-grid {
         display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1px;
-        background: var(--ef-rule);
-        border: 1px solid var(--ef-rule);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 2px;
+        background: transparent;
     }
     .drawer-item {
         display: flex;
         flex-direction: column;
         justify-content: center;
         gap: 0.1rem;
-        min-height: 3rem;
-        padding: 0.5rem 0.75rem;
-        background: var(--ef-panel);
+        min-height: 44px;
+        padding: 0.5rem 0.3rem;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        background: transparent;
+        border-radius: 6px;
         color: var(--ef-ink);
     }
-    .drawer-item:hover {
+    .drawer-item:is(:hover, :focus-visible) {
         background: var(--ef-chip);
     }
     .drawer-item[aria-current="page"] {
+        border-radius: 6px;
         background: var(--ef-signal);
         color: var(--ef-on-signal);
-    }
-    .drawer-item .zh {
-        font-weight: 700;
-        font-size: 0.9375rem;
     }
     .drawer-item .ext {
         position: absolute;

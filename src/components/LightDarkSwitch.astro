@@ -1,8 +1,10 @@
 ---
 import { Icon } from "astro-icon/components";
+interface Props { englishOnly?: boolean; }
+const { englishOnly = false } = Astro.props;
 ---
 
-<button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark" title="Switch to dark">
+<button type="button" data-english-only={englishOnly || undefined} class="theme-toggle" aria-pressed="false" aria-label="Switch to dark" title="Switch to dark">
     <span class="light-symbol" aria-hidden="true"><Icon name="material-symbols:wb-sunny-outline-rounded" /></span>
     <span class="dark-symbol" aria-hidden="true"><Icon name="material-symbols:dark-mode-outline-rounded" /></span>
 </button>
@@ -19,8 +21,10 @@ function syncThemeButton() {
         ? getTranslation("zh_CN")[key] : i18n(key);
     document.querySelectorAll<HTMLButtonElement>(".theme-toggle").forEach((button) => {
         button.setAttribute("aria-pressed", String(dark));
-        button.setAttribute("aria-label", label);
-        button.title = label;
+        const buttonLabel = button.hasAttribute("data-english-only")
+            ? (dark ? "Switch to light" : "Switch to dark") : label;
+        button.setAttribute("aria-label", buttonLabel);
+        button.title = buttonLabel;
     });
 }
 

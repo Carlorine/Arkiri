@@ -26,6 +26,7 @@ interface Group {
 export let sortedPosts: ArchivePost[] = [];
 /** No.001 … — the same real number each post carries everywhere else */
 export let numbers: Record<string, string> = {};
+export let heading: string | undefined = undefined;
 
 let groups: Group[] = [];
 let total = 0;
@@ -98,7 +99,7 @@ onMount(() => {
 
 <section class="archive">
     <header class="ef-sheet-head">
-        <h1 class="ef-read"><span data-l="en">{i18n(I18nKey.archive)}</span><span data-l="zh">{zhDict[I18nKey.archive]}</span></h1>
+        <h1 class="ef-read">{#if heading}{heading}{:else}<span data-l="en">{i18n(I18nKey.archive)}</span><span data-l="zh">{zhDict[I18nKey.archive]}</span>{/if}</h1>
         <p class="ef-field">{total} <span data-l="en">{postWord(total)}</span><span data-l="zh">{postWordZh(total)}</span></p>
     </header>
 

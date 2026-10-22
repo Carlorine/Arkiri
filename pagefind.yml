@@ -1,6 +1,6 @@
+# Use one index for Chinese and English posts, regardless of the UI language.
+force_language: zh
 exclude_selectors:
   - "span.katex"
   - "span.katex-display"
   - "[data-pagefind-ignore]"
-  - ".search-panel"
-  - "#search-panel"

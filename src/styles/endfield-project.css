@@ -17,6 +17,8 @@
 /* Outfit carries Latin UI and titles; HarmonyOS unifies Chinese throughout.
    Code uses JetBrains Mono, with HarmonyOS for Chinese comments. */
 :root {
+  --site-header-height: 4rem;
+  scroll-padding-top: calc(var(--site-header-height) + 1rem);
   --ef-font-ui: 'Outfit Variable', 'HarmonyOS Sans SC', 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', 'Noto Sans SC', 'Source Han Sans SC', sans-serif;
   --ef-font-text: 'HarmonyOS Sans SC', 'PingFang SC', 'Hiragino Sans GB',
@@ -159,4 +161,8 @@
 }
 :root[data-ui-lang="zh"] [data-l="en"] {
   display: none;
+}
+
+@media (max-width: 1099px) {
+  :root { --site-header-height: 3.75rem; }
 }

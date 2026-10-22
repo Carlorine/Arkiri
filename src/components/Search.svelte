@@ -1,288 +1,166 @@
 <script lang="ts">
-import I18nKey from "@i18n/i18nKey";
-import { getTranslation, i18n } from "@i18n/translation";
-import Icon from "@iconify/svelte";
-import { url } from "@utils/url-utils.ts";
-import { onMount } from "svelte";
 import type { SearchResult } from "@/global";
+import { url } from "@utils/url-utils";
+import { onMount } from "svelte";
 import { currentUiLang, onUiLangChange } from "../utils/ui-lang-client";
 
-const zhDict = getTranslation("zh_CN");
-let uiLang = currentUiLang();
-
-let keywordDesktop = "";
-let keywordMobile = "";
+let uiLang = "en";
+let keyword = "";
 let result: SearchResult[] = [];
+let ready = false;
 let isSearching = false;
-let pagefindLoaded = false;
-let initialized = false;
+let failed = false;
+let requestId = 0;
+let timer: ReturnType<typeof setTimeout> | undefined;
+let pagefind: Promise<Window["pagefind"]> | undefined;
 
-const fakeResult: SearchResult[] = [
-	{
-		url: url("/"),
-		meta: {
-			title: "This Is a Fake Search Result",
-		},
-		excerpt:
-			"Because the search cannot work in the <mark>dev</mark> environment.",
-	},
-	{
-		url: url("/"),
-		meta: {
-			title: "If You Want to Test the Search",
-		},
-		excerpt: "Try running <mark>npm build && npm preview</mark> instead.",
-	},
-];
-
-const togglePanel = () => {
-	const panel = document.getElementById("search-panel");
-	panel?.classList.toggle("float-panel-closed");
+$: copy = uiLang === "zh" ? {
+    label: "搜索文章", placeholder: "输入关键词…", hint: "搜索文章标题与正文。",
+    loading: "正在搜索…", empty: "没有找到相关文章，试试其他关键词。",
+    error: "搜索暂时不可用，请重试。", retry: "重试", count: "篇相关文章",
+    dev: "搜索索引将在构建后生成，请在预览版本中搜索。",
+} : {
+    label: "Search articles", placeholder: "Enter a keyword…", hint: "Search article titles and content.",
+    loading: "Searching…", empty: "No articles found. Try a different keyword.",
+    error: "Search is unavailable. Please try again.", retry: "Retry", count: "articles found",
+    dev: "The search index is generated during build. Search is available in the preview.",
 };
 
-const setPanelVisibility = (show: boolean, isDesktop: boolean): void => {
-	const panel = document.getElementById("search-panel");
-	if (!panel || !isDesktop) return;
+async function search(query: string, id: number) {
+    try {
+        // Load the index only on the search page and reuse it between queries.
+        pagefind ??= import(/* @vite-ignore */ url("/pagefind/pagefind.js"));
+        const engine = await pagefind;
+        const response = await engine.search(query);
+        const hits = await Promise.all(response.results.map((item) => item.data()));
+        if (id === requestId) result = hits;
+    } catch (error) {
+        if (id === requestId) {
+            failed = true;
+            result = [];
+            pagefind = undefined;
+        }
+        console.error("Search failed:", error);
+    } finally {
+        if (id === requestId) isSearching = false;
+    }
+}
 
-	if (show) {
-		panel.classList.remove("float-panel-closed");
-	} else {
-		panel.classList.add("float-panel-closed");
-	}
-};
-
-const search = async (keyword: string, isDesktop: boolean): Promise<void> => {
-	if (!keyword) {
-		setPanelVisibility(false, isDesktop);
-		result = [];
-		return;
-	}
-
-	if (!initialized) {
-		return;
-	}
-
-	isSearching = true;
-
-	try {
-		let searchResults: SearchResult[] = [];
-
-		if (import.meta.env.PROD && pagefindLoaded && window.pagefind) {
-			const response = await window.pagefind.search(keyword);
-			searchResults = await Promise.all(
-				response.results.map((item) => item.data()),
-			);
-		} else if (import.meta.env.DEV) {
-			searchResults = fakeResult;
-		} else {
-			searchResults = [];
-			console.error("Pagefind is not available in production environment.");
-		}
-
-		result = searchResults;
-		setPanelVisibility(result.length > 0, isDesktop);
-	} catch (error) {
-		console.error("Search error:", error);
-		result = [];
-		setPanelVisibility(false, isDesktop);
-	} finally {
-		isSearching = false;
-	}
-};
+function scheduleSearch(value: string) {
+    clearTimeout(timer);
+    const id = ++requestId;
+    const query = value.trim();
+    result = [];
+    failed = false;
+    isSearching = !!query && import.meta.env.PROD;
+    const current = new URL(window.location.href);
+    if (query) current.searchParams.set("q", query);
+    else current.searchParams.delete("q");
+    window.history.replaceState(window.history.state, "", current);
+    if (isSearching) timer = setTimeout(() => search(query, id), 200);
+}
 
 onMount(() => {
-	const offLang = onUiLangChange((lang) => { uiLang = lang; });
-	const initializeSearch = () => {
-		initialized = true;
-		pagefindLoaded =
-			typeof window !== "undefined" &&
-			!!window.pagefind &&
-			typeof window.pagefind.search === "function";
-		console.log("Pagefind status on init:", pagefindLoaded);
-		if (keywordDesktop) search(keywordDesktop, true);
-		if (keywordMobile) search(keywordMobile, false);
-	};
-
-	if (import.meta.env.DEV) {
-		console.log(
-			"Pagefind is not available in development mode. Using mock data.",
-		);
-		initializeSearch();
-	} else {
-		document.addEventListener("pagefindready", () => {
-			console.log("Pagefind ready event received.");
-			initializeSearch();
-		});
-		document.addEventListener("pagefindloaderror", () => {
-			console.warn(
-				"Pagefind load error event received. Search functionality will be limited.",
-			);
-			initializeSearch(); // Initialize with pagefindLoaded as false
-		});
-
-		// Fallback in case events are not caught or pagefind is already loaded by the time this script runs
-		setTimeout(() => {
-			if (!initialized) {
-				console.log("Fallback: Initializing search after timeout.");
-				initializeSearch();
-			}
-		}, 2000); // Adjust timeout as needed
-	}
-
-	return () => offLang();
+    uiLang = currentUiLang();
+    const offLang = onUiLangChange((lang) => { uiLang = lang; });
+    const restoreQuery = () => {
+        keyword = new URL(window.location.href).searchParams.get("q") ?? "";
+    };
+    restoreQuery();
+    ready = true;
+    window.addEventListener("popstate", restoreQuery);
+    return () => {
+        offLang();
+        clearTimeout(timer);
+        ++requestId;
+        window.removeEventListener("popstate", restoreQuery);
+    };
 });
 
-$: if (initialized && keywordDesktop) {
-	(async () => {
-		await search(keywordDesktop, true);
-	})();
-}
-
-$: if (initialized && keywordMobile) {
-	(async () => {
-		await search(keywordMobile, false);
-	})();
-}
+$: if (ready) scheduleSearch(keyword);
 </script>
 
-<!-- desktop: the field sits under the rail nav -->
-<div id="search-bar" class="search-desktop">
-    <label class="ef-search">
-        <input
-            type="search"
-            placeholder={uiLang === "zh" ? zhDict[I18nKey.search] : i18n(I18nKey.search)}
-            data-i18n-attr="placeholder"
-            data-i18n-en={i18n(I18nKey.search)}
-            data-i18n-zh={zhDict[I18nKey.search]}
-            aria-label={uiLang === "zh" ? zhDict[I18nKey.search] : i18n(I18nKey.search)}
-            bind:value={keywordDesktop}
-            on:focus={() => search(keywordDesktop, true)}
-        />
-    </label>
-</div>
-
-<!-- phone / tablet: a 46px square button that opens the same panel -->
-<button on:click={togglePanel} aria-label={uiLang === "zh" ? zhDict[I18nKey.search] : i18n(I18nKey.search)} id="search-switch" class="icon-btn search-toggle">
-    <Icon icon="material-symbols:search" class="text-[1.25rem]"></Icon>
-</button>
-
-<!-- results: a paper panel with a hairline frame, one row per post -->
-<div id="search-panel" class="float-panel float-panel-closed search-panel" role="region" aria-label={uiLang === "zh" ? zhDict[I18nKey.search] : i18n(I18nKey.search)}>
-    <label class="ef-search search-in-panel">
-        <input
-            type="search"
-            placeholder={uiLang === "zh" ? zhDict[I18nKey.search] : i18n(I18nKey.search)}
-            data-i18n-attr="placeholder"
-            data-i18n-en={i18n(I18nKey.search)}
-            data-i18n-zh={zhDict[I18nKey.search]}
-            aria-label={uiLang === "zh" ? zhDict[I18nKey.search] : i18n(I18nKey.search)}
-            bind:value={keywordMobile}
-        />
-    </label>
-
-    {#if result.length > 0}
-        <p class="ef-eyebrow slash results-head"><span data-l="en">{i18n(I18nKey.search)}</span><span data-l="zh">{zhDict[I18nKey.search]}</span> · {result.length}</p>
-        <div class="hits">
-            {#each result as item}
-                <a class="hit" href={item.url}>
-                    <span class="hit-title">{item.meta.title}</span>
-                    <span class="hit-excerpt">{@html item.excerpt}</span>
-                </a>
-            {/each}
-        </div>
-    {:else if initialized && (keywordDesktop || keywordMobile)}
-        <p class="ef-empty"><span data-l="en">{i18n(I18nKey.noResults)}</span><span data-l="zh">{zhDict[I18nKey.noResults]}</span></p>
-    {/if}
+<div class="search-page">
+    <label for="article-search" class="search-label">{copy.label}</label>
+    <div class="ef-search">
+        <input id="article-search" type="search" bind:value={keyword}
+            placeholder={copy.placeholder} aria-describedby="search-status" autocomplete="off" />
+    </div>
+    <div id="search-status" class="search-status" role="status" aria-live="polite" aria-atomic="true">
+        {#if !keyword.trim()}
+            <p>{copy.hint}</p>
+        {:else if import.meta.env.DEV}
+            <p>{copy.dev}</p>
+        {:else if isSearching}
+            <p>{copy.loading}</p>
+        {:else if failed}
+            <p>{copy.error} <button class="retry" on:click={() => scheduleSearch(keyword)}>{copy.retry}</button></p>
+        {:else if result.length === 0}
+            <p>{copy.empty}</p>
+        {:else}
+            <p>{result.length} {copy.count}</p>
+        {/if}
+    </div>
+    <div class="hits" aria-busy={isSearching}>
+        {#each result as item}
+            <a class="hit" href={item.url}>
+                <h2 class="hit-title">{item.meta.title}</h2>
+                <p class="hit-excerpt">{@html item.excerpt}</p>
+            </a>
+        {/each}
+    </div>
 </div>
 
 <style>
-    .search-desktop {
+    .search-page { margin-top: 1.5rem; }
+    .search-label {
         display: block;
-    }
-    .search-desktop .ef-search {
-        width: 100%;
-    }
-    .search-toggle {
-        display: none;
-    }
-
-    .search-panel {
-        position: fixed;
-        top: 4.5rem;
-        inset-inline: 0;
-        margin-inline: auto;
-        width: min(46rem, calc(100vw - 2rem));
-        max-height: min(70vh, 40rem);
-        overflow-y: auto;
-        padding: 0.75rem;
-        border: 1px solid var(--ef-ink);
-        background: var(--ef-panel);
-        box-shadow: none;
-        border-radius: 0;
-    }
-    .search-in-panel {
         margin-bottom: 0.5rem;
+        font-weight: 700;
+        color: var(--ef-ink);
     }
-    .results-head {
-        margin: 0.5rem 0 0.25rem;
+    .search-status {
+        min-height: 3.5rem;
+        padding-block: 0.75rem;
+        color: var(--ef-ink-2);
+        font-size: 0.875rem;
     }
-    .hits {
-        border-top: 1px solid var(--ef-rule);
-    }
+    .search-status p { margin: 0; }
     .hit {
         display: block;
-        padding: 0.6rem 0.5rem;
+        padding: 1.25rem 0.5rem;
         border-bottom: 1px solid var(--ef-rule);
         color: var(--ef-ink);
-        transition: background-color 120ms var(--ef-ease);
+        overflow-wrap: anywhere;
     }
-    .hit:hover,
-    .hit:focus-visible {
-        background: var(--ef-chip);
+    .hit:first-child { border-top: 1px solid var(--ef-rule); }
+    .hit:hover, .hit:focus-visible { background: var(--ef-chip); }
+    .hit:focus-visible, .retry:focus-visible {
+        outline: 2px solid var(--ef-ink);
+        outline-offset: 2px;
     }
     .hit-title {
-        display: block;
+        margin: 0;
+        font-family: var(--ef-font-ui);
+        font-size: 1.25rem;
         font-weight: 700;
-        font-size: 0.95rem;
+        line-height: 1.4;
     }
     .hit-excerpt {
-        display: block;
-        margin-top: 0.15rem;
+        margin: 0.5rem 0 0;
         color: var(--ef-ink-2);
-        font-size: 0.8125rem;
-        line-height: 1.5;
+        font-size: 0.875rem;
+        line-height: 1.65;
     }
     .hit-excerpt :global(mark) {
         background: var(--ef-signal);
         color: var(--ef-on-signal);
     }
-    .ef-empty {
-        margin: 0.75rem 0.25rem;
-    }
-
-    @media (max-width: 1199px) {
-        .search-desktop {
-            display: none;
-        }
-        .search-toggle {
-            display: flex;
-            width: 46px;
-            min-height: 44px;
-            padding: 0;
-            background: none;
-        }
-    }
-
-    @media (min-width: 1200px) {
-        .search-desktop {
-            display: block;
-        }
-        .search-toggle {
-            display: none;
-        }
-    }
-
-    input:focus {
-        outline: 0;
+    .retry {
+        min-height: 44px;
+        padding-inline: 0.75rem;
+        color: var(--ef-ink);
+        text-decoration: underline;
+        text-underline-offset: 0.2em;
     }
 </style>

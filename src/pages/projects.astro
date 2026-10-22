@@ -1,0 +1,19 @@
+---
+import MainGridLayout from "@layouts/MainGridLayout.astro";
+---
+
+<MainGridLayout title="Projects" showProfile={false} showWidgets={false}>
+    <section aria-labelledby="projects-heading" data-pagefind-ignore>
+        <header class="ef-sheet-head">
+            <h1 id="projects-heading" class="ef-read">Projects</h1>
+        </header>
+        <p class="section-empty">
+            <span data-l="en">Projects will appear here as they are added.</span>
+            <span data-l="zh">添加的项目会显示在这里。</span>
+        </p>
+    </section>
+</MainGridLayout>
+
+<style>
+    .section-empty { margin-top: 1.5rem; color: var(--ef-ink-2); }
+</style>

@@ -295,12 +295,12 @@ function setClickOutsideToClose(panel: string, ignores: string[]) {
 				return;
 			}
 		}
-		panelDom!.classList.add("float-panel-closed");
+		panelDom?.classList.add("float-panel-closed");
 	});
 }
 setClickOutsideToClose("display-setting", ["display-setting", "display-settings-switch"])
 setClickOutsideToClose("nav-menu-panel", ["nav-menu-panel", "nav-menu-switch"])
-setClickOutsideToClose("search-panel", ["search-panel", "search-bar", "search-switch"])
+
 
 
 function loadTheme() {
@@ -389,6 +389,15 @@ function init() {
 init();
 
 const setup = () => {
+    // Swup scrolls anchors itself, so mirror the native scroll padding for
+    // the floating navigation instead of letting headings land underneath it.
+    const scrollPlugin = window.swup.findPlugin('SwupScrollPlugin') as
+        { options: { offset: () => number } } | undefined;
+    if (scrollPlugin) {
+        scrollPlugin.options.offset = () =>
+            Number.parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+    }
+
 	// TODO: temp solution to change the height of the banner
 /*
 	window.swup.hooks.on('animation:out:start', () => {

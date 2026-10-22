@@ -17,6 +17,8 @@ import { currentUiLang, onUiLangChange } from "../../utils/ui-lang-client";
 
 type Motion = "full" | "calm";
 
+export let englishOnly = false;
+
 const zhDict = getTranslation("zh_CN");
 let uiLang = currentUiLang();
 
@@ -48,8 +50,8 @@ onMount(() => {
 </script>
 
 <div id="display-setting" class="float-panel float-panel-closed absolute w-80 right-4 px-4 py-4">
-    <p class="ef-field m-0 mb-2"><span data-l="en">{i18n(I18nKey.motion)}</span><span data-l="zh">{zhDict[I18nKey.motion]}</span></p>
-    <div class="ef-seg" role="radiogroup" data-i18n-attr="aria-label" data-i18n-en={i18n(I18nKey.motion)} data-i18n-zh={zhDict[I18nKey.motion]} aria-label={uiLang === "zh" ? zhDict[I18nKey.motion] : i18n(I18nKey.motion)}>
+    <p class="ef-field m-0 mb-2">{#if englishOnly}Motion{:else}<span data-l="en">{i18n(I18nKey.motion)}</span><span data-l="zh">{zhDict[I18nKey.motion]}</span>{/if}</p>
+    <div class="ef-seg" role="radiogroup" data-i18n-attr={englishOnly ? undefined : "aria-label"} data-i18n-en={i18n(I18nKey.motion)} data-i18n-zh={zhDict[I18nKey.motion]} aria-label={englishOnly ? "Motion" : uiLang === "zh" ? zhDict[I18nKey.motion] : i18n(I18nKey.motion)}>
         {#each MOTIONS as value}
             <label>
                 <input
@@ -59,7 +61,7 @@ onMount(() => {
                     checked={motion === value}
                     onchange={() => setMotion(value)}
                 />
-                <span><span data-l="en">{i18n(motionLabel[value])}</span><span data-l="zh">{zhDict[motionLabel[value]]}</span></span>
+                <span>{#if englishOnly}{i18n(motionLabel[value])}{:else}<span data-l="en">{i18n(motionLabel[value])}</span><span data-l="zh">{zhDict[motionLabel[value]]}</span>{/if}</span>
             </label>
         {/each}
     </div>

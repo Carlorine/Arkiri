@@ -33,8 +33,7 @@ const {
 	showWidgets = true,
 } = Astro.props;
 
-// Reading pages put the table of contents in the page margin; other pages use
-// the full width next to the rail.
+// Reading pages put the table of contents in the page margin.
 const hasMargin = headings.length > 0;
 ---
 
@@ -53,8 +52,9 @@ const hasMargin = headings.length > 0;
         </div>
     )}
 
+    <Navbar></Navbar>
+
     <div class="shell">
-        <Navbar class="shell-nav"></Navbar>
 
         <main id="swup-container" class="transition-swup-fade shell-main">
             <div id="content-wrapper">
@@ -79,116 +79,65 @@ const hasMargin = headings.length > 0;
 </Layout>
 
 <style>
-    /* One flow: rail, sheet, margin. No absolute positioning, no banner
-       overlap math — the reading column simply sits beside the rail, left
-       aligned, and the margin holds the contents. */
-    /* One column of text, centred in the page: 75rem max, 1rem side padding,
-       so 1440 gives 120px of air on each side. The rail and the margin sit
-       inside that same container. */
     .shell {
-        /* 1200px = 75rem at a 16px root; written in px so a browser with a
-           larger default font size cannot eat the side gutters. */
-        max-width: 1200px;
-        margin-inline: auto;
         display: grid;
         grid-template-columns: minmax(0, 1fr);
         align-items: start;
+        max-width: 1200px;
+        margin-inline: auto;
+        padding-inline: var(--ef-pad);
     }
     .shell-main {
         min-width: 0;
-        padding: 1.5rem 1rem 3rem;
+        width: 100%;
+        max-width: 800px;
+        margin-inline: auto;
+        padding-block: 1.5rem 3rem;
     }
     .shell-footer {
         grid-column: 1 / -1;
-        padding: 0 1rem 3rem;
-    }
-    /* the rail is sticky and a viewport tall: the footer must start after its
-       column, otherwise the rail covers the copyright line */
-    @media (min-width: 1200px) {
-        .shell-footer {
-            grid-column: 3 / -1;
-            padding: 0 0 4rem;
-        }
+        padding-block: 0 3rem;
     }
     .shell-margin {
-        display: block;
-        padding: 1.5rem 1rem 3rem;
+        min-width: 0;
+        padding-block: 1.5rem 3rem;
         border-top: 1px solid var(--ef-rule);
     }
-    .margin-toc:empty,
     .margin-toc:not(:has(a)) {
         display: none;
     }
-    /* the contents block sits right above the widget panels on a reading
-       page; give it air so the two do not weld together. When there is no
-       contents (front pages) the widgets start at the aside's own padding. */
     .margin-toc:has(a) + :global(.margin-widgets) {
         margin-top: 1.6rem;
     }
     .margin-inner {
-        position: sticky;
-        top: 2rem;
-        max-height: calc(100dvh - 4rem);
+        max-height: calc(100dvh - var(--site-header-height) - 4rem);
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
     }
-    .margin-inner::-webkit-scrollbar {
-        display: none;
-    }
-
-    .banner {
-        border-bottom: 1px solid var(--ef-rule);
-    }
+    .margin-inner::-webkit-scrollbar { display: none; }
+    .banner { border-bottom: 1px solid var(--ef-rule); }
     .banner-image {
         display: block;
         width: 100%;
         height: 26vh;
         min-height: 10rem;
     }
-
-    /* Three columns start at 1200 — the width of the shell itself. Below it the
-       shell is one column, so 1100–1199 gets the top bar and a 660px measure
-       instead of a reading column squeezed to 545px. */
     @media (min-width: 1200px) {
         .shell {
-            /* Keep the reading measure and rail; share the right-hand space
-               equally on either side of the 240px margin. The left spacer
-               balances those two gaps together as the viewport grows. */
-            max-width: none;
-            margin-inline: 0;
-            grid-template-columns: 168px minmax(24px, 2fr) minmax(0, 712px) minmax(16px, 1fr) 240px minmax(16px, 1fr);
+            grid-template-columns: minmax(0, 712px) 240px;
+            justify-content: center;
+            column-gap: 48px;
         }
-        .shell-main {
-            grid-column: 3;
-            width: 100%;
-            max-width: 712px;
-            margin-inline: auto;
-            padding: 1.5rem 0 4rem;
-        }
+        .shell-main { padding-bottom: 4rem; }
         .shell-margin {
-            grid-column: 5;
-            padding: 2rem 0 3rem;
+            padding-top: 2rem;
             border-top: 0;
         }
-        /* Article pages: the margin holds only the contents, and it follows
-           the reader. The grid row is as tall as the article, so the aside has
-           real travel here; the inner sticky is switched off to avoid two
-           sticky layers. top:0 lets the 2rem padding decide the resting
-           position (panel at 40px), which is where it already started. */
         .shell-margin.is-article-margin {
             position: sticky;
-            top: 0;
-            align-self: start;
+            top: var(--site-header-height);
         }
-        .shell-margin.is-article-margin .margin-inner {
-            position: static;
-        }
-    }
-
-    @media (max-width: 1199px) {
-        .shell-main {
-            padding: 1rem var(--ef-pad) 3rem;
-        }
+        .shell-footer { padding-bottom: 4rem; }
     }
 </style>

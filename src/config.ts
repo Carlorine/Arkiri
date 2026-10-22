@@ -5,7 +5,6 @@ import type {
 	ProfileConfig,
 	SiteConfig,
 } from "./types/config";
-import { LinkPreset } from "./types/config";
 
 export const siteConfig: SiteConfig = {
 	title: "Arkiri",
@@ -37,9 +36,11 @@ export const siteConfig: SiteConfig = {
 
 export const navBarConfig: NavBarConfig = {
 	links: [
-		LinkPreset.Home,
-		LinkPreset.Archive,
-		LinkPreset.About,
+        { name: "Blog", url: "/blog/" },
+        { name: "Notes", url: "/notes/" },
+        { name: "Projects", url: "/projects/" },
+        { name: "Links", url: "/links/" },
+        { name: "About", url: "/about/" },
 	],
 };
 
