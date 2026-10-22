@@ -1,0 +1,62 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<button type="button" class="theme-toggle" aria-pressed="false" aria-label="Switch to dark" title="Switch to dark">
+    <span class="light-symbol" aria-hidden="true"><Icon name="material-symbols:wb-sunny-outline-rounded" /></span>
+    <span class="dark-symbol" aria-hidden="true"><Icon name="material-symbols:dark-mode-outline-rounded" /></span>
+</button>
+
+<script>
+import I18nKey from "../i18n/i18nKey";
+import { getTranslation, i18n } from "../i18n/translation";
+import { setTheme } from "../utils/setting-utils";
+
+function syncThemeButton() {
+    const dark = document.documentElement.classList.contains("dark");
+    const key = dark ? I18nKey.switchToLight : I18nKey.switchToDark;
+    const label = document.documentElement.dataset.uiLang === "zh"
+        ? getTranslation("zh_CN")[key] : i18n(key);
+    document.querySelectorAll<HTMLButtonElement>(".theme-toggle").forEach((button) => {
+        button.setAttribute("aria-pressed", String(dark));
+        button.setAttribute("aria-label", label);
+        button.title = label;
+    });
+}
+
+document.addEventListener("click", (event) => {
+    if (!(event.target instanceof Element) || !event.target.closest(".theme-toggle")) return;
+    setTheme(document.documentElement.classList.contains("dark") ? "light" : "dark");
+    syncThemeButton();
+});
+window.addEventListener("ui-lang-change", syncThemeButton);
+syncThemeButton();
+</script>
+
+<style>
+    .theme-toggle {
+        display: flex;
+        flex: none;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        min-height: 44px;
+        background: var(--ef-chip);
+        color: var(--ef-ink);
+        border-radius: 0;
+        transition: background-color 120ms var(--ef-ease);
+    }
+    .theme-toggle:hover { background: var(--ef-rule); }
+    .theme-toggle:focus-visible {
+        outline: 2px solid currentColor;
+        outline-offset: 2px;
+    }
+    .theme-toggle span { display: flex; }
+    .theme-toggle :global(svg) { width: 1.25rem; height: 1.25rem; }
+    .theme-toggle .dark-symbol,
+    :global(:root.dark) .theme-toggle .light-symbol { display: none; }
+    :global(:root.dark) .theme-toggle .dark-symbol { display: flex; }
+    @media (max-width: 767px) {
+        .theme-toggle { background: none; }
+    }
+</style>

@@ -81,6 +81,7 @@ const bannerOffset =
 	  data-ef-ground="contours"
 	  data-ef-density="standard"
 	  data-ef-motion="full"
+	  data-initial-view
 	  class="transition"
 	  data-overlayscrollbars-initialize
 >
@@ -419,6 +420,7 @@ const setup = () => {
 	})
 	window.swup.hooks.on('content:replace', initCustomScrollbar)
 	window.swup.hooks.on('visit:start', (visit: {to: {url: string}}) => {
+		document.documentElement.removeAttribute('data-initial-view');
 		// change banner height immediately when a link is clicked
 		const bodyElement = document.querySelector('body')
 		if (pathsEqual(visit.to.url, url('/'))) {

@@ -1,14 +1,9 @@
 /*
- * Page change and first paint.
- *
- * Swup swaps the containers; the incoming page is pushed in behind a slanted
- * shutter (mech, 360ms). Individual entrance pieces are .ef-in-* classes on
- * the components themselves. Nothing animates under prefers-reduced-motion.
+ * First paint and Swup navigation use the same container reveal, layered
+ * over the same component entrances.
  */
 @media (prefers-reduced-motion: no-preference) {
-    /* Only the incoming phase animates. `is-changing` is set during the leave
-       and the enter phase, so keying on it ran the same shutter twice; swup
-       marks the incoming phase with is-rendering. */
+    html[data-initial-view] .transition-swup-fade,
     html.is-changing.is-rendering .transition-swup-fade {
         animation: ef-shutter 360ms var(--ef-mech) both;
     }
@@ -16,6 +11,11 @@
 
 #swup-container {
     outline: none;
+}
+
+:root[data-ef-motion="calm"] .onload-animation,
+:root[data-ef-motion="calm"] .transition-swup-fade {
+    animation: none !important;
 }
 
 /* Components that still carry the old helper class get one short arrival

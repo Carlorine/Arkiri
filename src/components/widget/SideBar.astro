@@ -18,7 +18,7 @@ const className = Astro.props.class;
 ---
 <div id="sidebar" class:list={[className, "w-full"]}>
     {showProfile && (
-        <div class="flex flex-col w-full gap-[1.6rem] mb-[1.6rem]">
+        <div class="onload-animation flex flex-col w-full gap-[1.6rem] mb-[1.6rem]" style="animation-delay: 100ms">
             <Profile></Profile>
         </div>
     )}

@@ -8,7 +8,7 @@ import { LinkPreset, type NavBarLink } from "../types/config";
 import { pathsEqual, url } from "../utils/url-utils";
 import { uiAttrs } from "../utils/ui-i18n";
 import LangSwitch from "./common/LangSwitch.astro";
-import LightDarkSwitch from "./LightDarkSwitch.svelte";
+import LightDarkSwitch from "./LightDarkSwitch.astro";
 import Search from "./Search.svelte";
 import DisplaySettings from "./widget/DisplaySettings.svelte";
 import NavMenuPanel from "./widget/NavMenuPanel.astro";
@@ -73,7 +73,7 @@ const isCurrent = (link: NavBarLink): boolean =>
             <button aria-label="Motion" class="icon-btn" id="display-settings-switch" {...uiAttrs(I18nKey.motion, "aria-label")}>
                 <Icon name="material-symbols:tune-rounded" class="text-[1.25rem]"></Icon>
             </button>
-            <LightDarkSwitch client:only="svelte"></LightDarkSwitch>
+            <LightDarkSwitch></LightDarkSwitch>
             <LangSwitch></LangSwitch>
         </div>
         <button aria-label="Menu" name="Nav Menu" class="icon-btn menu-btn" id="nav-menu-switch">
