@@ -58,8 +58,7 @@ for (const heading of items) {
     .toc-head {
         margin: 0 0 0.75rem;
     }
-    /* The contents is a panel like the two widget panels under it; the section
-       being read is the rail's yellow block, cut at the same corner. */
+    /* Keep the contents aligned with the other margin panels. */
     .toc-list {
         margin: 0;
         padding: 0;
@@ -72,23 +71,17 @@ for (const heading of items) {
         padding: 0.35rem 0.5rem;
         color: var(--ef-ink-2);
         font-size: 0.875rem;
+        font-weight: 400;
         line-height: 1.4;
         transition: color 120ms var(--ef-ease);
     }
     .toc-link:not([aria-current="true"]):hover {
         color: var(--ef-ink);
     }
-    /* The current row is a yellow block, so the ring sits inside it and is drawn
-       in ink: a trace ring would be yellow on yellow in the dark theme. */
+    /* Keep keyboard focus visible against the neutral fill in both themes. */
     .toc-link:focus-visible {
         outline: 2px solid var(--ef-ink);
         outline-offset: -2px;
-    }
-    /* On the yellow block the ring must contrast with the fill, not with the
-       text token: --ef-ink is light grey in the dark theme (1.06:1 on yellow),
-       while the ink used on signal is #161616 in both themes (16.3:1). */
-    .toc-link[aria-current="true"]:focus-visible {
-        outline-color: var(--ef-on-signal);
     }
     .toc-link .n {
         flex: none;
@@ -102,132 +95,73 @@ for (const heading of items) {
         margin-left: 1rem;
         font-size: 0.8125rem;
     }
-    /* the section being read, in the rail's language: a solid yellow block,
-       ink text, the 01 number in the same ink. No cut corner: the cut belongs
-       to pressable things, and "you are here" is not one. */
+    /* Keep text metrics stable; indicate the current section with color only. */
     .toc-link[aria-current="true"] {
-        color: var(--ef-on-signal);
-        background: var(--ef-signal);
-        font-weight: 700;
+        color: var(--ef-ink);
+        background: var(--ef-chip);
     }
     .toc-link[aria-current="true"] .n {
-        color: var(--ef-on-signal);
+        color: var(--ef-ink);
     }
 </style>
 
 <script>
 class TableOfContents extends HTMLElement {
     private links: HTMLAnchorElement[] = [];
-    private ids: string[] = [];
-    private sections: HTMLElement[] = [];
-    private active: boolean[] = [];
-    private observer: IntersectionObserver;
-    private inited = false;
-    private anchorTarget: HTMLElement | null = null;
+    private headings: (HTMLElement | null)[] = [];
+    private resizeObserver: ResizeObserver | null = null;
+    private frame = 0;
 
-    constructor() {
-        super();
-        this.observer = new IntersectionObserver(this.onIntersect, { threshold: 0 });
-    }
+    private update = () => {
+        this.frame = 0;
+        if (!this.isConnected) return;
 
-    private onIntersect = (entries: IntersectionObserverEntry[]) => {
-        entries.forEach((entry) => {
-            const id = entry.target.firstElementChild?.getAttribute("id");
-            const index = id ? this.ids.indexOf(id) : -1;
-            if (index >= 0) this.active[index] = entry.isIntersecting;
-            if (entry.isIntersecting && this.anchorTarget === entry.target.firstChild) {
-                this.anchorTarget = null;
-            }
+        // Sections can contain other sections, so their intersection does not
+        // identify the heading being read. Track the last heading above the
+        // reading line instead; keep the first one selected before the prose.
+        const readingLine = 2 * Number.parseFloat(getComputedStyle(document.documentElement).fontSize);
+        let current = this.headings.findIndex((heading) => heading !== null);
+        this.headings.forEach((heading, index) => {
+            if (heading && heading.getBoundingClientRect().top <= readingLine) current = index;
         });
 
-        if (!this.active.some(Boolean)) this.fallback();
-        this.paint();
-    };
-
-    /** Ranges of visible sections stay lit, like a margin bracket. */
-    private paint() {
-        let first = -1;
-        let last = -1;
-        this.active.forEach((on, index) => {
-            if (!on) return;
-            if (first < 0) first = index;
-            last = index;
-        });
+        // Short final sections cannot always reach the reading line.
+        if (window.scrollY > 0 && window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2) {
+            const last = this.headings.findLastIndex((heading) => heading !== null);
+            if (last >= 0) current = last;
+        }
 
         this.links.forEach((link, index) => {
-            const on = first >= 0 && index >= first && index <= last;
-            // A link that has keyboard focus keeps its marker: repainting the
-            // scroll spy while Tab rests on it must not make the yellow block
-            // and its aria-current disappear under the focus ring.
-            if (on || link === document.activeElement) link.setAttribute("aria-current", "true");
+            if (index === current) link.setAttribute("aria-current", "true");
             else link.removeAttribute("aria-current");
         });
-    }
-
-    private fallback() {
-        for (let index = 0; index < this.sections.length; index += 1) {
-            const rect = this.sections[index].getBoundingClientRect();
-            if (rect.top < window.innerHeight && rect.bottom > 0) {
-                this.active[index] = true;
-            } else if (rect.top > window.innerHeight) {
-                break;
-            }
-        }
-    }
-
-    private onClick = (event: Event) => {
-        const anchor = event
-            .composedPath()
-            .find((element): element is HTMLAnchorElement => element instanceof HTMLAnchorElement);
-        const id = anchor ? decodeURIComponent(anchor.hash?.substring(1) ?? "") : "";
-        this.anchorTarget = id ? document.getElementById(id) : null;
     };
 
-    private onFocusIn = (event: Event) => {
-        const target = event.target;
-        if (!(target instanceof HTMLAnchorElement) || !target.classList.contains("toc-link")) return;
-        // Keep the marker on the link the keyboard is on, even if a repaint is
-        // already in flight; then repaint once with the focus in place.
-        target.setAttribute("aria-current", "true");
-        requestAnimationFrame(() => this.paint());
+    private scheduleUpdate = () => {
+        if (!this.frame) this.frame = requestAnimationFrame(this.update);
     };
-
-    private init() {
-        if (this.inited) return;
-        this.inited = true;
-
-        this.links = Array.from(this.querySelectorAll<HTMLAnchorElement>("a[href^='#']"));
-        this.active = this.links.map(() => false);
-        this.ids = this.links.map((link) => decodeURIComponent(link.hash?.substring(1) ?? ""));
-
-        this.sections = this.ids.map((id) => {
-            const heading = document.getElementById(id);
-            const section = heading?.parentElement;
-            return section instanceof HTMLElement ? section : document.body;
-        });
-
-        this.sections.forEach((section) => this.observer.observe(section));
-        this.addEventListener("click", this.onClick, { capture: true });
-        // Focus can land while the scroll spy is mid-repaint (the browser
-        // scrolls the link into view, which changes intersections). Paint once
-        // more after the focus settles so the focused link keeps its marker.
-        this.addEventListener("focusin", this.onFocusIn, { capture: true });
-        this.fallback();
-        this.paint();
-    }
 
     connectedCallback() {
-        // No dependency on an entrance animation finishing: measure on the
-        // next frame, and once more as a safety net after layout settles.
-        requestAnimationFrame(() => this.init());
-        window.setTimeout(() => this.init(), 600);
+        this.links = Array.from(this.querySelectorAll<HTMLAnchorElement>("a[href^='#']"));
+        this.headings = this.links.map((link) => document.getElementById(decodeURIComponent(link.hash.substring(1))));
+        window.addEventListener("scroll", this.scheduleUpdate, { passive: true });
+        window.addEventListener("resize", this.scheduleUpdate);
+        // Images and fonts can move headings without a scroll event.
+        this.resizeObserver = new ResizeObserver(this.scheduleUpdate);
+        const content = document.getElementById("swup-container");
+        if (content) this.resizeObserver.observe(content);
+        this.scheduleUpdate();
     }
 
     disconnectedCallback() {
-        this.sections.forEach((section) => this.observer.unobserve(section));
-        this.observer.disconnect();
-        this.removeEventListener("click", this.onClick, { capture: true });
-        this.removeEventListener("focusin", this.onFocusIn, { capture: true });
+        cancelAnimationFrame(this.frame);
+        this.frame = 0;
+        this.resizeObserver?.disconnect();
+        this.resizeObserver = null;
+        window.removeEventListener("scroll", this.scheduleUpdate);
+        window.removeEventListener("resize", this.scheduleUpdate);
+        this.links = [];
+        this.headings = [];
     }
 }
 
