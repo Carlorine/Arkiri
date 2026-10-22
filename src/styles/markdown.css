@@ -270,6 +270,15 @@
     height: 1rem;
 }
 
+/* Both states occupy the same slot: opacity alone still leaves SVGs in flow. */
+.custom-md .copy-btn > .copy-btn-icon {
+    display: grid;
+}
+
+.custom-md .copy-btn-icon > svg {
+    grid-area: 1 / 1;
+}
+
 .custom-md .copy-btn .copy-icon {
     fill: currentColor;
     opacity: 1;
