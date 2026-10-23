@@ -5,7 +5,6 @@
 ## 技术栈
 
 - **Astro**：静态站点生成，内容集合、RSS、sitemap、Pagefind 搜索。
-- **[fuwari](https://github.com/saicaca/fuwari)**：上游博客模板（MIT）。内容结构、i18n、搜索、RSS 等基础能力来自它。
 - **[endfield-ui skill](https://github.com/hhikr/endfield-ui-skill)**：界面的视觉与交互规范。本站的纸面、墨色、单一酸黄强调色、切角、编号记录行、短促机械动效，都是照这个 skill 重做的；样式以 `src/styles/endfield.css`（套件）＋ `src/styles/endfield-project.css`（项目覆盖层）组织。
 
 ## 字体
@@ -41,7 +40,7 @@ pnpm preview   # 预览构建产物
 ```
 src/
   components/        界面组件（ef/ 为套件风格组件，widget/ 为侧栏组件）
-  content/           文章、关于页等 Markdown 内容
+  content/           文章、关于页等 Markdown 内容（保留中文写作与格式指南）
   layouts/           Layout.astro（全局外壳）与 MainGridLayout.astro（三栏栅格）
   pages/             路由：首页分页、文章、归档、关于、RSS、sitemap
   styles/            endfield.css（套件）、endfield-project.css（项目覆盖）、
@@ -53,7 +52,7 @@ public/
 
 ## 致谢与许可
 
-- 模板：[fuwari](https://github.com/saicaca/fuwari)（MIT），其版权与许可声明保留在仓库的 `LICENSE` 中。
+- 本项目基于 [Fuwari](https://github.com/saicaca/fuwari)（MIT）开发，沿用其博客基础能力，并重做了界面与交互。原作者版权与许可声明保留在仓库的 `LICENSE` 中。
 - 界面规范：[endfield-ui skill](https://github.com/hhikr/endfield-ui-skill)。
 - 字体：Outfit（OFL，许可证随 Fontsource 包提供）、HarmonyOS Sans（Huawei Device Co., Ltd.，见 `public/fonts/harmonyos-sc/LICENSE.txt`）。
 - 本站内容与代码：见仓库 `LICENSE`。

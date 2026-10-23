@@ -1,7 +1,7 @@
 @tailwind components;
 
 /*
- * Shared component classes from the fuwari theme, re-skinned onto the kit.
+ * Shared component classes from the original theme, re-skinned onto the kit.
  *
  * Rules of this file:
  *   - no rounded corners, no shadows, no gradients, no glow (kit fixed rules)
