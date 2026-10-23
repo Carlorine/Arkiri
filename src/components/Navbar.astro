@@ -138,17 +138,23 @@ const isCurrent = (link: NavBarLink): boolean =>
         border: 0;
     }
     .nav-shell .brand {
+        display: flex;
         flex: none;
+        align-items: center;
+        min-height: 44px;
         padding: 0;
         color: var(--ef-ink);
-        letter-spacing: 0.04em;
+        font-size: 1rem;
+        line-height: 1;
+        letter-spacing: 0.02em;
     }
     .brand-name {
+        display: block;
         font-family: var(--ef-font-ui);
-        font-size: 1.25rem;
+        font-size: inherit;
         font-weight: 700;
-        line-height: 1;
-        text-transform: uppercase;
+        line-height: inherit;
+        text-transform: none;
     }
     .links { display: flex; gap: 0.5rem; }
     .brand, .links, .nav-tools {
@@ -249,7 +255,6 @@ const isCurrent = (link: NavBarLink): boolean =>
     @media (max-width: 1099px) {
         .nav-inner { gap: 0.5rem; height: 56px; padding-inline: 24px; }
         .nav-shell .links, .tool-row :global(.lang-toggle) { display: none; }
-        .brand-name { font-size: 1.2rem; }
         .menu-btn { display: flex; }
         .is-floating .nav-surface { border-radius: 16px; }
         .is-floating .brand, .is-floating .nav-tools { translate: none; }
