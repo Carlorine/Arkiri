@@ -7,20 +7,20 @@ import ImageWrapper from "../misc/ImageWrapper.astro";
 const config = profileConfig;
 ---
 <div class="profile ef-panel tab-right">
-    <a href={url('/about/')} aria-label="Go to About Page" class="avatar-link">
+    {config.avatar && <a href={url('/about/')} aria-label="Go to About Page" class="avatar-link">
         <ImageWrapper
-            src={config.avatar || ""}
+            src={config.avatar}
             alt="Profile Image of the Author"
             class="avatar-img"
         ></ImageWrapper>
         <span class="avatar-mask" aria-hidden="true">
             <Icon name="fa6-regular:address-card" class="avatar-icon"></Icon>
         </span>
-    </a>
+    </a>}
 
     <p class="profile-name">{config.name}</p>
     <span class="profile-mark" aria-hidden="true"></span>
-    <p class="profile-bio">{config.bio}</p>
+    {config.bio && <p class="profile-bio">{config.bio}</p>}
 
     {config.links.length > 0 && (
         <ul class="profile-links">
