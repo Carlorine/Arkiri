@@ -1,17 +1,14 @@
 ---
-import { i18n } from "../i18n/translation";
-import I18nKey from "../i18n/i18nKey";
 import { efDate } from "../utils/post-index";
-import { getCategoryUrl, getTagUrl } from "../utils/url-utils";
+import { getTagUrl } from "../utils/url-utils";
 import UiText from "./common/UiText.astro";
-import { uiPair } from "../utils/ui-i18n";
 
 interface Props {
 	class: string;
 	published: Date;
 	updated?: Date;
+
 	tags: string[];
-	category: string | null;
 	hideTagsForMobile?: boolean;
 	hideUpdateDate?: boolean;
 }
@@ -19,33 +16,53 @@ const {
 	published,
 	updated,
 	tags,
-	category,
 	hideTagsForMobile = false,
 	hideUpdateDate = false,
 } = Astro.props;
 const className = Astro.props.class;
 const hasUpdate =
 	!hideUpdateDate && updated && updated.getTime() !== published.getTime();
+const visibleTags = tags.map((tag) => tag.trim()).filter(Boolean);
 ---
-<ul class:list={["ef-facts ef-field meta-facts", className]}>
-    <li><time datetime={published.toISOString()}>{efDate(published)}</time></li>
-    {hasUpdate && <li><time datetime={(updated as Date).toISOString()}>{efDate(updated as Date)}</time></li>}
-    <li>
-        <a href={getCategoryUrl(category)}>{category ? category : <UiText k={I18nKey.uncategorized} />}</a>
-    </li>
-    {tags && tags.length > 0 && (
-        <li class:list={[{ "tags-on-mobile": !hideTagsForMobile }]}>
-            {tags.map((tag, index) => (
+<div class:list={["ef-field meta-facts", className]}>
+    <time datetime={published.toISOString()}>{efDate(published)}</time>
+    {hasUpdate && (
+        <span class="updated">
+            <span class="divider" aria-hidden="true">｜</span>
+            <span><UiText en="Updated" zh="更新于" /> <time datetime={(updated as Date).toISOString()}>{efDate(updated as Date)}</time></span>
+        </span>
+    )}
+    {visibleTags.length > 0 && (
+        <span class:list={["meta-tags", { "hide-tags-on-mobile": hideTagsForMobile }]}>
+            <span class="divider" aria-hidden="true">｜</span>
+            {visibleTags.map((tag, index) => (
                 <span class="tag">
-                    {index > 0 && <span class="sep" aria-hidden="true">/</span>}
-                    <a href={getTagUrl(tag)}>{tag.trim()}</a>
+                    {index === 0
+                        ? <span class="hash" aria-hidden="true">#</span>
+                        : <span class="sep" aria-hidden="true">/</span>}
+                    <a href={getTagUrl(tag)} rel="tag">{tag}</a>
                 </span>
             ))}
-        </li>
+        </span>
     )}
-</ul>
+</div>
 
 <style>
+    .meta-facts {
+        line-height: 1.9;
+        letter-spacing: 0;
+        overflow-wrap: anywhere;
+    }
+    .meta-facts time {
+        white-space: nowrap;
+    }
+    .meta-facts .divider {
+        margin-inline: 0.55rem;
+        color: var(--ef-rule);
+    }
+    .meta-facts .hash {
+        margin-right: 0.35rem;
+    }
     .meta-facts a {
         color: inherit;
     }
@@ -60,14 +77,8 @@ const hasUpdate =
         color: var(--ef-rule);
     }
     @media (max-width: 719px) {
-        .meta-facts li:not(.tags-on-mobile) {
-            font-size: 0.75rem;
-        }
-        .meta-facts li:has(.tag) {
+        .hide-tags-on-mobile {
             display: none;
-        }
-        .meta-facts li.tags-on-mobile {
-            display: block;
         }
     }
 </style>

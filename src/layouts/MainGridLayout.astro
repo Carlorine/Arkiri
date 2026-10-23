@@ -115,6 +115,9 @@ const hasMargin = headings.length > 0;
         overflow-x: hidden;
         scrollbar-width: none;
     }
+    .is-article-margin .margin-inner {
+        max-height: calc((100dvh - var(--site-header-height) - 4rem) * 0.6);
+    }
     .margin-inner::-webkit-scrollbar { display: none; }
     .banner { border-bottom: 1px solid var(--ef-rule); }
     .banner-image {
@@ -125,12 +128,23 @@ const hasMargin = headings.length > 0;
     }
     @media (min-width: 1200px) {
         .shell {
-            grid-template-columns: minmax(0, 712px) 240px;
-            justify-content: center;
-            column-gap: 48px;
+            /* Preserve the home reading column's position. The second track
+               fills the remaining viewport, with the margin centred inside. */
+            --shell-inset: max(var(--ef-pad), calc((100vw - 1000px) / 2));
+            max-width: none;
+            margin-inline: var(--shell-inset) 0;
+            padding-inline: 0;
+            grid-template-columns: minmax(0, 712px) minmax(0, 1fr);
+        }
+        .shell:has(.post-sheet) {
+            /* Grow rightward from the home column's left edge. The margin
+               remains centred in the viewport space left beside the article. */
+            grid-template-columns: minmax(0, 800px) minmax(0, 1fr);
         }
         .shell-main { padding-bottom: 4rem; }
         .shell-margin {
+            width: 240px;
+            justify-self: center;
             padding-top: 2rem;
             border-top: 0;
         }
@@ -138,6 +152,9 @@ const hasMargin = headings.length > 0;
             position: sticky;
             top: var(--site-header-height);
         }
-        .shell-footer { padding-bottom: 4rem; }
+        .shell-footer {
+            margin-inline-end: var(--shell-inset);
+            padding-bottom: 4rem;
+        }
     }
 </style>

@@ -58,16 +58,18 @@ for (const heading of items) {
     .toc-head {
         margin: 0 0 0.75rem;
     }
-    /* Keep the contents aligned with the other margin panels. */
     .toc-list {
         margin: 0;
         padding: 0;
+        /* Keep the final chapter above the scroll area's bottom fade. */
+        padding-bottom: 0.75rem;
         list-style: none;
     }
     .toc-link {
         display: flex;
         align-items: baseline;
         gap: 0.5rem;
+        min-height: 1.6rem;
         padding: 0.35rem 0.5rem;
         color: var(--ef-ink-2);
         font-size: 0.875rem;
@@ -103,6 +105,11 @@ for (const heading of items) {
     .toc-link[aria-current="true"] .n {
         color: var(--ef-ink);
     }
+    @media (hover: none) {
+        .toc-link {
+            min-height: 2rem;
+        }
+    }
 </style>
 
 <script>
@@ -111,6 +118,28 @@ class TableOfContents extends HTMLElement {
     private headings: (HTMLElement | null)[] = [];
     private resizeObserver: ResizeObserver | null = null;
     private frame = 0;
+
+    private revealCurrent(link: HTMLAnchorElement | undefined) {
+        const scroller = this.closest<HTMLElement>(".margin-inner");
+        if (!link || !scroller || scroller.clientHeight === 0) return;
+
+        const bounds = scroller.getBoundingClientRect();
+        if (bounds.bottom <= 0 || bounds.top >= window.innerHeight) return;
+
+        const inset = Math.min(
+            2 * Number.parseFloat(getComputedStyle(document.documentElement).fontSize),
+            scroller.clientHeight / 4,
+        );
+        const item = link.getBoundingClientRect();
+
+        // Move only the TOC's own viewport. scrollIntoView would also move
+        // the article, and the masked edges must not hide the active label.
+        if (item.top < bounds.top + inset) {
+            scroller.scrollTop += item.top - bounds.top - inset;
+        } else if (item.bottom > bounds.bottom - inset) {
+            scroller.scrollTop += item.bottom - bounds.bottom + inset;
+        }
+    }
 
     private update = () => {
         this.frame = 0;
@@ -136,6 +165,7 @@ class TableOfContents extends HTMLElement {
             if (index === current) link.setAttribute("aria-current", "true");
             else link.removeAttribute("aria-current");
         });
+        this.revealCurrent(this.links[current]);
     };
 
     private scheduleUpdate = () => {

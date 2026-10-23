@@ -13,7 +13,6 @@ import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import PostMetadata from "../../components/PostMeta.astro";
 import { profileConfig, siteConfig } from "../../config";
 import { efDate, makePostNumbers } from "../../utils/post-index";
-import { url } from "../../utils/url-utils";
 
 export async function getStaticPaths() {
 	const blogEntries = await getSortedPosts();
@@ -55,32 +54,30 @@ const nextNumber = entry.data.nextSlug ? numbers.get(entry.data.nextSlug) ?? "" 
     <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
 
     <article class="ef-sheet post-sheet" data-pagefind-body data-pagefind-weight="10">
-        <p class="ef-crumb ef-field">
-            <a href={url("/")}>{i18n(I18nKey.home)}</a><span>{entry.data.category || i18n(I18nKey.uncategorized)}</span>
-        </p>
+        <header class="post-header">
+            <p class="ids">
+                <a class="ef-tag is-current" href={Astro.url.pathname} aria-current="page">{number}</a>
+                <a class="ef-kv" href={getCategoryUrl(entry.data.category)}>
+                    <span>{i18n(I18nKey.categories)}</span>
+                    <span>{entry.data.category || i18n(I18nKey.uncategorized)}</span>
+                </a>
+            </p>
 
-        <p class="ids">
-            <a class="ef-tag is-current" href={Astro.url.pathname} aria-current="page">{number}</a>
-            <a class="ef-kv" href={getCategoryUrl(entry.data.category)}>
-                <span>{i18n(I18nKey.categories)}</span>
-                <span>{entry.data.category || i18n(I18nKey.uncategorized)}</span>
-            </a>
-        </p>
+            <h1 class="ef-read post-title" data-pagefind-meta="title">{entry.data.title}</h1>
 
-        <PostMetadata
-            class="post-meta"
-            published={entry.data.published}
-            updated={entry.data.updated}
-            tags={entry.data.tags}
-            category={entry.data.category}
-        ></PostMetadata>
+            <PostMetadata
+                class="post-meta"
+                published={entry.data.published}
+                updated={entry.data.updated}
+                tags={entry.data.tags}
+            ></PostMetadata>
 
-        <h1 class="ef-read post-title" data-pagefind-meta="title">{entry.data.title}</h1>
-        <div class="ef-tri" aria-hidden="true"><i></i><i></i><i></i></div>
+            {entry.data.description && (
+                <p class="ef-lede ef-read post-lede">{entry.data.description}</p>
+            )}
 
-        {entry.data.description && (
-            <p class="ef-lede ef-read post-lede">{entry.data.description}</p>
-        )}
+            <div class="ef-tri" aria-hidden="true"><i></i><i></i><i></i></div>
+        </header>
 
         {entry.data.image && (
             <ImageWrapper
@@ -133,13 +130,14 @@ const nextNumber = entry.data.nextSlug ? numbers.get(entry.data.nextSlug) ?? "" 
 </MainGridLayout>
 
 <style>
-    /* One measure plus the sheet's own side padding, centred in the column. The
-       line length is decided by --ef-measure (33rem = 660px). The wide 32px
-       padding is desktop-only: on a phone it would narrow the reading column to
-       ~13 characters, so below 1200 the sheet keeps 1rem and the 660 measure.
-       Cap = 660 + 2 x 32 = 724, so at 1200+ the column (712) sets the box. */
+    /* The shell widens the article to the right of the home column's left edge.
+       Keep the type scale local, so index and navigation stay stable. */
     .post-sheet {
-        max-width: calc(var(--ef-measure) + 3.2rem);
+        --ef-t-body: 0.9rem;
+        --ef-t-h2: 1.3rem;
+        --ef-measure: 100%;
+        width: 100%;
+        max-width: none;
         margin-inline: auto;
         padding-inline: 1rem;
     }
@@ -148,28 +146,36 @@ const nextNumber = entry.data.nextSlug ? numbers.get(entry.data.nextSlug) ?? "" 
             padding-inline: 1.6rem;
         }
     }
+    .post-header {
+        display: grid;
+        gap: 1.2rem;
+    }
+    .post-header .ef-tri {
+        margin-top: 0.4rem;
+    }
     .ids {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         gap: 0.5rem;
-        margin: 0 0 0.75rem;
+        margin: 0;
     }
     .post-meta {
-        margin: 0 0 1.25rem;
+        margin: 0;
     }
     .post-title {
-        margin: 0 0 0.75rem;
+        margin: 0;
         font-family: var(--ef-font-ui);
-        font-size: var(--ef-t-h1);
+        font-size: clamp(1.4rem, 3vw, 1.8rem);
         font-weight: 700;
-        line-height: 1.15;
+        line-height: 1.4;
         letter-spacing: -0.01em;
         overflow-wrap: anywhere;
     }
     .post-lede {
-        margin: 1.25rem 0 0;
-        font-size: 1.05rem;
+        margin: 0;
+        font-size: 0.95rem;
+        line-height: 1.9;
         color: var(--ef-ink-2);
     }
     .post-cover {
@@ -177,8 +183,20 @@ const nextNumber = entry.data.nextSlug ? numbers.get(entry.data.nextSlug) ?? "" 
         border: 1px solid var(--ef-rule);
         aspect-ratio: 16 / 9;
     }
-    .post-prose {
+    .post-sheet :global(.post-prose) {
         margin-top: 2rem;
+    }
+    .post-sheet :global(.custom-md h1) {
+        font-size: 1.5rem;
+    }
+    .post-sheet :global(.custom-md h3) {
+        font-size: 1.1rem;
+    }
+    .post-sheet :global(.custom-md :is(h4, h5, h6)) {
+        font-size: 1rem;
+    }
+    .post-sheet :global(.custom-md table) {
+        font-size: 0.875rem;
     }
     .post-license {
         margin-top: 2.5rem;
@@ -186,7 +204,7 @@ const nextNumber = entry.data.nextSlug ? numbers.get(entry.data.nextSlug) ?? "" 
 
     .post-nav {
         margin-inline: auto;
-        max-width: calc(var(--ef-measure) + 2rem);
+        width: 100%;
         margin-top: 2.5rem;
     }
 </style>

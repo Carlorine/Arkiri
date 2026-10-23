@@ -2,7 +2,7 @@
    Project layer on top of endfield.css
    --------------------------------------------------------------------------
    Only two kinds of rules belong here:
-     1. token overrides (which font, which alias) — never new colours
+     1. token overrides (fonts, aliases, theme surfaces)
      2. layout and typography (grid, measure, hierarchy)
    Components come from src/styles/endfield.css (ef- classes).
    ========================================================================== */
@@ -31,6 +31,12 @@
   /* Outfit has a weight axis only; keep the kit's width tokens neutral. */
   --ef-wide: 100%;
   --ef-wider: 100%;
+}
+
+/* Dark sheets need a visible step above the page, especially without frames. */
+:root.dark {
+  --ef-paper: #121212;
+  --ef-panel: #282828;
 }
 
 /* Titles use the display face even when they also carry .ef-read. Keep
@@ -102,6 +108,10 @@
   border: 0;
   padding: 1.25rem 1.4rem;
 }
+/* The article margin recedes behind the reading sheet. */
+.margin-toc .ef-panel {
+  background: color-mix(in srgb, var(--ef-panel) 35%, transparent);
+}
 /* The tab used to hang 1px outside to sit on the border. With the border gone
    that 1px is a visible overhang, so it now ends exactly on the sheet. */
 #sidebar .ef-panel::before,
@@ -110,6 +120,9 @@
   top: 0;
   left: 0;
   right: 0;
+}
+.margin-toc .ef-panel::before {
+  opacity: 0.35;
 }
 
 /* "You are here" is one state and gets one look: the same solid signal block
