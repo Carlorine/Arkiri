@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540">
+  <rect width="960" height="540" fill="#f4f4f2"/>
+  <rect x="96" y="96" width="12" height="72" fill="#fffa00"/>
+  <g fill="#161616" font-family="sans-serif">
+    <text x="132" y="143" font-size="42" font-weight="700">Arkiri</text>
+    <text x="96" y="252" font-size="28">Reading progress</text>
+    <text x="96" y="400" font-size="22">A four-second video example</text>
+  </g>
+  <rect x="96" y="292" width="768" height="24" fill="#d9d9d6"/>
+  <rect x="96" y="292" width="192" height="24" fill="#161616"/>
+</svg>
