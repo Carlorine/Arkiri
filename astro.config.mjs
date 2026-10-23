@@ -2,7 +2,6 @@ import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
 import tailwind from "@astrojs/tailwind";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
-import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import swup from "@swup/astro";
 import expressiveCode from "astro-expressive-code";
 import icon from "astro-icon";
@@ -56,31 +55,31 @@ export default defineConfig({
 			},
 		}),
 		expressiveCode({
-			themes: [expressiveCodeConfig.theme, expressiveCodeConfig.theme],
+			themes: [expressiveCodeConfig.lightTheme, expressiveCodeConfig.theme],
+			useDarkModeMediaQuery: false,
+			themeCssSelector: (theme) => theme.type === "dark" ? ":root.dark" : ":root:not(.dark)",
 			plugins: [
 				pluginCollapsibleSections(),
-				pluginLineNumbers(),
 				pluginLanguageBadge(),
 				pluginCustomCopyButton()
 			],
 			defaultProps: {
 				wrap: true,
-				overridesByLang: {
-					'shellsession': {
-						showLineNumbers: false,
-					},
-				},
 			},
 			styleOverrides: {
-				codeBackground: "var(--codeblock-bg)",
+				// Opaque equivalents let syntax contrast correction account for the
+				// translucent frame over the reading sheet. CSS paints the frame once.
+				codeBackground: ({ theme }) => theme.type === "dark" ? "#353535" : "#f2f2f2",
+				gutterForeground: "var(--ef-ink-2)",
+				gutterHighlightForeground: "var(--ef-ink)",
 				borderRadius: "0.75rem",
-				borderColor: "none",
+				borderColor: "var(--codeblock-border)",
 				codeFontSize: "0.875rem",
 				codeFontFamily: "var(--ef-font-mono)",
 				codeLineHeight: "1.5rem",
 				frames: {
-					editorBackground: "var(--codeblock-bg)",
-					terminalBackground: "var(--codeblock-bg)",
+					editorBackground: "transparent",
+					terminalBackground: "transparent",
 					terminalTitlebarBackground: "var(--codeblock-topbar-bg)",
 					editorTabBarBackground: "var(--codeblock-topbar-bg)",
 					editorActiveTabBackground: "none",

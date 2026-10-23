@@ -3,7 +3,7 @@
  *
  * The kit's --ef-* variables are the single source of truth (light and dark are
  * two complete token sets there; the theme switches on <html class="dark">).
- * This file only keeps the old fuwari names alive so components that have not
+ * This file only keeps the legacy token names alive so components that have not
  * been rewritten yet resolve to kit values instead of a hue palette.
  *
  * There is no hue variable anymore: this style has exactly one accent, and it is a
@@ -43,8 +43,9 @@
   --inline-code-color var(--ef-ink)
   --selection-bg var(--ef-signal)
   --codeblock-selection var(--ef-mark)
-  --codeblock-bg #161616
-  --codeblock-topbar-bg #222222
+  --codeblock-bg rgba(0, 0, 0, 0.05)
+  --codeblock-topbar-bg rgba(0, 0, 0, 0.04)
+  --codeblock-border rgba(0, 0, 0, 0.12)
 
   --license-block-bg var(--ef-paper)
 
@@ -78,3 +79,8 @@
   --toc-btn-hover var(--ef-chip)
   --toc-btn-active var(--ef-rule)
   --toc-item-active var(--ef-ink)
+
+:root.dark
+  --codeblock-bg rgba(255, 255, 255, 0.06)
+  --codeblock-topbar-bg rgba(255, 255, 255, 0.04)
+  --codeblock-border rgba(255, 255, 255, 0.14)

@@ -94,5 +94,6 @@ export type BlogPostData = {
 };
 
 export type ExpressiveCodeConfig = {
+	lightTheme: string;
 	theme: string;
 };

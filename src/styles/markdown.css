@@ -29,8 +29,8 @@
     --tw-prose-captions: var(--ef-ink-2);
     --tw-prose-kbd: var(--ef-ink);
     --tw-prose-code: var(--ef-ink);
-    --tw-prose-pre-code: #ededed;
-    --tw-prose-pre-bg: #161616;
+    --tw-prose-pre-code: var(--ef-ink);
+    --tw-prose-pre-bg: var(--codeblock-bg);
     --tw-prose-th-borders: var(--ef-rule);
     --tw-prose-td-borders: var(--ef-rule);
 }
@@ -198,7 +198,6 @@
 
 .custom-md pre {
     overflow-x: auto;
-    border-radius: 0;
 }
 
 .custom-md pre code {
@@ -207,18 +206,18 @@
     background: none;
 }
 
-/* Expressive Code: square frames, dark block in both themes, chip buttons */
+/* Paint the translucent surface once; nested pre elements stay transparent. */
 .custom-md .expressive-code {
     margin-block: 1.25rem;
 }
 
 .custom-md .expressive-code .frame {
-    border-radius: 0;
+    background: var(--codeblock-bg);
 }
 
 .custom-md .expressive-code .frame pre,
 .custom-md .expressive-code pre {
-    border-radius: 0;
+    background: transparent;
 }
 
 .custom-md .expressive-code ::selection {
@@ -236,9 +235,9 @@
     justify-content: center;
     width: 2rem;
     height: 2rem;
-    border: 1px solid #3a3a3a;
-    background: #222222;
-    color: #ededed;
+    border: 1px solid var(--codeblock-border);
+    background: var(--ef-chip);
+    color: var(--ef-ink);
     opacity: 0;
     transition: opacity 120ms var(--ef-ease);
 }
@@ -256,7 +255,7 @@
 }
 
 .custom-md .copy-btn:active {
-    background: #3a3a3a;
+    background: var(--ef-rule);
 }
 
 .custom-md .copy-btn.success {
@@ -315,6 +314,17 @@
     font-weight: 600;
     letter-spacing: 0.04em;
     text-align: left;
+}
+
+/* Preserve the column alignment requested by GFM tables. */
+.custom-md th[align="center"],
+.custom-md td[align="center"] {
+    text-align: center;
+}
+
+.custom-md th[align="right"],
+.custom-md td[align="right"] {
+    text-align: right;
 }
 
 .custom-md tbody td {
