@@ -45,6 +45,7 @@ export const navBarConfig: NavBarConfig = {
 };
 
 export const profileConfig: ProfileConfig = {
+	avatar: "assets/images/profile-avatar.png",
 	name: "Arkiri",
 	bio: "",
 	links: [

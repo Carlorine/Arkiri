@@ -12,6 +12,7 @@ const config = profileConfig;
             src={config.avatar}
             alt="Profile Image of the Author"
             class="avatar-img"
+            position="50% 30%"
         ></ImageWrapper>
         <span class="avatar-mask" aria-hidden="true">
             <Icon name="fa6-regular:address-card" class="avatar-icon"></Icon>
@@ -52,8 +53,11 @@ const config = profileConfig;
         position: relative;
         display: block;
         box-sizing: border-box;
-        width: 96px;
-        height: 96px;
+        width: 160px;
+        height: 160px;
+        max-width: 100%;
+        aspect-ratio: 1;
+        flex-shrink: 0;
         overflow: hidden;
         border: 1px solid var(--ef-rule);
         /* the single exception to "radius is always 0" */
@@ -150,8 +154,8 @@ const config = profileConfig;
 
     @media (max-width: 719px) {
         .avatar-link {
-            width: 80px;
-            height: 80px;
+            width: 128px;
+            height: 128px;
         }
         .avatar-link :global(.avatar-icon) {
             font-size: 1.5rem;
