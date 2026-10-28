@@ -1,8 +1,11 @@
 ---
+import { Icon } from "astro-icon/components";
 import { licenseConfig, profileConfig } from "../../config";
 import I18nKey from "../../i18n/i18nKey";
 import { i18n } from "../../i18n/translation";
 import { efDate } from "../../utils/post-index";
+import { getPostUrlBySlug } from "../../utils/url-utils";
+import UiText from "../common/UiText.astro";
 
 interface Props {
 	title: string;
@@ -11,21 +14,73 @@ interface Props {
 	class: string;
 }
 
-const { title, pubDate } = Astro.props;
+const { title, slug, pubDate } = Astro.props;
 const className = Astro.props.class;
 const licenseConf = licenseConfig;
-const postUrl = decodeURIComponent(Astro.url.toString());
+const postUrl = new URL(getPostUrlBySlug(slug), Astro.site ?? Astro.url).href;
 ---
 <section class:list={["license", className]} aria-label={i18n(I18nKey.license)}>
     <p class="ef-eyebrow slash license-head">{i18n(I18nKey.license)}</p>
-    <p class="license-title">{title}</p>
-    <a class="license-url ef-field" href={postUrl}>{postUrl}</a>
+    <p class="license-title">
+        <span class="license-title-text">{title}</span>
+        <button type="button" class="license-copy" data-copy-url={postUrl} data-state="idle">
+            <span class="copy-state" data-copy-state="idle">
+                <Icon name="material-symbols:link-rounded" aria-hidden="true" />
+                <UiText en="Copy link" zh="复制链接" />
+            </span>
+            <span class="copy-state" data-copy-state="copied">
+                <Icon name="material-symbols:check-rounded" aria-hidden="true" />
+                <UiText en="Copied" zh="已复制" />
+            </span>
+            <span class="copy-state" data-copy-state="error">
+                <Icon name="material-symbols:refresh-rounded" aria-hidden="true" />
+                <UiText en="Retry copy" zh="重新复制" />
+            </span>
+        </button>
+    </p>
+    <span class="sr-only copy-feedback" role="status" aria-atomic="true"></span>
     <ul class="ef-facts ef-field license-facts">
         <li><span>{i18n(I18nKey.author)}</span> {profileConfig.name}</li>
         <li><span>{i18n(I18nKey.publishedAt)}</span> <time datetime={pubDate.toISOString()}>{efDate(pubDate)}</time></li>
         <li><a href={licenseConf.url} target="_blank" rel="noopener">{licenseConf.name}</a></li>
     </ul>
 </section>
+
+<script>
+import { currentUiLang } from "../../utils/ui-lang-client";
+
+const resetTimers = new WeakMap<HTMLButtonElement, ReturnType<typeof setTimeout>>();
+
+// Delegation also handles articles reached through swup navigation.
+document.addEventListener("click", async (event) => {
+    const target = event.target;
+    if (!(target instanceof Element)) return;
+    const button = target.closest<HTMLButtonElement>(".license-copy");
+    if (!button || button.disabled) return;
+    const url = button.dataset.copyUrl;
+    const feedback = button.closest(".license")?.querySelector(".copy-feedback");
+    if (!url || !feedback) return;
+
+    clearTimeout(resetTimers.get(button));
+    feedback.textContent = "";
+    button.disabled = true;
+    try {
+        await navigator.clipboard.writeText(url);
+        button.dataset.state = "copied";
+        feedback.textContent = currentUiLang() === "zh" ? "文章链接已复制" : "Article link copied";
+        resetTimers.set(button, setTimeout(() => {
+            button.dataset.state = "idle";
+        }, 2000));
+    } catch {
+        button.dataset.state = "error";
+        feedback.textContent = currentUiLang() === "zh"
+            ? "无法复制链接，请允许剪贴板访问后重试。"
+            : "Could not copy the link. Allow clipboard access and try again.";
+    } finally {
+        button.disabled = false;
+    }
+});
+</script>
 
 <style>
     .license {
@@ -36,19 +91,60 @@ const postUrl = decodeURIComponent(Astro.url.toString());
         margin: 0 0 0.5rem;
     }
     .license-title {
-        margin: 0 0 0.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0 0 0.6rem;
         font-weight: 700;
     }
-    .license-url {
-        display: block;
-        margin-bottom: 0.6rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+    .license-title-text {
+        flex: 1;
+        min-width: 0;
+        overflow-wrap: anywhere;
     }
-    .license-url:hover {
+    .license-copy {
+        display: inline-grid;
+        flex: none;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        padding: 0 0.5rem;
+        white-space: nowrap;
+        font-family: var(--ef-font-ui);
+        font-size: var(--ef-t-field);
+        font-weight: 500;
+        line-height: 1.5;
         color: var(--ef-ink);
-        text-decoration: underline;
+        background: transparent;
+        border: 0;
+        border-radius: 6px;
+        transition: color 120ms var(--ef-ease), background-color 120ms var(--ef-ease);
+    }
+    .license-copy:is(:hover, :focus-visible) {
+        background: var(--ef-chip);
+    }
+    .license-copy:active,
+    .license-copy[data-state="copied"] {
+        color: var(--ef-on-signal);
+        background: var(--ef-signal);
+    }
+    .license-copy:disabled {
+        cursor: progress;
+    }
+    .copy-state {
+        display: inline-flex;
+        grid-area: 1 / 1;
+        visibility: hidden;
+        align-items: center;
+        gap: 0.35em;
+    }
+    .license-copy[data-state="idle"] [data-copy-state="idle"],
+    .license-copy[data-state="copied"] [data-copy-state="copied"],
+    .license-copy[data-state="error"] [data-copy-state="error"] {
+        visibility: visible;
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .license-copy { transition: none; }
     }
     .license-facts {
         margin: 0;
