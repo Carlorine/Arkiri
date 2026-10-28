@@ -31,7 +31,11 @@ export function uiAttrs(key: I18nKey, attr: string): Record<string, string> {
 }
 
 /** Same as uiAttrs, for strings that are not in the dictionaries yet. */
-export function uiAttrsRaw(attr: string, en: string, zh: string): Record<string, string> {
+export function uiAttrsRaw(
+	attr: string,
+	en: string,
+	zh: string,
+): Record<string, string> {
 	return {
 		"data-i18n-attr": attr,
 		"data-i18n-en": en,

@@ -1,8 +1,8 @@
 ---
 import type { GetStaticPaths } from "astro";
+import UiText from "../components/common/UiText.astro";
 import Pagination from "../components/control/Pagination.astro";
 import Hero from "../components/ef/Hero.astro";
-import UiText from "../components/common/UiText.astro";
 import PostPage from "../components/PostPage.astro";
 import { PAGE_SIZE } from "../constants/constants";
 import I18nKey from "../i18n/i18nKey";
@@ -10,8 +10,8 @@ import { i18n } from "../i18n/translation";
 import MainGridLayout from "../layouts/MainGridLayout.astro";
 import { getSortedPosts } from "../utils/content-utils";
 import { efDate, makePostNumbers } from "../utils/post-index";
-import { getPostUrlBySlug } from "../utils/url-utils";
 import { uiPair } from "../utils/ui-i18n";
+import { getPostUrlBySlug } from "../utils/url-utils";
 
 export const getStaticPaths = (async ({ paginate }) => {
 	const allBlogPosts = await getSortedPosts();

@@ -1,7 +1,7 @@
 ---
 import type { MarkdownHeading } from "astro";
-import UiText from "../common/UiText.astro";
 import { siteConfig } from "../../config";
+import UiText from "../common/UiText.astro";
 
 interface Props {
 	class?: string;
@@ -21,7 +21,9 @@ const items = headings.filter((heading) => heading.depth <= maxDepth);
 
 const removeTailingHash = (text: string) => {
 	const lastIndexOfHash = text.lastIndexOf("#");
-	return lastIndexOfHash === text.length - 1 ? text.substring(0, lastIndexOfHash) : text;
+	return lastIndexOfHash === text.length - 1
+		? text.substring(0, lastIndexOfHash)
+		: text;
 };
 
 // 01, 02, ... — the number of each top-level section, a real position in the

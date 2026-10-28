@@ -1,8 +1,8 @@
 ---
-import I18nKey from "../../i18n/i18nKey";
 import { profileConfig, siteConfig } from "../../config";
-import { url } from "../../utils/url-utils";
+import I18nKey from "../../i18n/i18nKey";
 import { uiPair } from "../../utils/ui-i18n";
+import { url } from "../../utils/url-utils";
 import UiText from "../common/UiText.astro";
 
 interface Recent {
@@ -21,8 +21,10 @@ interface Props {
 const { total, totalWords, latest } = Astro.props;
 
 // plural forms: the number is real, so the unit has to agree with it
-const wordPair = (n: number) => uiPair(n === 1 ? I18nKey.wordCount : I18nKey.wordsCount);
-const postPair = (n: number) => uiPair(n === 1 ? I18nKey.postCount : I18nKey.postsCount);
+const wordPair = (n: number) =>
+	uiPair(n === 1 ? I18nKey.wordCount : I18nKey.wordsCount);
+const postPair = (n: number) =>
+	uiPair(n === 1 ? I18nKey.postCount : I18nKey.postsCount);
 ---
 
 <section class="hero">

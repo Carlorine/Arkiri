@@ -3,8 +3,8 @@ import { Icon } from "astro-icon/components";
 import { navBarConfig, siteConfig } from "../config";
 import { LinkPresets } from "../constants/link-presets";
 import { LinkPreset, type NavBarLink } from "../types/config";
-import { url } from "../utils/url-utils";
 import { isNavPathCurrent } from "../utils/nav-utils";
+import { url } from "../utils/url-utils";
 import LangSwitch from "./common/LangSwitch.astro";
 import LightDarkSwitch from "./LightDarkSwitch.astro";
 import DisplaySettings from "./widget/DisplaySettings.svelte";
@@ -22,7 +22,9 @@ let links: NavBarLink[] = navBarConfig.links.map(
 );
 
 const enLabels: Record<string, string> = {
-    "/": "Home", "/archive/": "Archive", "/about/": "About",
+	"/": "Home",
+	"/archive/": "Archive",
+	"/about/": "About",
 };
 const enLabel = (link: NavBarLink): string => enLabels[link.url] ?? link.name;
 const isCurrent = (link: NavBarLink): boolean =>

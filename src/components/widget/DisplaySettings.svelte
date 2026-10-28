@@ -44,7 +44,9 @@ function setMotion(next: Motion) {
 onMount(() => {
 	const storedMotion = localStorage.getItem("motion");
 	if (isMotion(storedMotion)) motion = storedMotion;
-	const off = onUiLangChange((lang) => { uiLang = lang; });
+	const off = onUiLangChange((lang) => {
+		uiLang = lang;
+	});
 	return off;
 });
 </script>

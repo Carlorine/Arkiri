@@ -46,8 +46,12 @@ const jsonLd = {
 		: siteConfig.lang.replace("_", "-"),
 };
 
-const prevNumber = entry.data.prevSlug ? numbers.get(entry.data.prevSlug) ?? "" : "";
-const nextNumber = entry.data.nextSlug ? numbers.get(entry.data.nextSlug) ?? "" : "";
+const prevNumber = entry.data.prevSlug
+	? (numbers.get(entry.data.prevSlug) ?? "")
+	: "";
+const nextNumber = entry.data.nextSlug
+	? (numbers.get(entry.data.nextSlug) ?? "")
+	: "";
 ---
 
 <MainGridLayout banner={entry.data.image} title={entry.data.title} description={entry.data.description} lang={entry.data.lang} setOGTypeArticle={true} headings={headings} showProfile={false} showWidgets={false}>

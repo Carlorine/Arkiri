@@ -36,11 +36,11 @@ export const siteConfig: SiteConfig = {
 
 export const navBarConfig: NavBarConfig = {
 	links: [
-        { name: "Blog", url: "/blog/" },
-        { name: "Notes", url: "/notes/" },
-        { name: "Projects", url: "/projects/" },
-        { name: "Links", url: "/links/" },
-        { name: "About", url: "/about/" },
+		{ name: "Blog", url: "/blog/" },
+		{ name: "Notes", url: "/notes/" },
+		{ name: "Projects", url: "/projects/" },
+		{ name: "Links", url: "/links/" },
+		{ name: "About", url: "/about/" },
 	],
 };
 

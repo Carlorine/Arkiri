@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { SearchResult } from "@/global";
 import { url } from "@utils/url-utils";
 import { onMount } from "svelte";
+import type { SearchResult } from "@/global";
 import { currentUiLang, onUiLangChange } from "../utils/ui-lang-client";
 
 let uiLang = "en";
@@ -14,67 +14,82 @@ let requestId = 0;
 let timer: ReturnType<typeof setTimeout> | undefined;
 let pagefind: Promise<Window["pagefind"]> | undefined;
 
-$: copy = uiLang === "zh" ? {
-    label: "搜索文章", placeholder: "输入关键词…", hint: "搜索文章标题与正文。",
-    loading: "正在搜索…", empty: "没有找到相关文章，试试其他关键词。",
-    error: "搜索暂时不可用，请重试。", retry: "重试", count: "篇相关文章",
-    dev: "搜索索引将在构建后生成，请在预览版本中搜索。",
-} : {
-    label: "Search articles", placeholder: "Enter a keyword…", hint: "Search article titles and content.",
-    loading: "Searching…", empty: "No articles found. Try a different keyword.",
-    error: "Search is unavailable. Please try again.", retry: "Retry", count: "articles found",
-    dev: "The search index is generated during build. Search is available in the preview.",
-};
+$: copy =
+	uiLang === "zh"
+		? {
+				label: "搜索文章",
+				placeholder: "输入关键词…",
+				hint: "搜索文章标题与正文。",
+				loading: "正在搜索…",
+				empty: "没有找到相关文章，试试其他关键词。",
+				error: "搜索暂时不可用，请重试。",
+				retry: "重试",
+				count: "篇相关文章",
+				dev: "搜索索引将在构建后生成，请在预览版本中搜索。",
+			}
+		: {
+				label: "Search articles",
+				placeholder: "Enter a keyword…",
+				hint: "Search article titles and content.",
+				loading: "Searching…",
+				empty: "No articles found. Try a different keyword.",
+				error: "Search is unavailable. Please try again.",
+				retry: "Retry",
+				count: "articles found",
+				dev: "The search index is generated during build. Search is available in the preview.",
+			};
 
 async function search(query: string, id: number) {
-    try {
-        // Load the index only on the search page and reuse it between queries.
-        pagefind ??= import(/* @vite-ignore */ url("/pagefind/pagefind.js"));
-        const engine = await pagefind;
-        const response = await engine.search(query);
-        const hits = await Promise.all(response.results.map((item) => item.data()));
-        if (id === requestId) result = hits;
-    } catch (error) {
-        if (id === requestId) {
-            failed = true;
-            result = [];
-            pagefind = undefined;
-        }
-        console.error("Search failed:", error);
-    } finally {
-        if (id === requestId) isSearching = false;
-    }
+	try {
+		// Load the index only on the search page and reuse it between queries.
+		pagefind ??= import(/* @vite-ignore */ url("/pagefind/pagefind.js"));
+		const engine = await pagefind;
+		const response = await engine.search(query);
+		const hits = await Promise.all(response.results.map((item) => item.data()));
+		if (id === requestId) result = hits;
+	} catch (error) {
+		if (id === requestId) {
+			failed = true;
+			result = [];
+			pagefind = undefined;
+		}
+		console.error("Search failed:", error);
+	} finally {
+		if (id === requestId) isSearching = false;
+	}
 }
 
 function scheduleSearch(value: string) {
-    clearTimeout(timer);
-    const id = ++requestId;
-    const query = value.trim();
-    result = [];
-    failed = false;
-    isSearching = !!query && import.meta.env.PROD;
-    const current = new URL(window.location.href);
-    if (query) current.searchParams.set("q", query);
-    else current.searchParams.delete("q");
-    window.history.replaceState(window.history.state, "", current);
-    if (isSearching) timer = setTimeout(() => search(query, id), 200);
+	clearTimeout(timer);
+	const id = ++requestId;
+	const query = value.trim();
+	result = [];
+	failed = false;
+	isSearching = !!query && import.meta.env.PROD;
+	const current = new URL(window.location.href);
+	if (query) current.searchParams.set("q", query);
+	else current.searchParams.delete("q");
+	window.history.replaceState(window.history.state, "", current);
+	if (isSearching) timer = setTimeout(() => search(query, id), 200);
 }
 
 onMount(() => {
-    uiLang = currentUiLang();
-    const offLang = onUiLangChange((lang) => { uiLang = lang; });
-    const restoreQuery = () => {
-        keyword = new URL(window.location.href).searchParams.get("q") ?? "";
-    };
-    restoreQuery();
-    ready = true;
-    window.addEventListener("popstate", restoreQuery);
-    return () => {
-        offLang();
-        clearTimeout(timer);
-        ++requestId;
-        window.removeEventListener("popstate", restoreQuery);
-    };
+	uiLang = currentUiLang();
+	const offLang = onUiLangChange((lang) => {
+		uiLang = lang;
+	});
+	const restoreQuery = () => {
+		keyword = new URL(window.location.href).searchParams.get("q") ?? "";
+	};
+	restoreQuery();
+	ready = true;
+	window.addEventListener("popstate", restoreQuery);
+	return () => {
+		offLang();
+		clearTimeout(timer);
+		++requestId;
+		window.removeEventListener("popstate", restoreQuery);
+	};
 });
 
 $: if (ready) scheduleSearch(keyword);
