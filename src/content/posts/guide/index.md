@@ -10,7 +10,9 @@ draft: false
 
 > Cover image source: [Source](https://image.civitai.com/xG1nkqKTMzGDvpLrqFT7WA/208fc754-890d-4adb-9753-2c963332675d/width=2048/01651-1456859105-(colour_1.5),girl,_Blue,yellow,green,cyan,purple,red,pink,_best,8k,UHD,masterpiece,male%20focus,%201boy,gloves,%20ponytail,%20long%20hair,.jpeg)
 
-This blog template is built with [Astro](https://astro.build/). For the things that are not mentioned in this guide, you may find the answers in the [Astro Docs](https://docs.astro.build/).
+This page is an old template note. The current writing and publishing steps are in [内容与格式全览](/posts/content-format-guide/), and the syntax that actually renders is listed in [Markdown 兼容性核对](/posts/markdown-compatibility/).
+
+This site is built with [Astro](https://astro.build/). For the things that are not mentioned in those guides, you may find the answers in the [Astro Docs](https://docs.astro.build/).
 
 ## Front-matter of Posts
 
@@ -34,7 +36,7 @@ draft: false
 | `image`       | The cover image path of the post.<br/>1. Start with `http://` or `https://`: Use web image<br/>2. Start with `/`: For image in `public` dir<br/>3. With none of the prefixes: Relative to the markdown file |
 | `tags`        | The tags of the post.                                                                                                                                                                                       |
 | `category`    | The category of the post.                                                                                                                                                                                   |
-| `draft`        | If this post is still a draft, which won't be displayed.                                                                                                                                                    |
+| `draft`        | `true` hides the post from production builds. `pnpm dev` still shows it, with a draft label.                                                                                                                |
 
 ## Where to Place the Post Files
 

@@ -277,11 +277,18 @@
     background: var(--ef-ink);
     color: transparent;
     padding: 0 0.125rem;
+    cursor: pointer;
     transition: background-color 150ms var(--ef-ease);
 }
-.custom-md spoiler:hover {
+.custom-md spoiler:hover,
+.custom-md spoiler:focus-visible,
+.custom-md spoiler.is-open {
     background: var(--ef-chip);
     color: var(--ef-ink);
+}
+.custom-md spoiler:focus-visible {
+    outline: 2px solid var(--ef-ink);
+    outline-offset: 2px;
 }
 .custom-md spoiler * {
     color: inherit;

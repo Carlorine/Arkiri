@@ -14,6 +14,7 @@
     font-size: var(--ef-t-body);
     line-height: 1.85;
     color: var(--ef-ink);
+    overflow-wrap: break-word;
 
     /* kept for the GitHub card and admonitions, which read these */
     --tw-prose-body: var(--ef-ink);
@@ -64,6 +65,7 @@
     font-weight: 700;
     line-height: 1.3;
     margin-block: 2em 0.75em;
+    overflow-wrap: anywhere;
 }
 
 .custom-md h2 {
@@ -73,6 +75,7 @@
     font-size: var(--ef-t-h2);
     font-weight: 700;
     line-height: 1.45;
+    overflow-wrap: anywhere;
 }
 
 .custom-md h3 {
@@ -82,6 +85,7 @@
     font-size: 1.1rem;
     font-weight: 700;
     line-height: 1.5;
+    overflow-wrap: anywhere;
 }
 
 .custom-md h4,
@@ -90,6 +94,7 @@
     margin-block: 1.6em 0.6em;
     font-size: 1rem;
     font-weight: 700;
+    overflow-wrap: anywhere;
 }
 
 /* the "#" that appears on hover, for linking to a section */
@@ -127,6 +132,7 @@
     background-size: 100% 0.4em;
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
+    overflow-wrap: anywhere;
     transition: background-size 200ms var(--ef-mech);
 }
 
@@ -139,6 +145,17 @@
     background-image: none;
     border-bottom: 1.5px solid var(--ef-signal);
     padding-bottom: 0.05em;
+}
+
+/* A linked image is the picture, not a highlighted word. */
+.custom-md a:not(.no-styling, .anchor):has(> img) {
+    background-image: none;
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+:root.dark .custom-md a:not(.no-styling, .anchor):has(> img) {
+    border-bottom: 0;
 }
 
 /* ---------- lists ---------- */
@@ -166,6 +183,21 @@
 .custom-md li > ul,
 .custom-md li > ol {
     margin-block: 0.25em;
+}
+
+/* Task items already show a checkbox; the em-dash marker would double it. */
+.custom-md li:has(> input[type="checkbox"]) {
+    list-style: none;
+}
+
+.custom-md li:has(> input[type="checkbox"])::marker {
+    content: none;
+}
+
+.custom-md li > input[type="checkbox"] {
+    margin: 0 0.45em 0 0;
+    vertical-align: middle;
+    accent-color: var(--ef-ink);
 }
 
 /* ---------- quotes ---------- */
@@ -297,9 +329,23 @@
 }
 
 /* ---------- tables ---------- */
-.custom-md table {
-    width: 100%;
+.custom-md .table-scroll {
+    max-width: 100%;
     margin-block: 1.6em;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--ef-rule) transparent;
+}
+
+.custom-md .table-scroll:focus-visible {
+    outline: 2px solid var(--ef-ink);
+    outline-offset: 2px;
+}
+
+.custom-md table {
+    width: max-content;
+    min-width: 100%;
+    margin-block: 0;
     border-collapse: collapse;
     font-size: 0.9375rem;
 }
@@ -339,9 +385,20 @@
 }
 
 /* ---------- figures, rules, formulas ---------- */
+.custom-md img,
+.custom-md video {
+    max-width: 100%;
+    height: auto;
+}
+
 .custom-md img {
     border-radius: 0;
     border: 1px solid var(--ef-rule);
+}
+
+.custom-md audio,
+.custom-md iframe {
+    max-width: 100%;
 }
 
 .custom-md figure figcaption {
@@ -400,4 +457,55 @@
 
 .custom-md strong {
     font-weight: 700;
+}
+
+.custom-md .footnotes {
+    margin-top: 2.4em;
+    color: var(--ef-ink-2);
+    font-size: 0.875rem;
+}
+
+/* remark-gfm marks this heading sr-only, but that utility is not generated. */
+.custom-md .footnotes > h2 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.custom-md .footnotes ol {
+    padding-left: 1.4em;
+}
+
+.custom-md sup {
+    font-size: 0.75em;
+    line-height: 0;
+}
+
+.custom-md kbd {
+    font-family: var(--ef-font-mono);
+    font-size: 0.84em;
+    padding: 0.05em 0.35em;
+    border: 1px solid var(--ef-rule);
+    background: var(--ef-paper);
+}
+
+.custom-md details {
+    margin-block: 1.1em;
+    padding: 0.8rem 1rem;
+    border: 1px solid var(--ef-rule);
+}
+
+.custom-md summary {
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.custom-md details > :not(summary) {
+    margin-top: 0.7em;
 }

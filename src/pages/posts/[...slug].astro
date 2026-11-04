@@ -9,6 +9,7 @@ import { getSortedPosts } from "@utils/content-utils";
 import { getCategoryUrl, getDir, getPostUrlBySlug } from "@utils/url-utils";
 import { Icon } from "astro-icon/components";
 import { licenseConfig } from "src/config";
+import UiText from "../../components/common/UiText.astro";
 import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import PostMetadata from "../../components/PostMeta.astro";
 import { profileConfig, siteConfig } from "../../config";
@@ -59,6 +60,11 @@ const nextNumber = entry.data.nextSlug
 
     <article class="ef-sheet post-sheet" data-pagefind-body data-pagefind-weight="10">
         <header class="post-header">
+            {entry.data.draft && (
+                <p class="draft-flag">
+                    <UiText en="Draft. Production builds omit this post." zh="草稿。正式构建不会发布这篇文章。" />
+                </p>
+            )}
             <p class="ids">
                 <a class="ef-tag is-current" href={Astro.url.pathname} aria-current="page">{number}</a>
                 <a class="ef-kv" href={getCategoryUrl(entry.data.category)}>
@@ -153,6 +159,13 @@ const nextNumber = entry.data.nextSlug
     .post-header {
         display: grid;
         gap: 1.2rem;
+    }
+    .draft-flag {
+        margin: 0;
+        color: var(--ef-ink-2);
+        font-family: var(--ef-font-ui);
+        font-size: 0.8125rem;
+        letter-spacing: 0.04em;
     }
     .post-header .ef-tri {
         margin-top: 0.4rem;

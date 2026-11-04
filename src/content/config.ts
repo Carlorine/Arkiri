@@ -1,10 +1,19 @@
 import { defineCollection, z } from "astro:content";
 
+/** Accept a YAML date or a quoted date string. Empty values stay empty. */
+function dateInput(value: unknown): unknown {
+	if (value == null || value === "") return undefined;
+	return value;
+}
+
+const publishedDate = z.preprocess(dateInput, z.coerce.date());
+const optionalDate = z.preprocess(dateInput, z.coerce.date().optional());
+
 const postsCollection = defineCollection({
 	schema: z.object({
 		title: z.string(),
-		published: z.date(),
-		updated: z.date().optional(),
+		published: publishedDate,
+		updated: optionalDate.optional(),
 		draft: z.boolean().optional().default(false),
 		description: z.string().optional().default(""),
 		image: z.string().optional().default(""),

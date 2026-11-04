@@ -22,7 +22,7 @@ interface Props {
 	/** No.024 — the real, stable number of this post */
 	number: string;
 }
-const { entry, title, url, published, number, style } = Astro.props;
+const { entry, title, url, published, draft, number, style } = Astro.props;
 
 const { remarkPluginFrontmatter } = await entry.render();
 const words = remarkPluginFrontmatter.words;
@@ -32,7 +32,7 @@ const words = remarkPluginFrontmatter.words;
     <a class="ef-record" href={url} aria-label={title}>
         <span class="ef-tag">{number}</span>
         <time class="ef-field" datetime={published.toISOString()}>{efDate(published)}</time>
-        <span class="name ef-read">{title}</span>
+        <span class="name ef-read">{title}{draft && <> · <UiText en="Draft" zh="草稿" /></>}</span>
         <span class="ef-field count">{words} <UiText en={uiPair(words === 1 ? I18nKey.wordCount : I18nKey.wordsCount).en} zh={uiPair(words === 1 ? I18nKey.wordCount : I18nKey.wordsCount).zh} /></span>
     </a>
 </li>

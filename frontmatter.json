@@ -6,14 +6,18 @@
   "frontMatter.content.pageFolders": [
     {
       "title": "posts",
-      "path": "[[workspace]]/src/content/posts"
+      "path": "[[workspace]]/src/content/posts",
+      "previewPath": "/posts/{{slug}}",
+      "trailingSlash": true
     }
   ],
   "frontMatter.taxonomy.contentTypes": [
     {
       "name": "default",
       "pageBundle": true,
-      "previewPath": "'blog'",
+      "fileType": "md",
+      "previewPath": "/posts/{{slug}}",
+      "trailingSlash": true,
       "filePrefix": null,
       "clearEmpty": true,
       "fields": [
@@ -36,6 +40,11 @@
           "isPublishDate": true
         },
         {
+          "title": "updated",
+          "name": "updated",
+          "type": "datetime"
+        },
+        {
           "title": "preview",
           "name": "image",
           "type": "image",
@@ -54,11 +63,12 @@
         {
           "title": "draft",
           "name": "draft",
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         },
         {
-          "title": "language",
-          "name": "language",
+          "title": "lang",
+          "name": "lang",
           "type": "string"
         }
       ]
