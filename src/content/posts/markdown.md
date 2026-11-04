@@ -7,6 +7,8 @@ category: Examples
 draft: false
 ---
 
+> 这是上游模板留下的英文样本。定义列表、行块、Pandoc 表格，以及把 `---` / `...` 自动换成破折号和省略号，都不会按下文旧说明生效。当前会渲染的语法见[兼容性核对](/posts/markdown-compatibility/)和[内容与格式全览](/posts/content-format-guide/)。
+
 # An h1 header
 
 Paragraphs are separated by a blank line.
@@ -27,9 +29,7 @@ content starts at 4-columns in.
 > They can span multiple paragraphs,
 > if you like.
 
-Use 3 dashes for an em-dash. Use 2 dashes for ranges (ex., "it's all
-in chapters 12--14"). Three dots ... will be converted to an ellipsis.
-Unicode is supported. ☺
+Three dashes inside a sentence stay as `---`. `...` is not rewritten as an ellipsis; type the glyph you want. Unicode is supported. ☺
 
 ## An h2 header
 
@@ -100,58 +100,27 @@ doc](#an-h2-header). Here's a footnote [^1].
 
 [^1]: Footnote text goes here.
 
-Tables can look like this:
+Pandoc grid tables are not rendered. Use a GFM table instead:
 
-size material color
-
----
-
-9 leather brown
-10 hemp canvas natural
-11 glass transparent
-
-Table: Shoes, their sizes, and what they're made of
-
-(The above is the caption for the table.) Pandoc also supports
-multi-line tables:
-
----
-
-keyword text
-
----
-
-red Sunsets, apples, and
-other red or reddish
-things.
-
-green Leaves, grass, frogs
-and other things it's
-not easy being.
-
----
+| size | material | color |
+| ---: | :--- | :--- |
+| 9 | leather | brown |
+| 10 | hemp canvas | natural |
+| 11 | glass | transparent |
 
 A horizontal rule follows.
 
 ---
 
-Here's a definition list:
+Definition lists and line blocks are Pandoc syntax. They stay ordinary paragraphs and lines here:
 
+```markdown
 apples
 : Good for making applesauce.
-oranges
-: Citrus!
-tomatoes
-: There's no "e" in tomatoe.
-
-Again, text is indented 4 spaces. (Put a blank line between each
-term/definition pair to spread things out more.)
-
-Here's a "line block":
 
 | Line one
 | Line too
-| Line tree
+```
 
 and images can be specified like so:
 

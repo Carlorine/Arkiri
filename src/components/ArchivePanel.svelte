@@ -11,6 +11,7 @@ type ArchivePostData = {
 	/* the collection schema allows null here */
 	category?: string | null;
 	published: Date | string;
+	draft?: boolean;
 };
 
 type ArchivePost = {
@@ -117,7 +118,7 @@ onMount(() => {
                         <a class="ef-record" href={getPostUrlBySlug(post.slug)} aria-label={post.data.title}>
                             <span class="ef-tag">{numbers[post.slug] ?? ""}</span>
                             <time class="ef-field" datetime={published(post).toISOString()}>{efDate(published(post))}</time>
-                            <span class="name ef-read">{post.data.title}</span>
+                            <span class="name ef-read">{post.data.title}{#if post.data.draft} · <span data-l="en">Draft</span><span data-l="zh">草稿</span>{/if}</span>
                             <span class="ef-field arch-tags">{formatTag(post.data.tags)}</span>
                         </a>
                     </li>

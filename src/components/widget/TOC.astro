@@ -12,12 +12,17 @@ let { headings = [] } = Astro.props;
 const className = Astro.props.class;
 const isPostsRoute = Astro.url.pathname.startsWith("/posts/");
 
+// GFM's footnote label is an h2 for screen readers. It is not a section.
+const bodyHeadings = headings.filter(
+	(heading) => heading.slug !== "footnote-label",
+);
+
 let minDepth = 10;
-for (const heading of headings) {
+for (const heading of bodyHeadings) {
 	minDepth = Math.min(minDepth, heading.depth);
 }
 const maxDepth = Math.min(minDepth + (siteConfig.toc.depth ?? 2) - 1, 6);
-const items = headings.filter((heading) => heading.depth <= maxDepth);
+const items = bodyHeadings.filter((heading) => heading.depth <= maxDepth);
 
 const removeTailingHash = (text: string) => {
 	const lastIndexOfHash = text.lastIndexOf("#");
@@ -94,6 +99,7 @@ for (const heading of items) {
     }
     .toc-link .t {
         min-width: 0;
+        overflow-wrap: anywhere;
     }
     .toc-list li.sub .toc-link {
         margin-left: 1rem;

@@ -32,14 +32,14 @@ lang: zh_CN
 
 ## 新建一篇文章
 
-在项目根目录执行下面的命令。它会生成 `src/content/posts/my-article/index.md`，图片可以放在同一文件夹。
+在项目根目录执行下面的命令。它会生成 `src/content/posts/my-article/index.md`，图片可以放在同一文件夹。新文章默认是草稿。
 
 ```bash title="新建并预览"
-pnpm new-post my-article/index.md
+pnpm new-post my-article --title "我的第一篇文章" --lang zh_CN
 pnpm dev
 ```
 
-打开终端显示的本地地址，进入 `/posts/my-article/`。保存文章后，开发预览会自动更新。
+打开终端显示的本地地址，进入 `/posts/my-article/`。保存文章后，开发预览会自动更新。列表和文章页会标出草稿。确认可以发布后，把 `draft` 改成 `false`；如果创建时就要公开，加上 `--publish`。已经写好扩展名的路径会按原样创建，例如 `pnpm new-post notes/hello.md`。
 
 ### 填好文章信息
 
@@ -53,7 +53,7 @@ description: 用一句话说明读者能从文章中得到什么。
 image: ''
 tags: [写作, 示例]
 category: Guides
-draft: false
+draft: true
 lang: zh_CN
 ---
 
@@ -63,19 +63,19 @@ lang: zh_CN
 | 字段 | 用途 | 必填 |
 | :--- | :--- | :---: |
 | `title` | 文章标题，也会成为页面的一级标题 | 是 |
-| `published` | 发布日期，写作 `YYYY-MM-DD` | 是 |
+| `published` | 发布日期。不带引号的 `YYYY-MM-DD`，或带引号的日期字符串 | 是 |
 | `updated` | 更新日期，需要时添加 | 否 |
 | `description` | 列表摘要与文章开头的说明 | 否 |
 | `image` | 封面图片路径，留空则不显示 | 否 |
 | `tags` | 标签数组，例如 `[Markdown, 教程]` | 否 |
 | `category` | 一个分类名称 | 否 |
-| `draft` | `true` 为草稿，默认 `false` | 否 |
+| `draft` | `true` 为草稿。`pnpm new-post` 默认写成 `true`；正式构建会排除草稿 | 否 |
 | `lang` | 正文语言，例如 `zh_CN`、`en`、`ja` | 否 |
 
 `lang` 声明正文语言，不会自动翻译文章。`prevTitle`、`prevSlug`、`nextTitle`、`nextSlug` 由站点维护，无需填写。
 
 :::note[草稿在预览与发布时的区别]
-`pnpm dev` 会显示草稿，方便检查内容；`pnpm build` 会排除 `draft: true` 的文章。发布前改成 `false`，再运行 `pnpm build` 检查最终页面。
+`pnpm dev` 会显示草稿，列表和文章页会标明「草稿」；`pnpm build` 会排除 `draft: true` 的文章。发布前改成 `false`，再运行 `pnpm build` 检查最终页面。
 :::
 
 封面 `image` 支持相对文章的路径（`./cover.png`）、`public` 中的路径（`/images/cover.png`）和 `https://` 图片地址。
@@ -322,7 +322,7 @@ lang: zh_CN
 
 ### 悬停揭示剧透
 
-这段文字藏着答案：:spoiler[文章就是由这些**小片段**组成的]。将指针移到遮罩上查看；触屏阅读长篇补充内容时，优先使用上面的折叠区域。
+这段文字藏着答案：:spoiler[文章就是由这些**小片段**组成的]。指针移上、点击，或聚焦后按 Enter / 空格，都可以查看。触屏上的长篇补充仍优先使用上面的折叠区域。
 
 ```markdown
 这段文字藏着答案：:spoiler[文章就是由这些**小片段**组成的]。
@@ -744,7 +744,7 @@ Markdown 没有独立的音视频简写，直接使用 HTML 的 `<audio>` 和 `<
 
 当前没有启用 Mermaid 图表、MDX 组件、定义列表、Pandoc 表格或远程内容导入。不要把这些语法直接当作现成功能；简单图示可用 SVG 图片，复杂表格可用 HTML。
 
-需要更集中的样例时，可以继续看[基础排版](/posts/markdown-basics/)、[扩展组件](/posts/markdown-extended/)和[代码功能](/posts/expressive-code/)。
+需要逐项核对支持状态时，打开[兼容性核对](/posts/markdown-compatibility/)。需要更集中的样例时，可以继续看[基础排版](/posts/markdown-basics/)、[扩展组件](/posts/markdown-extended/)和[代码功能](/posts/expressive-code/)。
 
 [archive]: /archive/
 [^writing]: 本文以仓库中的内容 schema、Markdown 管线和已启用插件为依据；普通 HTML 元素由浏览器渲染，媒体解码与第三方嵌入仍取决于浏览器及目标服务。

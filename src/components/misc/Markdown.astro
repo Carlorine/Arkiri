@@ -25,6 +25,10 @@ document.addEventListener("swup:page:view", applyCopyLang);
 
 document.addEventListener("click", function (e: MouseEvent) {
     const target = e.target as Element | null;
+    const spoiler = target?.closest("spoiler");
+    if (spoiler instanceof HTMLElement) {
+        spoiler.classList.toggle("is-open");
+    }
     const copyBtn = target?.closest(".copy-btn") as HTMLElement | null;
     if (copyBtn) {
         const preEle = copyBtn.closest("pre");
@@ -48,5 +52,14 @@ document.addEventListener("click", function (e: MouseEvent) {
 
         copyBtn.setAttribute("data-timeout-id", newTimeoutId.toString());
     }
+});
+
+document.addEventListener("keydown", (event: KeyboardEvent) => {
+    if (event.key !== "Enter" && event.key !== " ") return;
+    if (!(event.target instanceof HTMLElement) || event.target.tagName !== "SPOILER") return;
+    event.preventDefault();
+    // One toggle path. preventDefault stops Space from scrolling the page.
+    if (event.repeat) return;
+    event.target.click();
 });
 </script>

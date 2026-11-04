@@ -31,6 +31,8 @@ pnpm install
 pnpm dev       # 本地开发
 pnpm build     # 构建到 dist/（含 Pagefind 索引）
 pnpm preview   # 预览构建产物
+pnpm new-post my-article --title "标题" --lang zh_CN
+pnpm test      # 新建文章脚本的检查
 ```
 
 部署域名在 `astro.config.mjs` 的 `site` 里改。
